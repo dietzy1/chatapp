@@ -1,9 +1,6 @@
 import UserAvatar from "@/components/UserAvatar";
-import React from "react";
 
-interface OfflineProps {}
-
-function Offline({}: OfflineProps) {
+function Offline() {
   const user = {
     name: "Bob Doe",
     icon: {
@@ -13,7 +10,7 @@ function Offline({}: OfflineProps) {
 
   return (
     <>
-      <div className="w-56 break-all shadow-inner">
+      <div className=" break-all">
         <div className="mb-2 flex flex-row items-center rounded-sm  hover:bg-muted">
           <div className="relative m-2">
             <UserAvatar />

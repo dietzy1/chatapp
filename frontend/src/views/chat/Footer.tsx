@@ -1,14 +1,13 @@
 import MessageInput from "@/components/MessageInput";
 import UserInformation from "@/components/UserInformation";
 import UserSettings from "@/components/UserSettings";
-import React from "react";
 
-interface FooterProps {}
+//interface FooterProps {}
 
-function Footer({}: FooterProps): JSX.Element {
+function Footer(): JSX.Element {
   return (
     <>
-      <footer className="flex h-20 flex-grow flex-row items-center  justify-center">
+      <footer className="flex h-[10vh] flex-grow flex-row items-center justify-center">
         <UserInformation />
         <MessageInput />
         <UserSettings />

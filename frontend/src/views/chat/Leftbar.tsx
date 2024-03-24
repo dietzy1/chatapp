@@ -1,29 +1,27 @@
-import React from "react";
-
-import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import Channels from "./leftbar/Channels";
-import Home from "./leftbar/Home";
+import { useRef } from "react";
 
 import ChatroomsContainer from "./leftbar/ChatroomsContainer";
 import ChannelsContainer from "./leftbar/ChannelsContainer";
+import useUpdateWidth from "@/hooks/useUpdateWidth";
 
-interface LeftbarProps {}
-
-function Leftbar({}: LeftbarProps): JSX.Element {
+function ChatroomContainer(): JSX.Element {
   //
 
   //const chatrooms = useGetChatrooms(user.data);
+  const leftbarRef = useRef<HTMLDivElement>(null);
+  useUpdateWidth(leftbarRef, "leftbarWidth");
 
   return (
     <>
-      <nav className="flex flex-row space-x-2">
+      <div
+        ref={leftbarRef}
+        className="hidden h-[90vh] flex-row space-x-2 sm:flex"
+      >
         <ChatroomsContainer />
-
         <ChannelsContainer />
-      </nav>
+      </div>
     </>
   );
 }
 
-export default Leftbar;
+export default ChatroomContainer;

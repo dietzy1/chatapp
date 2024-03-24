@@ -1,23 +1,15 @@
-import React from "react";
-import { Settings, Github } from "lucide-react";
-import { ModeToggle } from "./mode-toggle";
 import useWidthStore from "@/stores/widthStore";
 
-interface UserSettingsProps {}
-
-function UserSettings({}: UserSettingsProps) {
-  const cardWidth = useWidthStore((state) => state.rightbarWidth);
+function UserSettings() {
+  const cardWidth = useWidthStore((state) => state.widths.rightbarWidth);
+  console.log("Rightbar width", cardWidth);
   const style = cardWidth ? { width: `${cardWidth}px` } : {};
   return (
     <>
       <div
         style={style}
-        className="flex flex-row items-center justify-center space-x-2"
-      >
-        <Settings />
-        <Github />
-        <ModeToggle />
-      </div>
+        className="flex  flex-row items-center justify-center space-x-2"
+      ></div>
     </>
   );
 }

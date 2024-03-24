@@ -1,24 +1,21 @@
-import React from "react";
-import UserAvatar from "./UserAvatar";
-
 import { ChevronsUpDown } from "lucide-react";
-import useGetUser from "@/api/endpoints/user/getUser";
+
 import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar } from "./ui/avatar";
 import useWidthStore from "@/stores/widthStore";
+import useGetUser from "@/api/endpoints/user/getUser";
 
-interface UserInformationProps {}
+function UserInformation(): JSX.Element {
+  //const { data, error, isLoading } = useGetUser("hello");
+  const { data, isLoading } = useGetUser();
 
-function UserInformation({}: UserInformationProps): JSX.Element {
-  const { data, error, isLoading } = useGetUser("hello");
-
-  const cardWidth = useWidthStore((state) => state.leftbarWidth);
+  const cardWidth = useWidthStore((state) => state.widths.leftbarWidth);
+  console.log("LeftbarWidth", cardWidth);
   const style = cardWidth ? { width: `${cardWidth}px` } : {};
 
-  if (isLoading || error) {
+  if (isLoading) {
     // Display a loading skeleton while data is being fetched
     return (
-      <div className="flex space-x-4 rounded-sm p-1 hover:bg-muted">
+      <div className="hidden flex-grow space-x-4 rounded-sm p-1 hover:bg-muted sm:flex">
         <Skeleton className="h-14 w-14 rounded-sm" />
         <div className="flex flex-col justify-center space-y-2">
           <Skeleton className="h-4 w-20" />
@@ -34,12 +31,13 @@ function UserInformation({}: UserInformationProps): JSX.Element {
     <>
       <div
         style={style}
-        className="flex space-x-4 rounded-sm p-1 hover:bg-muted "
+        className="hidden space-x-4 rounded-sm p-1 hover:bg-muted sm:flex"
       >
-        <UserAvatar width={14} height={14} />
+        <img className="h-14 w-14" src={data?.user?.icon.link} />
+        {/* <UserAvatar  width={14} height={14} /> */}
         <div className="flex flex-col">
-          <div className="font-medium">{data?.name}</div>
-          <div className="font-thin">#{data?.uuid}</div>
+          <div className="font-medium">{data?.user?.username}</div>
+          <div className="font-thin">#{data?.user?.userId}</div>
         </div>
         <ChevronsUpDown className="self-center" size={24} />
       </div>

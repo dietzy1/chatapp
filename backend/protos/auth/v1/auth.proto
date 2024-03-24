@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package auth.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "github.com/dietzy1/chatapp/protos/auth/v1;auth_v1";
+
+service AuthService {
+  rpc GetAuth(GetAuthRequest) returns (GetAuthResponse) {
+    option (google.api.http) = {get: "/v1/auth"};
+  }
+
+  rpc GetMeme(GetMemeRequest) returns (GetMemeResponse) {
+    option (google.api.http) = {get: "/v1/auth/meme"};
+  }
+}
+
+
+
+
+message GetAuthRequest {}
+
+message GetAuthResponse {
+  string user_id = 1;
+}
+
+message GetMemeRequest {
+ 
+}
+
+message GetMemeResponse {
+    repeated string memes = 1;
+}
+

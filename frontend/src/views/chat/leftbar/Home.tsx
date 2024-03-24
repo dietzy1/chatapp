@@ -3,11 +3,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import useIsMobile from "@/hooks/useIsMobile";
 import { Home as HomeIcon } from "lucide-react";
 
-interface HomeProps {}
-
-function Home({}: HomeProps): JSX.Element {
+function Home(): JSX.Element {
+  useIsMobile();
   return (
     <>
       <Tooltip>

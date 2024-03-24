@@ -1,16 +1,27 @@
-import React from "react";
 import { Separator } from "@/components/ui/separator";
-interface HeaderProps {}
+import useSelectedChatroomStore from "@/stores/selectedChatroomStore";
+import { HashIcon, ArrowLeft } from "lucide-react";
 
-function Header({}: HeaderProps): JSX.Element {
+function Header(): JSX.Element {
+  //Stuff the header should show the current channel to the left
+
+  const { selectedChannel } = useSelectedChatroomStore();
+
   return (
     <>
-      <div className="mx-auto flex h-16 w-full items-center justify-center rounded-sm ">
-        <div className="flex  items-center justify-center rounded-sm  hover:bg-muted">
-          Channelheader super long name
+      <div className="flex flex-col">
+        <div className="items flex h-16 items-center">
+          <ArrowLeft
+            className="ml-6 mr-2 flex h-8 w-8 text-foreground sm:hidden"
+            onClick={() => {
+              console.log("arrowclicking");
+            }}
+          />
+          <HashIcon className="ml-6 mr-2 h-8 w-8 text-muted" />
+          {selectedChannel?.name}
         </div>
+        <Separator className="mx-auto w-[99%]" />
       </div>
-      <Separator className="" />
     </>
   );
 }

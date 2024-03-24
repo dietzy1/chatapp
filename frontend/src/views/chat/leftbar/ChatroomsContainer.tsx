@@ -1,29 +1,30 @@
-import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import Search from "./Search";
 import Home from "./Home";
-import useGetUser from "@/api/endpoints/user/getUser";
+//import useGetUser from "@/api/endpoints/user/getUser";
 import Chatroom from "./Chatroom";
 
-interface ChatroomsContainerProps {}
+import useGetChatrooms from "@/api/endpoints/chatroom/getChatrooms";
+import React from "react";
 
-function ChatroomsContainer({}: ChatroomsContainerProps) {
-  const user = useGetUser("hello");
+function ChatroomsContainer() {
+  const { data, isLoading, error } = useGetChatrooms();
 
   return (
     <>
       <div className="flex flex-col space-y-2">
-        {/* <Card className=""> */}
         <div className="rounded-lg bg-background">
           <Home />
-          <Search />
+          {/* <Search /> */}
         </div>
-        {/* </Card> */}
 
         {/*         <Card className="flex flex-grow flex-col space-y-4 p-2 align-middle"> */}
-        <div className="flex flex-grow flex-col space-y-4 rounded-lg bg-background p-2 align-middle">
-          {user.isLoading || user.error ? (
+        <div className=" flex-grow space-y-4 overflow-y-auto rounded-lg bg-background p-2 align-middle">
+          {isLoading || error ? (
             <>
+              <Skeleton className="h-14 w-14 rounded-sm" />
+              <Skeleton className="h-14 w-14 rounded-sm" />
+              <Skeleton className="h-14 w-14 rounded-sm" />
+              <Skeleton className="h-14 w-14 rounded-sm" />
               <Skeleton className="h-14 w-14 rounded-sm" />
               <Skeleton className="h-14 w-14 rounded-sm" />
               <Skeleton className="h-14 w-14 rounded-sm" />
@@ -32,10 +33,10 @@ function ChatroomsContainer({}: ChatroomsContainerProps) {
             </>
           ) : (
             <>
-              {user.data?.chatServers.map((chatroom, i) => (
-                <>
-                  <Chatroom key={i} />
-                </>
+              {data?.chatrooms.map((value) => (
+                <React.Fragment key={value.chatroomId}>
+                  <Chatroom chatroom={value} />
+                </React.Fragment>
               ))}
             </>
           )}

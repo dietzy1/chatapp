@@ -1,73 +1,53 @@
 import Footer from "./Footer";
-import Leftbar from "./Leftbar";
 
-import useGetUsers from "@/api/endpoints/user/getUsers";
-import useGetUser from "@/api/endpoints/user/getUser";
-import Messages from "./Messages";
-import Activitybar from "./Activitybar";
-import useWidthStore from "@/stores/widthStore";
-import { useEffect, useRef } from "react";
+import MessageContainer from "./MessageContainer";
+import ActivityContainer from "./ActivityContainer";
+import ChatroomContainer from "./Leftbar";
 
-/* const user = useGetUser("");
-const users = useGetUsers(""); */
+import { useSwipeable } from "react-swipeable";
+import useIsMobile from "@/hooks/useIsMobile";
 
 function Chat(): JSX.Element {
-  const setLeftbarWidth = useWidthStore((state) => state.setLeftbarWidth);
-  const setMiddleWidth = useWidthStore((state) => state.setMiddleWidth);
-  const setRightbarWidth = useWidthStore((state) => state.setRightbarWidth);
+  //const isMobile = useIsMobile();
 
-  const leftbarRef = useRef<HTMLDivElement>(null);
-  const middleRef = useRef<HTMLDivElement>(null);
-  const rightbarRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const updateWidths = () => {
-      if (leftbarRef.current) {
-        setLeftbarWidth(leftbarRef.current.offsetWidth);
-      }
-
-      if (middleRef.current) {
-        setMiddleWidth(middleRef.current.offsetWidth);
-      }
-
-      if (rightbarRef.current) {
-        setRightbarWidth(rightbarRef.current.offsetWidth);
-      }
-    };
-
-    updateWidths();
-
-    window.addEventListener("resize", updateWidths);
-
-    return () => {
-      window.removeEventListener("resize", updateWidths);
-    };
-  }, [setLeftbarWidth, setMiddleWidth, setRightbarWidth]);
+  const handlers = useSwipeable({
+    onSwipedLeft: () => {
+      //setShowChatroom(false);
+    },
+    onSwipedRight: () => {
+      //setShowChatroom(true);
+    },
+  });
 
   return (
     <>
-      <div className="flex h-screen flex-col p-2 pb-1 dark:bg-black">
-        <div className="flex flex-grow flex-row space-x-2 ">
-          {/* Calculate width for leftbar */}
-          <div className="flex" ref={leftbarRef}>
-            <Leftbar />
-          </div>
-
-          {/* Calculate width for middlebar */}
-          <div className="flex flex-grow" ref={middleRef}>
-            <Messages />
-          </div>
-
-          {/* Calculate width for rightbar */}
-          <div className="flex" ref={rightbarRef}>
-            <Activitybar />
-          </div>
+      <div
+        {...handlers}
+        className="flex h-screen max-h-screen flex-col bg-neutral-50 p-2 pb-1 dark:bg-black"
+      >
+        <div className="flex flex-row space-x-2 ">
+          <ChatroomContainer />
+          <MessageContainer />
+          <ActivityContainer />
         </div>
-        <div className="flex">
-          <Footer />
-        </div>
+        <Footer />
       </div>
     </>
   );
 }
 export default Chat;
+
+{
+  /* <div className={`flex h-screen max-h-screen flex-col bg-neutral-50 p-2 pb-1 dark:bg-black ${isMobile ? 'overflow-x-auto' : ''}`}>
+      <div className="flex flex-row space-x-2 ">
+        <div className={showChatroom ? 'flex transition-all duration-500' : 'hidden'} style={{ transform: showChatroom ? 'translateX(0)' : 'translateX(-100%)' }}>
+          <ChatroomContainer />
+        </div>
+        <div className={!showChatroom ? 'flex transition-all duration-500' : 'hidden'} style={{ transform: !showChatroom ? 'translateX(0)' : 'translateX(100%)' }}>
+          <MessageContainer />
+        </div>
+        {!isMobile && <ActivityContainer />}
+      </div>
+      <Footer />
+    </div> */
+}

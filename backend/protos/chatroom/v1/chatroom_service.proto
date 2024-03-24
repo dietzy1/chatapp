@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package chatroom.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "github.com/dietzy1/chatapp/protos/chatroom/v1;chatroom_v1";
+
+service ChatroomService {
+  rpc GetChatrooms(GetChatroomsRequest) returns (GetChatroomsResponse) {
+    option (google.api.http) = {get: "/v1/chatroom/{user_id}"};
+  }
+}
+
+message Icon {
+  string icon_id = 1;
+  string link = 2;
+  string kind = 3;
+}
+
+message Chatroom {
+  string chatroom_id = 1;
+  string name = 2;
+  string description = 3;
+  Icon icon = 4;
+  string admin = 5;
+  repeated string user_uuids = 6;
+  repeated Channel channels = 7;
+}
+
+message Channel {
+  string channel_id = 1;
+  string name = 2;
+}
+
+message GetChatroomsRequest {
+  string user_id = 1;
+}
+
+message GetChatroomsResponse {
+  repeated Chatroom chatrooms = 1;
+}

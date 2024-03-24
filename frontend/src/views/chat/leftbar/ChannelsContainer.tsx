@@ -1,13 +1,12 @@
-import React from "react";
 import ChannelHeader from "./ChannelHeader";
-import { Card } from "@/components/ui/card";
+
 import { ChevronDown } from "lucide-react";
 import Channel from "./Channel";
+import useChannels from "@/hooks/useChannels";
+import React from "react";
 
-interface ChannelsContainerProps {}
-
-function ChannelsContainer({}: ChannelsContainerProps) {
-  const channels = [1, 2, 3];
+function ChannelsContainer() {
+  const channels = useChannels(); //use the value from the store to call the API for channels
 
   return (
     <>
@@ -22,14 +21,13 @@ function ChannelsContainer({}: ChannelsContainerProps) {
           {/* </div> */}
         </div>
 
-        <div className="ml-3 space-y-3">
-          {channels.map((channel, i) => (
-            <>
-              <Channel key={i} />
-            </>
+        <div className="ml-3 space-y-3 overflow-y-auto">
+          {channels.map((value) => (
+            <React.Fragment key={value.channelId}>
+              <Channel channel={value} />
+            </React.Fragment>
           ))}
         </div>
-        {/* </Card> */}
       </div>
     </>
   );

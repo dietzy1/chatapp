@@ -1,0 +1,15 @@
+version: "1.0"
+ 
+services:
+    postgres:
+      image: postgres:latest
+      environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=password
+      ports:
+        - 9001:9001
+    redis:
+      image: redis
+      restart: unless-stopped
+      ports:
+        - 9002:9002

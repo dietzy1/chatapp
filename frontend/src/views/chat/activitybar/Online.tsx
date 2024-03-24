@@ -1,25 +1,20 @@
 import UserAvatar from "@/components/UserAvatar";
-import React from "react";
+import { User } from "@/types/user";
 
-interface OnlineProps {}
+interface OnlineProps {
+  user: User;
+}
 
-function Online({}: OnlineProps) {
-  const onlineUser = {
-    name: "User",
-    icon: {
-      link: "https://avatars.githubusercontent.com/u/76659596?v=4",
-    },
-  };
-
+function Online({ user }: OnlineProps) {
   return (
     <>
-      <div className="w-56 break-all shadow-inner">
-        <div className="mb-2 flex flex-row items-center  rounded-sm hover:bg-muted">
+      <div className="break-all">
+        <div className="mb-2 flex flex-row items-center rounded-sm hover:bg-muted">
           <div className="relative m-2">
-            <UserAvatar />
+            <UserAvatar src={user.icon.link} />
             <div className="z-2 absolute bottom-0  right-0 rounded-full bg-green-500 p-1.5" />
           </div>
-          <div className="text-gray-500"> {onlineUser.name}</div>
+          <div className="text-gray-500"> {user.username}</div>
         </div>
       </div>
     </>

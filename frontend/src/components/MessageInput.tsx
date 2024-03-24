@@ -1,13 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
 import { SendHorizontal, ThumbsUp, Smile, CommandIcon } from "lucide-react";
-import useFormatMessage from "@/hooks/useFormatMessage";
 import { Input } from "./ui/input";
 import useWidthStore from "@/stores/widthStore";
 
-interface MessageInputProps {}
-
-function MessageInput({}: MessageInputProps): JSX.Element {
+function MessageInput(): JSX.Element {
   const [input, setInput] = useState<string>("");
 
   const sendMessage = () => {
@@ -49,10 +46,10 @@ function MessageInput({}: MessageInputProps): JSX.Element {
     };
   }, []);
 
-  const cardWidth = useWidthStore((state) => state.middleWidth);
+  const cardWidth = useWidthStore((state) => state.widths.middleWidth);
   const style = cardWidth ? { width: `${cardWidth}px` } : {};
 
-  const { format } = useFormatMessage();
+  //  const { format } = useFormatMessage();
 
   return (
     <>
@@ -60,9 +57,9 @@ function MessageInput({}: MessageInputProps): JSX.Element {
         style={style}
         className="flex  items-center  justify-center space-x-2"
       >
-        <div className="flex items-center justify-center rounded-full p-1 hover:bg-muted">
+        <div className="hidden items-center justify-center rounded-sm p-1 hover:bg-muted sm:flex">
           <CommandIcon />
-          <span className="text-center">p</span>
+          <span className="text-center text-xs">p</span>
         </div>
         <Input
           ref={inputRef}

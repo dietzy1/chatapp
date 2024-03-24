@@ -1,14 +1,16 @@
 import * as React from "react";
+import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { LucideIcon, ThumbsUp } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   Icon?: LucideIcon; // Add an icon prop
+  Node?: ReactNode;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, Icon, ...props }, ref) => {
+  ({ className, type, Icon, Node, ...props }, ref) => {
     return (
       <div className="relative flex flex-grow items-center">
         <input
@@ -25,6 +27,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             <Icon className="text-foreground" />
           </div>
         )}
+        {Node && <div className="absolute right-3">{Node}</div>}
       </div>
     );
   },

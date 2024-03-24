@@ -1,6 +1,13 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 
 import { ReactNode } from "react";
+
+declare module "@tanstack/react-query" {
+  interface Register {
+    defaultError: AxiosError;
+  }
+}
 
 // Create react-query client
 const queryClient = new QueryClient({

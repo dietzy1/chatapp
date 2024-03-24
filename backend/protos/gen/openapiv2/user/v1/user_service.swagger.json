@@ -48,7 +48,7 @@
         ]
       }
     },
-    "/v1/user/{id}": {
+    "/v1/user/{userId}": {
       "get": {
         "operationId": "UserService_GetUser",
         "responses": {
@@ -67,7 +67,7 @@
         },
         "parameters": [
           {
-            "name": "id",
+            "name": "userId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -76,14 +76,16 @@
         "tags": [
           "UserService"
         ]
-      },
-      "delete": {
-        "operationId": "UserService_DeleteUser",
+      }
+    },
+    "/v1/users/{chatroomId}": {
+      "get": {
+        "operationId": "UserService_GetUsers",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1DeleteUserResponse"
+              "$ref": "#/definitions/v1GetUsersResponse"
             }
           },
           "default": {
@@ -95,57 +97,10 @@
         },
         "parameters": [
           {
-            "name": "id",
+            "name": "chatroomId",
             "in": "path",
             "required": true,
             "type": "string"
-          }
-        ],
-        "tags": [
-          "UserService"
-        ]
-      },
-      "put": {
-        "operationId": "UserService_UpdateUser",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1UpdateUserResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "email": {
-                  "type": "string"
-                },
-                "password": {
-                  "type": "string"
-                }
-              }
-            }
           }
         ],
         "tags": [
@@ -184,66 +139,67 @@
       }
     },
     "v1CreateUserRequest": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        }
-      }
+      "type": "object"
     },
     "v1CreateUserResponse": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        }
-      }
-    },
-    "v1DeleteUserResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
+        "user": {
+          "$ref": "#/definitions/v1User"
         }
       }
     },
     "v1GetUserResponse": {
       "type": "object",
       "properties": {
-        "id": {
+        "user": {
+          "$ref": "#/definitions/v1User"
+        }
+      }
+    },
+    "v1GetUsersResponse": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1User"
+          }
+        }
+      }
+    },
+    "v1Icon": {
+      "type": "object",
+      "properties": {
+        "iconId": {
           "type": "string"
         },
-        "name": {
+        "link": {
           "type": "string"
         },
-        "email": {
+        "kind": {
           "type": "string"
         }
       }
     },
-    "v1UpdateUserResponse": {
+    "v1User": {
       "type": "object",
       "properties": {
-        "id": {
+        "userId": {
           "type": "string"
         },
-        "name": {
+        "username": {
           "type": "string"
         },
-        "email": {
+        "icon": {
+          "$ref": "#/definitions/v1Icon"
+        },
+        "joinDate": {
           "type": "string"
+        },
+        "verified": {
+          "type": "boolean"
         }
       }
     }
