@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 
 	pb "github.com/dietzy1/chatapp/protos/auth/v1"
@@ -14,19 +13,37 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+const sessionTokenName = "session_token"
+
+type AuthService interface {
+	VerifySessionToken(ctx context.Context, sessionToken string) (string, error)
+}
+
 func (h *handlers) GetAuth(ctx context.Context, req *pb.GetAuthRequest) (*pb.GetAuthResponse, error) {
 	//Delay the response with 60 seconds
-	//time.Sleep(60 * time.Second)
+	//time.Sleep(120 * time.Second)
 
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		log.Println("no metadata")
+		h.logger.Info("no metadata")
 		return &pb.GetAuthResponse{}, status.Errorf(codes.Unauthenticated, "no metadata")
 	}
-	h.logger.Debug("metadata", zap.Any("metadata", md))
+
+	sessionToken := md.Get(sessionTokenName)
+	if len(sessionToken) == 0 {
+		h.logger.Info("no session token")
+		return &pb.GetAuthResponse{}, status.Errorf(codes.Unauthenticated, "no session token")
+	}
+
+	//Check if the session token is valid by calling into the auth service
+	userId, err := h.authService.VerifySessionToken(ctx, sessionToken[0])
+	if err != nil {
+		h.logger.Info("failed to verify session token", zap.Error(err))
+		return &pb.GetAuthResponse{}, status.Errorf(codes.Unauthenticated, "invalid session token")
+	}
 
 	return &pb.GetAuthResponse{
-		UserId: "123",
+		UserId: userId,
 	}, nil
 }
 

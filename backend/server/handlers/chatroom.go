@@ -4,54 +4,54 @@ import (
 	"context"
 
 	pb "github.com/dietzy1/chatapp/protos/chatroom/v1"
+	"github.com/dietzy1/chatapp/service"
+	"go.uber.org/zap"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
+type ChatroomService interface {
+	GetChatrooms(ctx context.Context, userId string) ([]service.Chatroom, error)
+}
+
 func (h *handlers) GetChatrooms(ctx context.Context, req *pb.GetChatroomsRequest) (*pb.GetChatroomsResponse, error) {
-	icon1 := pb.Icon{
-		IconId: "123",
-		Link:   "https://miro.medium.com/v2/resize:fit:1400/format:webp/1*vBcaxPJ5OlpYRTb_4rmZ-A.png",
-		Kind:   "chatroom",
+
+	//Use the userId from the request to get the chatrooms
+	chatrooms, err := h.chatroomService.GetChatrooms(ctx, req.UserId)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get chatrooms: %v", err)
 	}
 
-	icon2 := pb.Icon{
-		IconId: "456",
-		Link:   "https://rux.vc/wp-content/uploads/2017/12/javascript-fuck-you.jpg",
-		Kind:   "chatroom",
+	h.logger.Info("Chatrooms retrieved", zap.Any("chatrooms", chatrooms))
+
+	//Convert from service.Chatroom to pb.Chatroom
+	pbchatrooms := make([]*pb.Chatroom, len(chatrooms))
+	for i, chatroom := range chatrooms {
+		pbchatrooms[i] = &pb.Chatroom{
+			ChatroomId: chatroom.ChatroomId.String(),
+			Name:       chatroom.Name,
+			Icon: &pb.Icon{
+				IconId: chatroom.Icon.IconId.String(),
+				Link:   chatroom.Icon.Link,
+				Kind:   chatroom.Icon.Kind,
+			},
+			OwnerId: chatroom.OwnerId.String(),
+			Channels: func() []*pb.Channel {
+				pbchannels := make([]*pb.Channel, len(chatroom.Channels))
+				for j, channel := range chatroom.Channels {
+					pbchannels[j] = &pb.Channel{
+						ChannelId: channel.ChannelId.String(),
+						Name:      channel.Name,
+					}
+				}
+
+				return pbchannels
+			}(),
+		}
 	}
 
-	channel1 := &pb.Channel{
-		ChannelId: "123",
-		Name:      "Glorious JS hate",
-	}
+	return &pb.GetChatroomsResponse{
+		Chatrooms: pbchatrooms,
+	}, nil
 
-	channel2 := &pb.Channel{
-		ChannelId: "456",
-		Name:      "Bobs secret place",
-	}
-
-	channels1 := []*pb.Channel{channel1, channel2}
-	channels2 := []*pb.Channel{channel2}
-
-	chatroom1 := &pb.Chatroom{
-		ChatroomId:  "123",
-		Name:        "Bob's JS haters",
-		Description: "For people who hate JS",
-		Icon:        &icon1,
-		Admin:       "123",
-		UserUuids:   []string{"123"},
-		Channels:    channels1,
-	}
-	chatroom2 := &pb.Chatroom{
-		ChatroomId:  "456",
-		Name:        "Unix enjoyers",
-		Description: "For people who enjoy Unix",
-		Icon:        &icon2,
-		Admin:       "123",
-		UserUuids:   []string{"123"},
-		Channels:    channels2,
-	}
-
-	chatrooms := []*pb.Chatroom{chatroom1, chatroom2}
-
-	return &pb.GetChatroomsResponse{Chatrooms: chatrooms}, nil
 }

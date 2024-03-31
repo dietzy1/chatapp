@@ -8,8 +8,10 @@ import (
 	"time"
 
 	"github.com/dietzy1/chatapp/config"
+	"github.com/dietzy1/chatapp/repository"
 	"github.com/dietzy1/chatapp/server"
 	"github.com/dietzy1/chatapp/service"
+
 	"go.uber.org/zap"
 )
 
@@ -25,16 +27,32 @@ func main() {
 		logger.Warn("failed to load config", zap.Error(err))
 		logger.Warn("Application will start with default configuration")
 	}
-	_ = config
 
-	//Database
+	repository, err := repository.New(config.Repository)
+	if err != nil {
+		logger.Fatal("failed to initialize repository", zap.Error(err))
+	}
 
-	//Broker
+	//cdn := clients.NewCdnClient(config.Cdn)
+
+	//Cache layer
+	/* cache, err := cache.New(config.Cache)
+	if err != nil {
+		logger.Fatal("failed to initialize cache", zap.Error(err))
+	} */
+
+	//Broker layer
 
 	//Services
-	userService := service.NewUserService(logger)
 
-	s := server.New(&config.Server, userService)
+	//iconService := service.NewIconService(logger, repository, cdn)
+
+	authService := service.NewAuthService(logger, repository)
+	chatroomService := service.NewChatroomService(logger, repository)
+
+	userService := service.NewUserService(logger, repository)
+
+	s := server.New(&config.Server, userService, authService, chatroomService)
 
 	// Start the gRPC server in a separate goroutine
 	go func() {

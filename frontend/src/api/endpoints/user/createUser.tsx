@@ -1,14 +1,21 @@
 import { useMutation } from "@tanstack/react-query";
 
 import client from "@/api/client/axios";
-import { User } from "@/types/user";
 
-export interface CreateUserResponse {
-  user: User;
+export interface CreateUserRequest {
+  username: string;
+  description: string;
+  iconId: string;
 }
 
-const createUser = async (): Promise<CreateUserResponse> => {
-  const response = await client.post<CreateUserResponse>(`/user`);
+export interface CreateUserResponse {
+  userId: string;
+}
+
+const createUser = async (
+  req: CreateUserRequest,
+): Promise<CreateUserResponse> => {
+  const response = await client.post<CreateUserResponse>(`/user`, req);
 
   console.log(response.data);
 
@@ -16,9 +23,19 @@ const createUser = async (): Promise<CreateUserResponse> => {
 };
 
 const useCreateUser = () => {
+  const username = "bob";
+  const description = "bob is a cool guy";
+  const iconId = "a2b3314b-c20e-4148-9eaf-28dd2e142bad";
+
+  const req: CreateUserRequest = {
+    username,
+    description,
+    iconId,
+  };
+
   return useMutation({
     mutationKey: ["user"],
-    mutationFn: () => createUser(),
+    mutationFn: () => createUser(req),
   });
 };
 

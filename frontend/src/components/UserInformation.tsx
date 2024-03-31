@@ -37,7 +37,7 @@ function UserInformation(): JSX.Element {
         {/* <UserAvatar  width={14} height={14} /> */}
         <div className="flex flex-col">
           <div className="font-medium">{data?.user?.username}</div>
-          <div className="font-thin">#{data?.user?.userId}</div>
+          <div className="font-thin">#{data?.user?.description}</div>
         </div>
         <ChevronsUpDown className="self-center" size={24} />
       </div>

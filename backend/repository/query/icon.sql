@@ -1,5 +1,6 @@
--- name: CreateIcon :exec
-INSERT INTO
-    icons (icon_id, link, kind)
-VALUES
-    ($1, $2, $3);
+-- name: GetRandomDefaultIcon :one
+SELECT *
+FROM icons
+WHERE is_default = true
+ORDER BY RANDOM()
+LIMIT 1;

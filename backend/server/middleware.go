@@ -28,9 +28,6 @@ func loggingMiddleware(
 	) (interface{}, error) {
 		logger.Info("gRPC method", zap.String("method", info.FullMethod))
 		resp, err := handler(ctx, req)
-		if err != nil {
-			logger.Error("gRPC method encountered an error", zap.Error(err))
-		}
 
 		return resp, err
 	}
@@ -66,13 +63,13 @@ func allowedOrigin(origin string) bool {
 }
 
 const (
-	loginRoute        = "/authgateway.v1.AuthGatewayService/Login"
-	registerRoute     = "/authgateway.v1.AuthGatewayService/Register"
-	authenticateRoute = "/authgateway.v1.AuthGatewayService/Authenticate"
-	logoutRoute       = "/authgateway.v1.AuthGatewayService/Logout"
+	loginRoute        = "/v1/auth/login"
+	registerRoute     = "v1/auth/register"
+	authenticateRoute = "/v1/auth"
+	logoutRoute       = "/v1/auth/logout"
 )
 
-func wrapperAuthMiddleware() func(http.Handler) http.Handler {
+func wrapperAuthMiddleware(logger *zap.Logger) func(http.Handler) http.Handler {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			//if the request path is /login or /register /authenticate, then skip the auth middleware
@@ -81,8 +78,10 @@ func wrapperAuthMiddleware() func(http.Handler) http.Handler {
 
 			if r.URL.Path == loginRoute || r.URL.Path == registerRoute || r.URL.Path == authenticateRoute || r.URL.Path == logoutRoute {
 				h.ServeHTTP(w, r)
+				logger.Info("skipping auth middleware")
 				return
 			}
+			logger.Info("running auth middleware")
 			//Unsure if I actually need to do the cookie thing here or if its done at some other part of the middleware
 
 			//Call the auth service to check if the session token is valid
@@ -107,14 +106,12 @@ func wrapperAuthMiddleware() func(http.Handler) http.Handler {
 	}
 }
 
-const sessionToken = "session_token"
+const sessionTokenName = "session_token"
 
 // Called on the response from the GRPC call - is used to set session token cookies
 func withForwardResponseOptionWrapper(logger *zap.Logger) runtime.ServeMuxOption {
 
 	ok := runtime.WithForwardResponseOption(func(ctx context.Context, w http.ResponseWriter, m proto.Message) error {
-		//I need to read the cookie from the grpc context and set it as a header in the response
-		fmt.Println("Step number 3")
 		md, ok := runtime.ServerMetadataFromContext(ctx)
 		if !ok {
 			log.Println("no metadata")
@@ -122,18 +119,21 @@ func withForwardResponseOptionWrapper(logger *zap.Logger) runtime.ServeMuxOption
 		}
 
 		//Specificly look for the session_token key in the metadata
-		token := md.HeaderMD.Get(sessionToken)
+		token := md.HeaderMD.Get(sessionTokenName)
+
+		logger.Info("session token", zap.Any("token", token))
+
 		if len(token) == 0 {
 			log.Println("no session token")
 			return nil
 		}
 
 		//perform check if token is set to "logout" and if so, delete the cookie
-		if token[0] == "" {
+		/* 	if token[0] == "" {
 			log.Println("Deleting cookie")
 			// Add the session token to the cookie header
 			http.SetCookie(w, &http.Cookie{
-				Name:   sessionToken,
+				Name:   sessionTokenName,
 				Value:  "",
 				MaxAge: -1,
 				Path:   "/",
@@ -141,11 +141,11 @@ func withForwardResponseOptionWrapper(logger *zap.Logger) runtime.ServeMuxOption
 
 			log.Println("session and uuid token deleted")
 			return nil
-		}
+		} */
 
 		//Add the session token to the cookie header
 		http.SetCookie(w, &http.Cookie{
-			Name:    sessionToken,
+			Name:    sessionTokenName,
 			Value:   token[0],
 			Expires: time.Now().Add(60 * time.Minute),
 			Path:    "/",
@@ -162,9 +162,8 @@ func withForwardResponseOptionWrapper(logger *zap.Logger) runtime.ServeMuxOption
 func incomingHeaderMatcherWrapper(logger *zap.Logger) runtime.ServeMuxOption {
 	ok := runtime.WithIncomingHeaderMatcher(func(key string) (string, bool) {
 		//List of allowed headers that can be forwarded to the gRPC server
-		if key == sessionToken {
-			fmt.Println("Step number 1")
-			log.Default().Println("session_token recieved")
+		if key == "Cookie" {
+			logger.Debug("forwarding header", zap.String("key", key))
 			return key, true
 		}
 
@@ -177,14 +176,15 @@ func incomingHeaderMatcherWrapper(logger *zap.Logger) runtime.ServeMuxOption {
 // Function that looks at the request and extracts the cookies into metadata
 func withMetaDataWrapper(logger *zap.Logger) runtime.ServeMuxOption {
 	ok := runtime.WithMetadata(func(ctx context.Context, req *http.Request) metadata.MD {
-		fmt.Println("Step number 2")
-		cookie, err := req.Cookie(sessionToken)
+		cookie, err := req.Cookie(sessionTokenName)
 		if err != nil {
+			logger.Debug("no session token found in cookies")
 			return nil
 		}
 
-		md := metadata.Pairs(sessionToken, cookie.Value)
-		log.Default().Println("Cookie turned into metadata")
+		md := metadata.Pairs(sessionTokenName, cookie.Value)
+
+		logger.Debug(sessionTokenName, zap.Any("value", cookie.Value))
 		return md
 	})
 	return ok

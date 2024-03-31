@@ -1,5 +1,11 @@
 import React, { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { CommitIcon } from "@radix-ui/react-icons";
+import {
+  GitCommitHorizontal,
+  GitCommitHorizontalIcon,
+  GitCommitVertical,
+} from "lucide-react";
 
 type TimelineContentProps = {
   children: ReactNode;
@@ -11,7 +17,7 @@ const TimelineContent: React.FC<TimelineContentProps> = ({ children }) => (
 TimelineContent.displayName = "TimelineContent";
 
 const TimelineDot: React.FC = () => (
-  <div className={cn("h-3 w-3 rounded-full bg-gray-700")}></div>
+  <div className={cn("h-1 w-1 rounded-full bg-gray-400")}></div>
 );
 TimelineDot.displayName = "TimelineDot";
 
@@ -39,12 +45,27 @@ const Timeline: React.FC<TimelineProps> = ({ children }) => {
     <div className={cn("flex flex-col items-start")}>
       {timelineItems.map((child, index) => (
         <React.Fragment key={index}>
-          {index > 0 && (
-            <div
-              className={cn("ml-[4px] h-16 w-[3px] self-stretch bg-gray-400")}
-            ></div>
+          {index >= 0 && (
+            <div className=" flex w-96 items-center">
+              <GitCommitHorizontalIcon
+                size={24}
+                className="ml-2 text-neutral-900"
+              />
+              <span className="ml-1 text-xs font-light">
+                Commits on Jun 24, 2023
+              </span>
+            </div>
           )}
-          {child}
+          <div className="flex min-w-96 flex-col border border-neutral-900">
+            {child}
+            <div className="mb-2 ml-4 flex items-center">
+              <span className=" text-xs font-light ">😡 &nbsp; </span>
+
+              <span className="text-xs font-light text-white">
+                Martin commited{" "}
+              </span>
+            </div>
+          </div>
         </React.Fragment>
       ))}
     </div>

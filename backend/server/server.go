@@ -27,7 +27,7 @@ type Config struct {
 	Logger      *zap.Logger
 }
 
-func New(c *Config, userService handlers.UserService) *server {
+func New(c *Config, userService handlers.UserService, authService handlers.AuthService, chatroomService handlers.ChatroomService) *server {
 
 	logger := zapgrpc.NewLogger(c.Logger)
 	//Unsure if this is even supposed to be here honestly
@@ -44,7 +44,7 @@ func New(c *Config, userService handlers.UserService) *server {
 		logger: c.Logger,
 		config: c,
 	}
-	handlers.NewHandlers(c.Logger, userService).RegisterServices(s.grpc)
+	handlers.NewHandlers(c.Logger, userService, authService, chatroomService).RegisterServices(s.grpc)
 
 	return s
 }

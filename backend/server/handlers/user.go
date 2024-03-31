@@ -6,88 +6,88 @@ import (
 	pb "github.com/dietzy1/chatapp/protos/user/v1"
 	"github.com/dietzy1/chatapp/service"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 type UserService interface {
-	CreateUser(ctx context.Context) (service.User, error)
+	CreateUser(ctx context.Context, username, description, iconId string) (string, string, error)
+	GetUser(ctx context.Context, userID string) (service.User, error)
+	GetUsers(ctx context.Context, chatroomID string) ([]service.User, error)
 }
 
 func (h *handlers) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	/* user := &pb.User{
-		UserId:   "123",
-		Username: "Snartin",
-		Icon: &pb.Icon{
-			IconId: "123",
-			Link:   "https://emojiisland.com/cdn/shop/products/Very_Angry_Emoji_7f7bb8df-d9dc-4cda-b79f-5453e764d4ea_large.png?v=1571606036",
-			Kind:   "user",
-		},
-		JoinDate: "2021-10-10",
-		Verified: false,
+
+	userId, sessionToken, err := h.userService.CreateUser(ctx, req.Username, req.Description, req.IconId)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create user: %v", err)
 	}
+
+	//Add sessionToken to the response metadata
+
+	md := metadata.Pairs(sessionTokenName, sessionToken)
+	if err := grpc.SendHeader(ctx, md); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to send metadata: %v", err)
+	}
+
+	h.logger.Info("User created", zap.Any("user", userId))
 
 	return &pb.CreateUserResponse{
-		User: user,
-	}, nil */
-
-	user, err := h.userService.CreateUser(ctx)
-	if err != nil {
-		return nil, err
-	}
-	h.logger.Info("User created", zap.Any("user", user))
-
-	/* return &pb.CreateUserResponse{
-		User: &pb.User{
-			UserId:   user.UserID,
-			Username: user.Username,
-			Icon: &pb.Icon{
-				IconId: user.IconID,
-				Link:   user.IconLink,
-				Kind:   user.IconKind,
-			},
-			JoinDate: user.JoinDate,
-			Verified: user.Verified,
-		},
-	}, nil */
-	return nil, nil
+		UserId: userId,
+	}, nil
 }
 
 func (h *handlers) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.GetUserResponse, error) {
-	user := &pb.User{
-		UserId:   "123",
-		Username: "Snartin",
-		Icon: &pb.Icon{
-			IconId: "123",
-			Link:   "https://emojiisland.com/cdn/shop/products/Very_Angry_Emoji_7f7bb8df-d9dc-4cda-b79f-5453e764d4ea_large.png?v=1571606036",
-			Kind:   "user",
-		},
-		JoinDate: "2021-10-10",
-		Verified: false,
+
+	user, err := h.userService.GetUser(ctx, req.UserId)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
 
+	h.logger.Info("User retrieved", zap.Any("user", user))
+
 	return &pb.GetUserResponse{
-		User: user,
+		User: &pb.User{
+			UserId:   user.UserID.String(),
+			Username: user.Username,
+			Icon: &pb.Icon{
+				IconId: user.Icon.IconId.String(),
+				Link:   user.Icon.Link,
+				Kind:   user.Icon.Kind,
+			},
+			JoinDate:    user.JoinDate,
+			Description: user.Description,
+			Verified:    user.Verified,
+		},
 	}, nil
 }
 
 func (h *handlers) GetUsers(ctx context.Context, req *pb.GetUsersRequest) (*pb.GetUsersResponse, error) {
 
-	user := &pb.User{
-		UserId:   "123",
-		Username: "Snartin",
-		Icon: &pb.Icon{
-			IconId: "123",
-			Link:   "https://emojiisland.com/cdn/shop/products/Very_Angry_Emoji_7f7bb8df-d9dc-4cda-b79f-5453e764d4ea_large.png?v=1571606036",
-			Kind:   "user",
-		},
-		JoinDate: "2021-10-10",
-		Verified: false,
+	users, err := h.userService.GetUsers(ctx, req.ChatroomId)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get users: %v", err)
 	}
 
-	users := []*pb.User{
-		user,
+	pbusers := make([]*pb.User, len(users))
+	for i, user := range users {
+		pbusers[i] = &pb.User{
+			UserId:   user.UserID.String(),
+			Username: user.Username,
+			Icon: &pb.Icon{
+				IconId: user.Icon.IconId.String(),
+				Link:   user.Icon.Link,
+				Kind:   user.Icon.Kind,
+			},
+			JoinDate:    user.JoinDate,
+			Description: user.Description,
+			Verified:    user.Verified,
+		}
 	}
+
 	return &pb.GetUsersResponse{
-		Users: users,
+		Users: pbusers,
 	}, nil
-
 }

@@ -18,13 +18,17 @@ type handlers struct {
 	pb2.UnimplementedChatroomServiceServer
 	pb3.UnimplementedAuthServiceServer
 
-	userService UserService
+	userService     UserService
+	authService     AuthService
+	chatroomService ChatroomService
 }
 
-func NewHandlers(logger *zap.Logger, userService UserService) *handlers {
+func NewHandlers(logger *zap.Logger, userService UserService, authService AuthService, chatroomService ChatroomService) *handlers {
 	return &handlers{
-		logger:      logger,
-		userService: userService,
+		logger:          logger,
+		userService:     userService,
+		authService:     authService,
+		chatroomService: chatroomService,
 	}
 }
 

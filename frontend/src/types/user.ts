@@ -2,9 +2,9 @@ export interface User {
   userId: string;
   username: string;
   icon: Icon;
+  description: string;
   joinDate: string;
   verified: boolean;
-  chatServers: string[];
 }
 
 export interface Icon {
@@ -19,7 +19,6 @@ export interface Chatroom {
   description: string;
   icon: Icon;
   admin: string;
-  userUuids: string[];
   channels: Channel[];
 }
 

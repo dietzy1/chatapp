@@ -40,9 +40,12 @@ func (s *server) RunGateway() error {
 		return err
 	}
 
+	mw := wrapperAuthMiddleware(s.logger)
+	middleware := mw((corsMiddleware(gwmux)))
+
 	gwServer := &http.Server{
 		Addr:    s.config.GatewayAddr,
-		Handler: corsMiddleware(gwmux),
+		Handler: middleware,
 	}
 	//Assign to server struct so we can gracefully shutdown
 	s.gwServer = gwServer

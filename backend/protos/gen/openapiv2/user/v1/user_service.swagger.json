@@ -139,15 +139,27 @@
       }
     },
     "v1CreateUserRequest": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "iconId": {
+          "type": "string"
+        }
+      }
     },
     "v1CreateUserResponse": {
       "type": "object",
       "properties": {
-        "user": {
-          "$ref": "#/definitions/v1User"
+        "userId": {
+          "type": "string"
         }
-      }
+      },
+      "title": "And a token"
     },
     "v1GetUserResponse": {
       "type": "object",
@@ -194,6 +206,9 @@
         },
         "icon": {
           "$ref": "#/definitions/v1Icon"
+        },
+        "description": {
+          "type": "string"
         },
         "joinDate": {
           "type": "string"

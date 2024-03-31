@@ -16,6 +16,7 @@ const useGetAuth = () => {
   const { data, isPending, isLoading, error } = useQuery({
     queryKey: ["auth"],
     queryFn: getAuth,
+    enabled: true,
   });
 
   return {

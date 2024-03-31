@@ -35,8 +35,9 @@ message User {
   string user_id = 1;
   string username = 2;
   Icon icon = 3;
-  string join_date = 4;
-  bool verified = 5;
+  string description = 4;
+  string join_date = 5;
+  bool verified = 6;
 }
 
 message Icon {
@@ -45,10 +46,15 @@ message Icon {
   string kind = 3;
 }
 
-message CreateUserRequest {}
+message CreateUserRequest {
+  string username = 1;
+  string description = 2;
+  string icon_id = 3;
+}
 
+//And a token
 message CreateUserResponse {
-  User user = 1;
+  string user_id = 1;
 }
 
 message GetUserRequest {

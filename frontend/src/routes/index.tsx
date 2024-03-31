@@ -1,7 +1,9 @@
 import useGetAuth from "@/api/endpoints/auth/getAuth";
+import Authentication from "@/views/authentication/Authentication";
+import Login from "@/views/authentication/Login";
+import Register from "@/views/authentication/Register";
 import Chat from "@/views/chat/Chat";
-import Hero from "@/views/landing/Hero";
-import Loading from "@/views/loading/loading";
+import Landing from "@/views/landing/Landing";
 
 import { Navigate, Route, Routes as RouterRoutes } from "react-router-dom";
 
@@ -9,11 +11,11 @@ const ProtectedRoutes = ({ children }: { children: React.ReactNode }) => {
   const { data, isPending, isLoading, error } = useGetAuth();
 
   if (isPending && isLoading) {
-    return <Loading />;
+    return <Authentication />;
   }
 
   if (error || !data?.userId) {
-    return <Navigate to="/" />;
+    return <Navigate to="/register" />;
   }
 
   return children;
@@ -22,7 +24,9 @@ const ProtectedRoutes = ({ children }: { children: React.ReactNode }) => {
 function Routes() {
   return (
     <RouterRoutes>
-      <Route path="/" element={<Hero />} />
+      <Route path="/" element={<Landing />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/login" element={<Login />} />
       <Route
         path="/chat"
         element={

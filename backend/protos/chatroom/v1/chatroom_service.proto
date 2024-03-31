@@ -22,11 +22,9 @@ message Icon {
 message Chatroom {
   string chatroom_id = 1;
   string name = 2;
-  string description = 3;
-  Icon icon = 4;
-  string admin = 5;
-  repeated string user_uuids = 6;
-  repeated Channel channels = 7;
+  Icon icon = 3;
+  string owner_id = 4;
+  repeated Channel channels = 5;
 }
 
 message Channel {

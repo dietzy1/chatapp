@@ -96,20 +96,11 @@
         "name": {
           "type": "string"
         },
-        "description": {
-          "type": "string"
-        },
         "icon": {
           "$ref": "#/definitions/v1Icon"
         },
-        "admin": {
+        "ownerId": {
           "type": "string"
-        },
-        "userUuids": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         },
         "channels": {
           "type": "array",
