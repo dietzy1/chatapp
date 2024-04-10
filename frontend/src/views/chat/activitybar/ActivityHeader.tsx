@@ -16,7 +16,7 @@ function ActivityHeader() {
   return (
     <>
       <div className="flex flex-col">
-        <div className="items mx-2 flex h-16 items-center justify-end gap-x-2">
+        <div className="items mx-2 flex h-16 items-center justify-end">
           <SearchCommand />
 
           <div className="rounded-sm p-2 hover:bg-muted">

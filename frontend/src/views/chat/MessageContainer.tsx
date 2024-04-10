@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 
 import { TracingBeam } from "@/components/ui/tracing";
 import useUpdateWidth from "@/hooks/useUpdateWidth";
+import useWrappedWebsocket from "@/hooks/useWrappedWebsocket";
 
 function MessageContainer(): JSX.Element {
   //const { format } = useFormatMessage();
@@ -16,6 +17,8 @@ function MessageContainer(): JSX.Element {
 
   const middleRef = useRef<HTMLDivElement>(null);
   useUpdateWidth(middleRef, "middleWidth");
+
+  useWrappedWebsocket();
 
   return (
     <>

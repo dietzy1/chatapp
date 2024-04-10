@@ -7,10 +7,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/dietzy1/chatapp/broker"
 	"github.com/dietzy1/chatapp/config"
 	"github.com/dietzy1/chatapp/repository"
 	"github.com/dietzy1/chatapp/server"
 	"github.com/dietzy1/chatapp/service"
+	"github.com/dietzy1/chatapp/websocket"
 
 	"go.uber.org/zap"
 )
@@ -28,9 +30,14 @@ func main() {
 		logger.Warn("Application will start with default configuration")
 	}
 
-	repository, err := repository.New(config.Repository)
+	repository, err := repository.New(&config.Repository)
 	if err != nil {
 		logger.Fatal("failed to initialize repository", zap.Error(err))
+	}
+
+	broker, err := broker.New(&config.Broker)
+	if err != nil {
+		logger.Fatal("failed to initialize broker", zap.Error(err))
 	}
 
 	//cdn := clients.NewCdnClient(config.Cdn)
@@ -49,10 +56,13 @@ func main() {
 
 	authService := service.NewAuthService(logger, repository)
 	chatroomService := service.NewChatroomService(logger, repository)
+	messageService := service.NewMessageService(logger, repository)
 
 	userService := service.NewUserService(logger, repository)
 
-	s := server.New(&config.Server, userService, authService, chatroomService)
+	s := server.New(&config.Server, userService, authService, chatroomService, messageService)
+
+	websocketManager := websocket.NewManager(&config.Websocket, broker, messageService)
 
 	// Start the gRPC server in a separate goroutine
 	go func() {
@@ -67,6 +77,13 @@ func main() {
 		if err := s.RunGateway(); err != nil {
 			logger.Fatal("failed to start gateway", zap.Error(err))
 		}
+	}()
+
+	go func() {
+		if err := websocketManager.ListenAndServe(); err != nil {
+			logger.Fatal("failed to start websocket server", zap.Error(err))
+		}
+
 	}()
 
 	// Wait for the termination signal

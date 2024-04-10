@@ -1,10 +1,12 @@
 package config
 
 import (
+	"github.com/dietzy1/chatapp/broker"
 	"github.com/dietzy1/chatapp/cache"
 	"github.com/dietzy1/chatapp/clients"
 	"github.com/dietzy1/chatapp/repository"
 	"github.com/dietzy1/chatapp/server"
+	"github.com/dietzy1/chatapp/websocket"
 	"go.uber.org/zap"
 )
 
@@ -12,8 +14,12 @@ type Config struct {
 	//Log lvl?
 	Server     server.Config
 	Repository repository.Config
-	Cache      cache.Config
-	Cdn        clients.Config
+	Broker     broker.Config
+	Websocket  websocket.Config
+
+	//Not done yet
+	Cache cache.Config
+	Cdn   clients.Config
 }
 
 func New(logger *zap.Logger) (*Config, error) {
@@ -26,6 +32,15 @@ func New(logger *zap.Logger) (*Config, error) {
 		Repository: repository.Config{
 			DatabaseURL: "postgres://root:root@localhost:5432/postgres",
 		},
+		Broker: broker.Config{
+			Url:    "redis://localhost:6379", //FIXME: Verify this
+			Logger: logger,
+		},
+		Websocket: websocket.Config{
+			Addr:   ":9080",
+			Logger: logger,
+		},
+
 		Cache: cache.Config{},
 		Cdn: clients.Config{
 			PublicKey:   "public_123",
@@ -33,4 +48,5 @@ func New(logger *zap.Logger) (*Config, error) {
 			UrlEndpoint: "https://cdn.example.com",
 		},
 	}, nil
+
 }

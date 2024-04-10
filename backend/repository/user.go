@@ -13,8 +13,8 @@ import (
 const primaryChatroomId = "4ed6de81-dedb-47ab-92f5-04d5e23fb71a"
 
 func (r *repository) CreateUser(ctx context.Context, username, description string, iconId uuid.UUID) (uuid.UUID, uuid.UUID, error) {
-	fmt.Println("Starting transaction")
-	tx, err := r.conn.BeginTx(ctx, pgx.TxOptions{})
+
+	tx, err := r.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return uuid.Nil, uuid.Nil, fmt.Errorf("failed to begin transaction: %w", err)
 	}

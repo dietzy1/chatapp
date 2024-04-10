@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package message.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "github.com/dietzy1/chatapp/protos/message/v1;message_v1";
+
+service MessageService {
+  rpc GetMessages(GetMessagesRequest) returns (GetMessagesResponse) {
+    option (google.api.http) = {
+      get: "/v1/message/{chatroom_id}/{channel_id}"
+    };
+  }
+}
+
+message Message {
+  string message_id = 1;
+  string channel_id = 2;
+  string chatroom_id = 3;
+  string user_id = 4;
+  string content = 5;
+  string created_at = 6;
+  optional string updated_at = 7;
+}
+
+message GetMessagesRequest {
+  string channel_id = 1;
+  string chatroom_id = 2;
+}
+
+message GetMessagesResponse {
+  repeated Message messages = 1;
+}
+

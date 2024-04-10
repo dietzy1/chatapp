@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   CommandDialog,
   CommandEmpty,
@@ -6,7 +7,6 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Input } from "@/components/ui/input";
 import { CommandIcon } from "lucide-react";
 import React from "react";
 
@@ -29,22 +29,14 @@ function SearchCommand() {
     setOpen((open) => !open);
   };
 
-  const commandK = (
-    <div className="flex items-center justify-center rounded-sm p-1 hover:bg-muted">
-      <CommandIcon className="h-5 w-5" />
-      <span className="text-center text-xs">k</span>
-    </div>
-  );
-
   return (
     <>
-      <Input
-        onClick={openSearch}
-        type="text"
-        placeholder="Search"
-        inputMode="text"
-        Node={commandK}
-      />
+      <Button variant={"outline"} onClick={openSearch}>
+        <span className="mr-1 text-xs">Search </span>
+        <CommandIcon className="h-4 w-4" />
+        <span className="text-center text-xs">k</span>
+      </Button>
+
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>

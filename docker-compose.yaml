@@ -10,7 +10,11 @@ services:
       ports:
         - 5432:5432
     redis:
-      image: redis
+      image: redis:latest
       restart: unless-stopped
       ports:
-        - 9002:9002
+      - "6379:6379"
+      environment:
+      - REDIS_PASSWORD=my-password
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16

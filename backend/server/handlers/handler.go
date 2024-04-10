@@ -6,6 +6,7 @@ import (
 
 	pb3 "github.com/dietzy1/chatapp/protos/auth/v1"
 	pb2 "github.com/dietzy1/chatapp/protos/chatroom/v1"
+	pb4 "github.com/dietzy1/chatapp/protos/message/v1"
 	pb1 "github.com/dietzy1/chatapp/protos/user/v1"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go.uber.org/zap"
@@ -17,18 +18,21 @@ type handlers struct {
 	pb1.UnimplementedUserServiceServer
 	pb2.UnimplementedChatroomServiceServer
 	pb3.UnimplementedAuthServiceServer
+	pb4.UnimplementedMessageServiceServer
 
 	userService     UserService
 	authService     AuthService
 	chatroomService ChatroomService
+	messageService  MessageService
 }
 
-func NewHandlers(logger *zap.Logger, userService UserService, authService AuthService, chatroomService ChatroomService) *handlers {
+func NewHandlers(logger *zap.Logger, userService UserService, authService AuthService, chatroomService ChatroomService, messageService MessageService) *handlers {
 	return &handlers{
 		logger:          logger,
 		userService:     userService,
 		authService:     authService,
 		chatroomService: chatroomService,
+		messageService:  messageService,
 	}
 }
 
@@ -37,6 +41,7 @@ func (h *handlers) RegisterServices(grpc *grpc.Server) {
 	pb1.RegisterUserServiceServer(grpc, h)
 	pb2.RegisterChatroomServiceServer(grpc, h)
 	pb3.RegisterAuthServiceServer(grpc, h)
+	pb4.RegisterMessageServiceServer(grpc, h)
 }
 
 func RegisterGateway(ctx context.Context, gwmux *runtime.ServeMux, conn *grpc.ClientConn) error {

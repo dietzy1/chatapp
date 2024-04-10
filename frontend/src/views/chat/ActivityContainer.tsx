@@ -25,7 +25,7 @@ function ActivityContainer() {
         className="hidden  h-[90vh] flex-col rounded-lg bg-background sm:flex"
       >
         <ActivityHeader />
-        <div className="flex flex-col overflow-y-auto  p-2">
+        <div className="flex flex-col overflow-y-auto  p-2 ">
           <div className="pl-1.5">Online - {data?.users.length}</div>
           {data?.users.map((value) => (
             <React.Fragment key={value.userId}>

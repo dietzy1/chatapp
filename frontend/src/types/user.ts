@@ -26,3 +26,11 @@ export interface Channel {
   channelId: string;
   name: string;
 }
+
+export interface Message {
+  messageId: string;
+  channelId: string;
+  senderId: string;
+  content: string;
+  timestamp: string;
+}

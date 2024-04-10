@@ -1,5 +1,14 @@
 package websocket
 
+import (
+	"net/http"
+	"sync"
+	"time"
+
+	"github.com/gorilla/websocket"
+	"go.uber.org/zap"
+)
+
 //The bug could be related to when the websocket crashes unexpectedly and everything is cleaned up incorrectly
 //for example some state change could be sent on the channel after the client is removed from the manager
 //Maybe the solution is to make sure that the activity channel also is cleaned up like the rest of them
@@ -9,60 +18,120 @@ package websocket
 //So I need to look into if the client also is sending messages to the server
 //And if that is the case then I need to create more channels to ensure that only the connection writer is allowed to write to the connection
 
-/* type manager struct {
-	//Key is userID
-	clients map[string]*client
+// PubSub is an interface for a Redis Pub/Sub client.
 
-	//Key is chatroomID
-	active map[string][]string
-
-	upgrader websocket.Upgrader
-	mu       sync.RWMutex
-
+type manager struct {
 	logger *zap.Logger
 
+	config *Config
+
+	upgrader *websocket.Upgrader
 	//Redis pubsub service
-	broker Broker
+	broker MessageBroker
 
 	//Message service client
-	messageClient messageclientv1.MessageServiceClient
+	messageService MessageService
+
+	// Websocket clients key is userID
+	clients map[string]*client
+
+	// Clients connected to a chatroom - key is chatroomID
+	chatroomClients map[string][]string
+
+	mu sync.RWMutex
 }
 
-func newManager(broker Broker, messageClient messageclientv1.MessageServiceClient, l *zap.Logger) *manager {
-	return &manager{
-		clients:       make(map[string]*client),
-		active:        make(map[string][]string),
-		mu:            sync.RWMutex{},
-		broker:        broker,
-		messageClient: messageClient,
-		logger:        l,
+type ids struct {
+	chatroomId string
+	channelId  string
+	userId     string
+}
 
-		upgrader: websocket.Upgrader{
+type Config struct {
+	Addr   string
+	Logger *zap.Logger
+}
+
+func NewManager(c *Config, broker MessageBroker, messageService MessageService) *manager {
+
+	//Create new manager
+	m := &manager{
+		logger:          c.Logger,
+		config:          c,
+		clients:         make(map[string]*client),
+		chatroomClients: make(map[string][]string),
+		//mutexes
+		mu: sync.RWMutex{},
+
+		//upgrader
+		upgrader: &websocket.Upgrader{
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,
 			CheckOrigin: func(r *http.Request) bool {
 				return true
 			},
 		},
+		broker:         broker,
+		messageService: messageService,
 	}
+
+	return m
 }
 
-type id struct {
-	chatroom string
-	channel  string
-	user     string
+func (m *manager) ListenAndServe() error {
+
+	srv := http.Server{
+		Addr:              m.config.Addr,
+		ReadTimeout:       5 * time.Second,
+		ReadHeaderTimeout: 5 * time.Second,
+		WriteTimeout:      10 * time.Second,
+		IdleTimeout:       120 * time.Second,
+	}
+
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		m.upgradeHandler(w, r)
+	})
+
+	m.logger.Info("Websocket server started on port " + m.config.Addr)
+
+	if err := srv.ListenAndServe(); err != nil {
+		m.logger.Error("Failed to start websocket server", zap.Error(err))
+		return err
+	}
+	return nil
+
+}
+
+func (m *manager) Shutdown() error {
+	wg := &sync.WaitGroup{}
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	for _, client := range m.clients {
+		wg.Add(1)
+		go client.conn.Close(wg)
+	}
+	wg.Wait()
+	return nil
 }
 
 func (m *manager) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 
 	m.logger.Info("Websocket connection established")
-	id := id{
-		chatroom: r.URL.Query().Get("chatroom"),
-		channel:  r.URL.Query().Get("channel"),
-		user:     r.URL.Query().Get("user"),
+	ids := ids{
+		chatroomId: r.URL.Query().Get("chatroomId"),
+		channelId:  r.URL.Query().Get("channelId"),
+		userId:     r.URL.Query().Get("userId"),
 	}
-	if id.chatroom == "" || id.channel == "" || id.user == "" {
-		m.logger.Error("Missing chatroom, user or channel")
+	if ids.chatroomId == "" || ids.channelId == "" || ids.userId == "" {
+		if ids.chatroomId == "" {
+			m.logger.Info("Invalid query parameter: missing chatroomId")
+		}
+		if ids.channelId == "" {
+			m.logger.Info("Invalid query parameter: missing channelId")
+		}
+		if ids.userId == "" {
+			m.logger.Info("Invalid query parameter: missing userId")
+		}
 		return
 	}
 
@@ -72,94 +141,39 @@ func (m *manager) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ws := newConnection(&connOptions{conn: conn, logger: m.logger})
-
-	client := newClient(&clientOptions{
-		conn:          ws,
-		id:            id,
-		broker:        m.broker,
-		messageClient: m.messageClient,
-		logger:        m.logger,
-	},
+	ws := newConnection(
+		conn,
+		m.logger,
 	)
 
-	m.addClient(client, id)
-	//client.updateClientActivity(id.chatroom, m.active[id.chatroom])
-	defer client.updateClientActivity(id.chatroom, m.active[id.chatroom])
-	defer m.removeClient(client, id)
+	//Potentially add the MessageSerivce dont know yet
+	client := newClient(ids, ws, m.logger, m.broker, m.messageService)
 
-	client.run(id.chatroom, m.active[id.chatroom])
+	m.addClient(client)
+	defer m.removeClient(client)
 
+	client.run()
 }
 
 //The issue is that I am trying to send on a closed channel
 
-func (m *manager) addClient(c *client, id id) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
+func (m *manager) addClient(c *client) {
 	m.logger.Info("Adding client to manager")
-
-	m.clients[id.user] = c
-
-	//Perform check to see if id.user is already contained in the string array
-	ok := m.active[id.chatroom]
-	//Check if user is already in the active slice
-	for _, v := range ok {
-		if v == id.user {
-
-			log.Println("THIS IS NOT SUPPOSED TO HAPPEN FIND OUT WHAT THE UNDERLYING ISSUE IS 😡😡😡😡😡  Active Users: ", m.active)
-			return
-		}
-	}
-
-	m.active[id.chatroom] = append(m.active[id.chatroom], id.user)
-
-	log.Println("Active Users: ", m.active)
-}
-
-func (m *manager) removeClient(c *client, id id) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+
+	m.clients[c.ids.userId] = c
+
+	m.chatroomClients[c.ids.chatroomId] = append(m.chatroomClients[c.ids.chatroomId], c.ids.userId)
+}
+
+func (m *manager) removeClient(c *client) {
 	m.logger.Info("Removing client from manager")
+	m.mu.Lock()
+	defer m.mu.Unlock()
 
-	delete(m.clients, id.user)
+	delete(m.clients, c.ids.userId)
 
-	ok := m.active[id.chatroom]
-
-	//Remove element from slice that contains user id
-	//TODO: veryfy that this logic works
-	for i, v := range ok {
-		if v == id.user {
-			m.logger.Warn("Removing user from active users", zap.String("user", id.user))
-			m.active[id.chatroom] = append(ok[:i], ok[i+1:]...)
-		}
-	}
-
-	//remove element from slice that contains user id
-
-	log.Println("Removing users, active users left: ", m.active)
+	m.chatroomClients[c.ids.chatroomId] = remove(m.chatroomClients[c.ids.chatroomId], c.ids.userId)
 
 }
-
-func Start(logger *zap.Logger) {
-
-	broker := newBroker(logger)
-
-	//New messageService
-	messageClient := clients.NewMessageClient()
-
-	//manager should accept the broker interface
-	m := newManager(broker, *messageClient, logger)
-
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		logger.Info("Websocket connection request received")
-		m.upgradeHandler(w, r)
-	})
-
-	err := http.ListenAndServe(os.Getenv("WS"), nil)
-	if err != nil {
-		logger.Fatal("Failed to start websocket server", zap.Error(err))
-	}
-	logger.Info("Websocket server started on port " + os.Getenv("WS"))
-}
-*/

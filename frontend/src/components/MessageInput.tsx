@@ -3,13 +3,17 @@ import { useEffect, useRef, useState } from "react";
 import { SendHorizontal, ThumbsUp, Smile, CommandIcon } from "lucide-react";
 import { Input } from "./ui/input";
 import useWidthStore from "@/stores/widthStore";
+import useWrappedWebsocket from "@/hooks/useWrappedWebsocket";
 
 function MessageInput(): JSX.Element {
   const [input, setInput] = useState<string>("");
 
-  const sendMessage = () => {
+  const { sendMessage } = useWrappedWebsocket();
+
+  const handleSendMessage = () => {
     if (input.trim() !== "") {
       console.log(input);
+      sendMessage(input);
 
       setInput("");
     }
@@ -17,7 +21,7 @@ function MessageInput(): JSX.Element {
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      sendMessage();
+      handleSendMessage();
     }
   };
 
@@ -74,7 +78,7 @@ function MessageInput(): JSX.Element {
 
         <div className="rounded-full p-1 hover:bg-muted">
           {input.length > 0 ? (
-            <SendHorizontal onClick={sendMessage} />
+            <SendHorizontal onClick={handleSendMessage} />
           ) : (
             <ThumbsUp className="" onClick={() => console.log("hello")} />
           )}

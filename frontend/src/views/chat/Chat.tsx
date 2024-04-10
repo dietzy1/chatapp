@@ -5,7 +5,7 @@ import ActivityContainer from "./ActivityContainer";
 import ChatroomContainer from "./Leftbar";
 
 import { useSwipeable } from "react-swipeable";
-import useIsMobile from "@/hooks/useIsMobile";
+//import useIsMobile from "@/hooks/useIsMobile";
 
 function Chat(): JSX.Element {
   //const isMobile = useIsMobile();

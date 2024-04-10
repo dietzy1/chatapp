@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"regexp"
@@ -114,9 +113,16 @@ func withForwardResponseOptionWrapper(logger *zap.Logger) runtime.ServeMuxOption
 	ok := runtime.WithForwardResponseOption(func(ctx context.Context, w http.ResponseWriter, m proto.Message) error {
 		md, ok := runtime.ServerMetadataFromContext(ctx)
 		if !ok {
-			log.Println("no metadata")
 			return nil
 		}
+
+		/* md, ok := metadata.FromIncomingContext(ctx)
+		if !ok {
+			logger.Info("no metadata")
+			return nil
+		}
+
+		token := md.Get(sessionTokenName) */
 
 		//Specificly look for the session_token key in the metadata
 		token := md.HeaderMD.Get(sessionTokenName)
@@ -124,7 +130,6 @@ func withForwardResponseOptionWrapper(logger *zap.Logger) runtime.ServeMuxOption
 		logger.Info("session token", zap.Any("token", token))
 
 		if len(token) == 0 {
-			log.Println("no session token")
 			return nil
 		}
 
@@ -147,10 +152,10 @@ func withForwardResponseOptionWrapper(logger *zap.Logger) runtime.ServeMuxOption
 		http.SetCookie(w, &http.Cookie{
 			Name:    sessionTokenName,
 			Value:   token[0],
-			Expires: time.Now().Add(60 * time.Minute),
+			Expires: time.Now().Add(600 * time.Minute),
 			Path:    "/",
 		})
-		log.Println("session token set")
+		logger.Info("session and uuid token set", zap.String("token", token[0]))
 
 		return nil
 	})

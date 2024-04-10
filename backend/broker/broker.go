@@ -1,8 +1,8 @@
-package websocket
+package broker
 
 import (
 	"context"
-	"os"
+	"fmt"
 
 	"github.com/go-redis/redis/v8"
 	"go.uber.org/zap"
@@ -21,25 +21,31 @@ type broker struct {
 	logger *zap.Logger
 }
 
+type Config struct {
+	Url    string
+	Logger *zap.Logger
+}
+
 // NewRedisPubSub creates a new RedisPubSub instance.
-func Broker(logger *zap.Logger) *broker {
-	otps, err := redis.ParseURL(os.Getenv("REDIS_URL"))
+func New(c *Config) (*broker, error) {
+
+	otps, err := redis.ParseURL(c.Url)
 	if err != nil {
 
-		logger.Fatal("Failed to parse redis url", zap.Error(err))
-		return nil
+		c.Logger.Error("Failed to parse redis url", zap.Error(err))
+		return nil, fmt.Errorf("failed to parse redis url: %w", err)
 	}
 	client := redis.NewClient(otps)
 	if _, err := client.Ping(context.Background()).Result(); err != nil {
 
-		logger.Fatal("Failed to ping redis", zap.Error(err))
-		return nil
+		c.Logger.Error("Failed to ping redis", zap.Error(err))
+		return nil, fmt.Errorf("failed to ping redis: %w", err)
 	}
 
 	return &broker{
 		client: client,
-		logger: logger,
-	}
+		logger: c.Logger,
+	}, nil
 }
 
 // Subscribe subscribes to a channel and returns a PubSub instance for receiving messages.
@@ -54,7 +60,7 @@ func (b *broker) Subscribe(ctx context.Context, channel string) (*redis.PubSub, 
 	return pubsub, nil
 }
 
-func (b *broker) unsubscribe(ctx context.Context, pubsub *redis.PubSub) error {
+func (b *broker) Unsubscribe(ctx context.Context, pubsub *redis.PubSub) error {
 	err := pubsub.Unsubscribe(ctx)
 	if err != nil {
 		b.logger.Error("Failed to unsubscribe from channel")
