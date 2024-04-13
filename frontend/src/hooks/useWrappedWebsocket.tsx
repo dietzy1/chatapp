@@ -48,9 +48,6 @@ const useWrappedWebsocket = () => {
   const { data } = useGetUser();
 
   const [socketUrl] = useState("ws://localhost:9080/ws");
-  const [messageHistory, setMessageHistory] = useState<MessageEvent<Packet>[]>(
-    [],
-  );
 
   const queryParams: QueryParams = {
     userId: data?.user.userId,
@@ -70,7 +67,10 @@ const useWrappedWebsocket = () => {
   useEffect(() => {
     if (lastMessage !== null) {
       console.log("We recieved something", lastMessage);
-      setMessageHistory((prev) => prev.concat(lastMessage));
+
+      //Handle the different kinds of packets
+      const packet: Packet = JSON.parse(lastMessage.data);
+      console.log(packet);
     }
   }, [lastMessage]);
 
@@ -109,7 +109,6 @@ const useWrappedWebsocket = () => {
 
   return {
     sendMessage,
-    messageHistory,
   };
 };
 
