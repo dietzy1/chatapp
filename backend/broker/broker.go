@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 )
 
@@ -29,18 +29,29 @@ type Config struct {
 // NewRedisPubSub creates a new RedisPubSub instance.
 func New(c *Config) (*broker, error) {
 
-	otps, err := redis.ParseURL(c.Url)
+	client := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "root",
+		DB:       0, // use default DB
+	})
+	cmd := client.Ping(context.Background())
+	//Check if the connection is successful
+	if cmd.Err() != nil {
+		return nil, fmt.Errorf("failed to ping redis: %w", cmd.Err())
+	}
+
+	//Set some value and retrieve it
+	err := client.Set(context.Background(), "key", "value", 0).Err()
 	if err != nil {
-
-		c.Logger.Error("Failed to parse redis url", zap.Error(err))
-		return nil, fmt.Errorf("failed to parse redis url: %w", err)
+		return nil, fmt.Errorf("failed to set key: %w", err)
 	}
-	client := redis.NewClient(otps)
-	if _, err := client.Ping(context.Background()).Result(); err != nil {
 
-		c.Logger.Error("Failed to ping redis", zap.Error(err))
-		return nil, fmt.Errorf("failed to ping redis: %w", err)
+	val, err := client.Get(context.Background(), "key").Result()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get key: %w", err)
 	}
+
+	c.Logger.Info("Successfully connected to redis", zap.String("key", val))
 
 	return &broker{
 		client: client,
@@ -56,6 +67,7 @@ func (b *broker) Subscribe(ctx context.Context, channel string) (*redis.PubSub, 
 		b.logger.Error("Failed to subscribe to channel", zap.String("channel", channel))
 		return nil, err
 	}
+	b.logger.Info("Subscribed to channel", zap.String("channel", channel))
 
 	return pubsub, nil
 }

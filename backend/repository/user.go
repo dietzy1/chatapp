@@ -14,7 +14,7 @@ const primaryChatroomId = "4ed6de81-dedb-47ab-92f5-04d5e23fb71a"
 
 func (r *repository) CreateUser(ctx context.Context, username, description string, iconId uuid.UUID) (uuid.UUID, uuid.UUID, error) {
 
-	tx, err := r.pool.BeginTx(ctx, pgx.TxOptions{})
+	tx, err := r.postgres.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return uuid.Nil, uuid.Nil, fmt.Errorf("failed to begin transaction: %w", err)
 	}
@@ -22,7 +22,7 @@ func (r *repository) CreateUser(ctx context.Context, username, description strin
 	fmt.Println("Transaction started")
 
 	//Create transaction object
-	qtx := r.query.WithTx(tx)
+	qtx := r.postgres.query.WithTx(tx)
 
 	//2. Create a user in the database
 	userId, err := qtx.CreateUser(ctx, generated.CreateUserParams{
@@ -63,7 +63,7 @@ func (r *repository) CreateUser(ctx context.Context, username, description strin
 
 func (r *repository) GetUser(ctx context.Context, userID uuid.UUID) (service.User, error) {
 
-	user, err := r.query.GetUserAndIcon(ctx, userID)
+	user, err := r.postgres.query.GetUserAndIcon(ctx, userID)
 	if err != nil {
 		return service.User{}, fmt.Errorf("failed to get user: %w", err)
 	}
@@ -83,7 +83,7 @@ func (r *repository) GetUser(ctx context.Context, userID uuid.UUID) (service.Use
 }
 
 func (r *repository) GetUsers(ctx context.Context, chatroomID uuid.UUID) ([]service.User, error) {
-	users, err := r.query.GetUsersInChatroom(ctx, chatroomID)
+	users, err := r.postgres.query.GetUsersInChatroom(ctx, chatroomID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get users: %w", err)
 	}

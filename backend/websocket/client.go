@@ -2,10 +2,9 @@ package websocket
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/dietzy1/chatapp/service"
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 )
 
@@ -48,11 +47,16 @@ func (c *client) run() {
 	c.conn.run()
 
 	//Open pubsub connection
-	pubsub, err := c.broker.Subscribe(context.Background(), c.ids.userId)
+	pubsub, err := c.broker.Subscribe(context.Background(), c.ids.channelId)
 	if err != nil {
 		c.logger.Error("Failed to subscribe to pubsub", zap.Error(err))
 		return
 	}
+
+	//Retrieve last 25 messages from the message service
+
+	//Send messages to the client
+	c.conn.sendChannel <- []byte("Hello")
 
 	//handle events in blocking loop
 	c.handleEvents(pubsub.Channel())
@@ -79,28 +83,45 @@ func (c *client) handleEvents(ch <-chan *redis.Message) {
 				return
 			}
 
-			//Unmarshal message
-			unmarshaledMsg := service.CreateMessage{}
-			if err := json.Unmarshal(msg, &unmarshaledMsg); err != nil {
-				c.logger.Error("Failed to unmarshal message", zap.Error(err))
+			//Unmarshal into packet
+
+			packet, err := UnmarshalPacket[CreateMessageEvent](msg)
+			if err != nil {
+				c.logger.Error("Failed to unmarshal packet", zap.Error(err))
 				return
 			}
 
 			//Call the message service to create a message
-			response, err := c.messageService.CreateMessage(context.TODO(), unmarshaledMsg)
+			response, err := c.messageService.CreateMessage(context.TODO(), service.CreateMessage{
+				ChannelId:  packet.Payload.ChannelId,
+				ChatroomId: packet.Payload.ChatroomId,
+				UserId:     packet.Payload.UserId,
+				Content:    packet.Payload.Content,
+			},
+			)
 			if err != nil {
 				c.logger.Error("Failed to create message", zap.Error(err))
 				return
 			}
 
-			//Marshal message
-			marshaledMsg, err := json.Marshal(response)
+			//Marshal message into packet
+			responsePacket, err := MarshalPacket(Packet[RecieveMessageEvent]{
+				Kind: "2",
+				Payload: RecieveMessageEvent{
+					MessageId:  response.MessageId,
+					ChannelId:  response.ChannelId,
+					ChatroomId: response.ChatroomId,
+					UserId:     response.UserId,
+					Content:    response.Content,
+					CreatedAt:  response.CreatedAt,
+				},
+			})
 			if err != nil {
-				c.logger.Error("Failed to marshal message", zap.Error(err))
+				c.logger.Error("Failed to marshal packet", zap.Error(err))
 				return
 			}
 
-			if err := c.broker.Publish(context.TODO(), c.ids.channelId, marshaledMsg); err != nil {
+			if err := c.broker.Publish(context.TODO(), c.ids.channelId, responsePacket); err != nil {
 				c.logger.Error("Failed to publish message", zap.Error(err))
 				return
 			}
@@ -117,6 +138,7 @@ func (c *client) handleEvents(ch <-chan *redis.Message) {
 				c.logger.Info("Redis broker channel closed")
 				return
 			}
+			c.logger.Info("Recieved shit from redis broker", zap.Any("", msg.Payload))
 
 			//convert msg.Payload to slice of bytes
 			c.conn.sendChannel <- []byte(msg.Payload)

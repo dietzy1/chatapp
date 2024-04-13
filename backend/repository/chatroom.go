@@ -10,12 +10,12 @@ import (
 
 func (r *repository) GetChatrooms(ctx context.Context, userId uuid.UUID) ([]service.Chatroom, error) {
 
-	chatrooms, err := r.query.GetChatrooms(ctx, userId)
+	chatrooms, err := r.postgres.query.GetChatrooms(ctx, userId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get chatrooms: %w", err)
 	}
 
-	channels, err := r.query.GetChannels(ctx, userId)
+	channels, err := r.postgres.query.GetChannels(ctx, userId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get channels: %w", err)
 	}

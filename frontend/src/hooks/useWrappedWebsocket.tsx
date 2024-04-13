@@ -1,4 +1,6 @@
 import useGetUser from "@/api/endpoints/user/getUser";
+import useActivityStore from "@/stores/activityStore";
+import useMessageStore from "@/stores/messageStore";
 import useSelectedChatroomStore from "@/stores/selectedChatroomStore";
 import { useState, useCallback, useEffect } from "react";
 import useWebSocket from "react-use-websocket";
@@ -24,7 +26,6 @@ interface RecieveMessageEvent {
   userId: string;
   content: string;
   createdAt: string;
-  updatedAt: string;
 }
 
 //Kind = "3"
@@ -41,6 +42,9 @@ type QueryParams = {
 const useWrappedWebsocket = () => {
   const store = useSelectedChatroomStore();
 
+  const activityStore = useActivityStore();
+  const messageStore = useMessageStore();
+
   const { data } = useGetUser();
 
   const [socketUrl] = useState("ws://localhost:9080/ws");
@@ -55,7 +59,7 @@ const useWrappedWebsocket = () => {
   };
 
   //I need to find out if query params like this correctly forces the websocket to reconnect
-  const { sendJsonMessage, lastMessage, readyState } = useWebSocket(
+  const { sendJsonMessage, lastMessage } = useWebSocket(
     socketUrl,
     {
       queryParams: queryParams,
@@ -65,14 +69,10 @@ const useWrappedWebsocket = () => {
 
   useEffect(() => {
     if (lastMessage !== null) {
+      console.log("We recieved something", lastMessage);
       setMessageHistory((prev) => prev.concat(lastMessage));
     }
   }, [lastMessage]);
-
-  /*  const handleClickChangeSocketUrl = useCallback(
-    () => setSocketUrl("wss://demos.kaazing.com/echo"),
-    [],
-  ); */
 
   //Wrap sendJsonMessage
   const sendMessage = useCallback(

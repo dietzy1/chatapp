@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -17,14 +19,16 @@ import (
 	optional string updated_at = 7;
   } */
 
+//fix for later perhabs: https://gist.github.com/SupaHam/3afe982dc75039356723600ccc91ff77
+
+// Mongo doesn't like the UUID type, so we'll use string instead
 type Message struct {
-	MessageId  uuid.UUID `json:"message_id"`
-	ChannelId  uuid.UUID `json:"channel_id"`
-	ChatroomId uuid.UUID `json:"chatroom_id"`
-	UserId     uuid.UUID `json:"user_id"`
-	Content    string    `json:"content"`
-	CreatedAt  string    `json:"created_at"`
-	UpdatedAt  string    `json:"updated_at"`
+	MessageId  string `bson:"messageId"`
+	ChannelId  string `bson:"channelId"`
+	ChatroomId string `bson:"chatroomId"`
+	UserId     string `bson:"userId"`
+	Content    string `bson:"content"`
+	CreatedAt  string `bson:"createdAt"`
 }
 
 type messageService struct {
@@ -39,8 +43,9 @@ func NewMessageService(logger *zap.Logger, repo MessageRepository) *messageServi
 }
 
 type MessageRepository interface {
-	GetMessages(ctx context.Context, chatroomId, channelId uuid.UUID) ([]Message, error)
-	CreateMessage(ctx context.Context, msg CreateMessage) (Message, error)
+	//GetMessages(ctx context.Context, chatroomId, channelId uuid.UUID) ([]Message, error)
+	// CreateMessage(ctx context.Context, msg CreateMessage) (Message, error)
+	AddMessage(ctx context.Context, msg Message) error
 }
 
 func (m *messageService) GetMessages(ctx context.Context, chatroomId, channelId string) ([]Message, error) {
@@ -48,12 +53,35 @@ func (m *messageService) GetMessages(ctx context.Context, chatroomId, channelId 
 }
 
 type CreateMessage struct {
-	ChannelId  uuid.UUID `json:"channel_id"`
-	ChatroomId uuid.UUID `json:"chatroom_id"`
-	UserId     uuid.UUID `json:"user_id"`
-	Content    string    `json:"content"`
+	ChannelId  string
+	ChatroomId string
+	UserId     string
+	Content    string
 }
 
 func (m *messageService) CreateMessage(ctx context.Context, msg CreateMessage) (Message, error) {
-	return Message{}, nil
+
+	//Confirm if the message is empty
+	if msg.Content == "" || msg.UserId == "" || msg.ChatroomId == "" || msg.ChannelId == "" {
+		return Message{}, fmt.Errorf("message cannot be empty")
+	}
+
+	message := Message{
+		MessageId:  uuid.New().String(),
+		ChannelId:  msg.ChannelId,
+		ChatroomId: msg.ChatroomId,
+		UserId:     msg.UserId,
+		Content:    msg.Content,
+		CreatedAt:  time.Now().String(),
+	}
+
+	//Print formattted message to the console
+	m.logger.Info("Message created", zap.Any("message", message))
+
+	err := m.repo.AddMessage(ctx, message)
+	if err != nil {
+		return Message{}, err
+	}
+
+	return message, nil
 }

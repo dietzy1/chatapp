@@ -12,14 +12,12 @@ function Channel({ channel }: ChannelProps) {
   if (channel.channelId === selectedChannel?.channelId) {
     return (
       <>
-        <div className="mr-2 flex flex-row items-center rounded-sm bg-muted p-2">
-          <HashIcon className="mr-2 h-6 w-6  text-foreground" />
-          <span
-            onClick={() => setSelectedChannel(channel)}
-            className="truncate text-foreground"
-          >
-            {channel.name}
-          </span>
+        <div
+          onClick={() => setSelectedChannel(channel)}
+          className="mr-2 flex flex-row items-center rounded-sm bg-muted p-2"
+        >
+          <HashIcon className="mr-2 h-6 w-6  text-primary" />
+          <span className="truncate text-foreground">{channel.name}</span>
         </div>
       </>
     );
@@ -27,11 +25,12 @@ function Channel({ channel }: ChannelProps) {
 
   return (
     <>
-      <div className="mr-2 flex flex-row items-center rounded-sm hover:bg-muted">
-        <HashIcon className="mr-2 h-8 w-8  text-primary " />
-        <span onClick={() => setSelectedChannel(channel)} className="truncate">
-          {channel.name}
-        </span>
+      <div
+        onClick={() => setSelectedChannel(channel)}
+        className="mr-2 flex flex-row items-center rounded-sm p-2 hover:bg-muted"
+      >
+        <HashIcon className="mr-2 h-6 w-6  text-primary " />
+        <span className="truncate">{channel.name}</span>
       </div>
     </>
   );

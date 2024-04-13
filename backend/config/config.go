@@ -1,12 +1,16 @@
 package config
 
 import (
+	"log"
+	"os"
+
 	"github.com/dietzy1/chatapp/broker"
 	"github.com/dietzy1/chatapp/cache"
 	"github.com/dietzy1/chatapp/clients"
 	"github.com/dietzy1/chatapp/repository"
 	"github.com/dietzy1/chatapp/server"
 	"github.com/dietzy1/chatapp/websocket"
+	"github.com/joho/godotenv"
 	"go.uber.org/zap"
 )
 
@@ -23,6 +27,11 @@ type Config struct {
 }
 
 func New(logger *zap.Logger) (*Config, error) {
+
+	//Read in .env file
+
+	readEnvfile()
+
 	return &Config{
 		Server: server.Config{
 			Addr:        ":8000",
@@ -30,7 +39,8 @@ func New(logger *zap.Logger) (*Config, error) {
 			Logger:      logger,
 		},
 		Repository: repository.Config{
-			DatabaseURL: "postgres://root:root@localhost:5432/postgres",
+			PostgressURL: "postgres://root:root@localhost:5432/postgres",
+			MongoURL:     os.Getenv("MONGO_URL"),
 		},
 		Broker: broker.Config{
 			Url:    "redis://localhost:6379", //FIXME: Verify this
@@ -49,4 +59,21 @@ func New(logger *zap.Logger) (*Config, error) {
 		},
 	}, nil
 
+}
+
+// reads the .env file and sets the environment variables, if the file is not found, it will log an error and the program will default to injected production variables.
+func readEnvfile() {
+
+	//print current path
+	dir, _ := os.Getwd()
+	log.Println(dir)
+
+	//Read the .env file
+	err := godotenv.Load("./.env")
+	if err != nil {
+		log.Println("Loading .env file failed, using production environment")
+	}
+	if err == nil {
+		log.Println("Loaded .env file")
+	}
 }

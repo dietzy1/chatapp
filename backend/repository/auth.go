@@ -10,7 +10,7 @@ import (
 
 func (r *repository) GetSessionToken(ctx context.Context, sessionToken uuid.UUID) (service.Credentials, error) {
 
-	result, err := r.query.GetSessionToken(ctx, sessionToken)
+	result, err := r.postgres.query.GetSessionToken(ctx, sessionToken)
 	if err != nil {
 		return service.Credentials{}, fmt.Errorf("failed to get session token: %w", err)
 	}

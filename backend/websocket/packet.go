@@ -1,25 +1,76 @@
 package websocket
 
-import "github.com/dietzy1/chatapp/service"
+import "encoding/json"
 
 type Constraint interface {
-	service.CreateMessage | service.Message | ActivityEvent
+	CreateMessageEvent | RecieveMessageEvent | ActivityEvent
 }
 
+// Kind = "1"
+type CreateMessageEvent struct {
+	ChannelId  string `json:"channelId"`
+	ChatroomId string `json:"chatroomId"`
+	UserId     string `json:"userId"`
+	Content    string `json:"content"`
+}
+
+// Kind = "2"
+type RecieveMessageEvent struct {
+	MessageId  string `json:"messageId"`
+	ChannelId  string `json:"channelId"`
+	ChatroomId string `json:"chatroomId"`
+	UserId     string `json:"userId"`
+	Content    string `json:"content"`
+	CreatedAt  string `json:"createdAt"`
+}
+
+// Kind = "3"
 type ActivityEvent struct {
 	ActiveUsers []string `json:"activeUsers"`
 }
 
 // Kind can be of type "1", "2", "3"
 type Packet[T Constraint] struct {
-	Kind string `json:"kind"`
-	Data T      `json:"data"`
+	Kind    string `json:"kind"`
+	Payload T      `json:"payload"`
 }
 
-func NewPacket[T Constraint](kind string, data T) Packet[T] {
-
-	return Packet[T]{
-		Kind: kind,
-		Data: data,
-	}
+// MarshalPacket marshals a Packet to JSON
+func MarshalPacket[T Constraint](packet Packet[T]) ([]byte, error) {
+	return json.Marshal(packet)
 }
+
+// UnmarshalPacket unmarshals JSON into a Packet
+func UnmarshalPacket[T Constraint](data []byte) (Packet[T], error) {
+	var packet Packet[T]
+	err := json.Unmarshal(data, &packet)
+	return packet, err
+}
+
+/* interface Packet {
+	kind: string;
+	payload: CreateMessageEvent | RecieveMessageEvent | ActivityEvent;
+  }
+
+  //Kind = "1"
+  interface CreateMessageEvent {
+	channelId: string;
+	chatroomId: string;
+	userId: string;
+	content: string;
+  }
+
+  //Kind = "2"
+  interface RecieveMessageEvent {
+	messageId: string;
+	channelId: string;
+	chatroomId: string;
+	userId: string;
+	content: string;
+	createdAt: string;
+  }
+
+  //Kind = "3"
+  interface ActivityEvent {
+	activeUsers: string[];
+  } */
