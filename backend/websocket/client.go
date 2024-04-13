@@ -75,6 +75,7 @@ func (c *client) handleEvents(ch <-chan *redis.Message) {
 		//Messages recieved from the recieve channel is from the user itself
 		case msg, ok := <-c.conn.receiveChannel:
 			if !ok {
+				c.logger.Info("receive channel closed")
 				return
 			}
 
@@ -113,6 +114,7 @@ func (c *client) handleEvents(ch <-chan *redis.Message) {
 		//Handle messages recieved from the redis broker
 		case msg, ok := <-ch:
 			if !ok {
+				c.logger.Info("Redis broker channel closed")
 				return
 			}
 

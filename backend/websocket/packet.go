@@ -1,29 +1,25 @@
 package websocket
 
+import "github.com/dietzy1/chatapp/service"
+
 type Constraint interface {
-	UserMessage | ActivityMessage
+	service.CreateMessage | service.Message | ActivityEvent
 }
 
-type Msg[T Constraint] struct {
+type ActivityEvent struct {
+	ActiveUsers []string `json:"activeUsers"`
+}
+
+// Kind can be of type "1", "2", "3"
+type Packet[T Constraint] struct {
 	Kind string `json:"kind"`
 	Data T      `json:"data"`
 }
 
-type ActivityMessage struct {
+func NewPacket[T Constraint](kind string, data T) Packet[T] {
+
+	return Packet[T]{
+		Kind: kind,
+		Data: data,
+	}
 }
-
-type UserMessage struct {
-}
-
-/* type Message interface{}
-
-type Msg struct {
-    Kind string  `json:"kind"`
-    Data Message `json:"data"`
-}
-
-type ActivityMessage struct {
-}
-
-type UserMessage struct {
-} */

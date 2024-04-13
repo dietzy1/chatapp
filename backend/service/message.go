@@ -18,13 +18,13 @@ import (
   } */
 
 type Message struct {
-	MessageId  uuid.UUID
-	ChannelId  uuid.UUID
-	ChatroomId uuid.UUID
-	UserId     uuid.UUID
-	Content    string
-	CreatedAt  string
-	UpdatedAt  string
+	MessageId  uuid.UUID `json:"message_id"`
+	ChannelId  uuid.UUID `json:"channel_id"`
+	ChatroomId uuid.UUID `json:"chatroom_id"`
+	UserId     uuid.UUID `json:"user_id"`
+	Content    string    `json:"content"`
+	CreatedAt  string    `json:"created_at"`
+	UpdatedAt  string    `json:"updated_at"`
 }
 
 type messageService struct {
@@ -48,10 +48,10 @@ func (m *messageService) GetMessages(ctx context.Context, chatroomId, channelId 
 }
 
 type CreateMessage struct {
-	ChannelId  uuid.UUID
-	ChatroomId uuid.UUID
-	UserId     uuid.UUID
-	Content    string
+	ChannelId  uuid.UUID `json:"channel_id"`
+	ChatroomId uuid.UUID `json:"chatroom_id"`
+	UserId     uuid.UUID `json:"user_id"`
+	Content    string    `json:"content"`
 }
 
 func (m *messageService) CreateMessage(ctx context.Context, msg CreateMessage) (Message, error) {

@@ -22,7 +22,7 @@ function ActivityContainer() {
     <>
       <div
         ref={rightbarRef}
-        className="hidden  h-[90vh] flex-col rounded-lg bg-background sm:flex"
+        className="hidden  h-[90vh] flex-col rounded-lg bg-background lg:flex"
       >
         <ActivityHeader />
         <div className="flex flex-col overflow-y-auto  p-2 ">

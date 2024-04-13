@@ -1,11 +1,12 @@
 import React, { useRef } from "react";
-import LeftMessage from "../messages/LeftMessage";
-import RightMessage from "../messages/RightMessage";
+
 import Header from "@/components/Header";
 
 import { TracingBeam } from "@/components/ui/tracing";
 import useUpdateWidth from "@/hooks/useUpdateWidth";
 import useWrappedWebsocket from "@/hooks/useWrappedWebsocket";
+import MessageLayout from "./messages/MessageLayout";
+import MessageDevider from "./messages/MessageDevider";
 
 function MessageContainer(): JSX.Element {
   //const { format } = useFormatMessage();
@@ -14,11 +15,17 @@ function MessageContainer(): JSX.Element {
 
   //My target ref for the bracing beam
   const targetElementRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const middleRef = useRef<HTMLDivElement>(null);
   useUpdateWidth(middleRef, "middleWidth");
 
+  //scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+
   useWrappedWebsocket();
+
+  //Different scenarios we must take care of.
+  //On load we must fetch the last 25 messages
 
   return (
     <>
@@ -31,10 +38,12 @@ function MessageContainer(): JSX.Element {
           <TracingBeam scrollContainerRef={targetElementRef}>
             {temp.map((_, index) => (
               <React.Fragment key={index}>
-                <LeftMessage />
-                <RightMessage />
+                <MessageLayout align="right" />
+                <MessageLayout align="left" />
+                <MessageDevider timestamp="Yesterday at 19:48" />
               </React.Fragment>
             ))}
+            <div ref={scrollRef}></div>
           </TracingBeam>
         </div>
       </div>

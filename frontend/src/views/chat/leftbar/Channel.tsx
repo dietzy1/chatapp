@@ -12,11 +12,11 @@ function Channel({ channel }: ChannelProps) {
   if (channel.channelId === selectedChannel?.channelId) {
     return (
       <>
-        <div className="mr-2 flex flex-row items-center rounded-sm bg-foreground">
-          <HashIcon className="mr-2 h-8 w-8  text-background" />
+        <div className="mr-2 flex flex-row items-center rounded-sm bg-muted p-2">
+          <HashIcon className="mr-2 h-6 w-6  text-foreground" />
           <span
             onClick={() => setSelectedChannel(channel)}
-            className="truncate text-background"
+            className="truncate text-foreground"
           >
             {channel.name}
           </span>
