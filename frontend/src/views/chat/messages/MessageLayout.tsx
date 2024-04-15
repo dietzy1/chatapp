@@ -4,6 +4,7 @@ import MessageHeader from "./MessageHeader";
 import MessageContent from "./MessageContent";
 import { Message } from "@/types/message";
 import { User } from "@/types/user";
+import timeFormatter from "./TimeFormatter";
 
 //Message scenarios that I must take care of
 
@@ -52,7 +53,7 @@ function MessageLayout({
           <div className="ml-3 flex flex-col gap-1">
             <MessageHeader
               username={user.username}
-              timestamp="Today at 9:18PM"
+              timestamp={timeFormatter(message.message[0].createdAt)}
               align={align}
             />
 
@@ -72,7 +73,7 @@ function MessageLayout({
       <div className=" flex flex-col gap-1">
         <MessageHeader
           username={user.username}
-          timestamp="Today at 9:18PM"
+          timestamp={timeFormatter(message.message[0].createdAt)}
           align={align}
         />
 

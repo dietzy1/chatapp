@@ -55,6 +55,8 @@ func (c *client) run(callback activeUsersCallback) {
 		c.logger.Error("Failed to subscribe to pubsub", zap.Error(err))
 		return
 	}
+	//Use the broker to send messages to the client
+
 	//Send messages to
 
 	//Retrieve last 25 messages from the message service

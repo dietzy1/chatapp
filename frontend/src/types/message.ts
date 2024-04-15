@@ -22,4 +22,5 @@ export interface ActivityEvent {
 
 export interface Message {
   message: RecieveMessageEvent[];
+  dayDifference: boolean;
 }

@@ -18,7 +18,6 @@ function MessageContainer(): JSX.Element {
   //My target ref for the bracing beam
   const targetElementRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-
   const middleRef = useRef<HTMLDivElement>(null);
   useUpdateWidth(middleRef, "middleWidth");
 
@@ -32,22 +31,8 @@ function MessageContainer(): JSX.Element {
 
   //If there is a big timestamp gap between messages we need to show a timestamp
 
-  //const messages = useMessages();
-  /*  const { data } = useGetUsers();
-
-  const userMap =
-    data?.users.reduce<Record<string, User>>((acc, user) => {
-      acc[user.userId] = user;
-      return acc;
-    }, {}) || {};
-  console.log("User Map", userMap); */
-
   const { messages } = useMessageStore();
-  console.log("messaage store", messages);
-  console.log("Length of messages", messages.length);
-
   const user = useGetUser();
-
   const users = useGetUsers();
 
   const userMap = useMemo(
@@ -59,7 +44,7 @@ function MessageContainer(): JSX.Element {
     [users],
   );
 
-  //const align = user.userId === message.message[0].userId ? "right" : "left";
+  //Now we want to add timestamps inbetween messages if there is a day difference between them
 
   return (
     <>
@@ -73,6 +58,9 @@ function MessageContainer(): JSX.Element {
             {messages.length === 0 && <MessageLoading />}
             {messages.map((value) => (
               <React.Fragment key={value.message[0].messageId}>
+                {value.dayDifference && (
+                  <MessageDevider timestamp="Yesterday at 19:48" />
+                )}
                 <MessageLayout
                   message={value}
                   user={userMap[value.message[0].userId]}
@@ -82,7 +70,6 @@ function MessageContainer(): JSX.Element {
                       : "left"
                   }
                 />
-                <MessageDevider timestamp="Yesterday at 19:48" />
               </React.Fragment>
             ))}
             <div ref={scrollRef}></div>

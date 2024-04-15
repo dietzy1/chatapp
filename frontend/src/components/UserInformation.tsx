@@ -5,11 +5,9 @@ import useWidthStore from "@/stores/widthStore";
 import useGetUser from "@/api/endpoints/user/getUser";
 
 function UserInformation(): JSX.Element {
-  //const { data, error, isLoading } = useGetUser("hello");
   const { data, isLoading } = useGetUser();
 
   const cardWidth = useWidthStore((state) => state.widths.leftbarWidth);
-  console.log("LeftbarWidth", cardWidth);
   const style = cardWidth ? { width: `${cardWidth}px` } : {};
 
   if (isLoading) {

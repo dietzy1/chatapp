@@ -72,7 +72,7 @@ func (m *messageService) CreateMessage(ctx context.Context, msg CreateMessage) (
 		ChatroomId: msg.ChatroomId,
 		UserId:     msg.UserId,
 		Content:    msg.Content,
-		CreatedAt:  time.Now().String(),
+		CreatedAt:  time.Now().Format(time.RFC3339),
 	}
 
 	//Print formattted message to the console

@@ -2,7 +2,6 @@ import useWidthStore from "@/stores/widthStore";
 
 function UserSettings() {
   const cardWidth = useWidthStore((state) => state.widths.rightbarWidth);
-  console.log("Rightbar width", cardWidth);
   const style = cardWidth ? { width: `${cardWidth}px` } : {};
   return (
     <>

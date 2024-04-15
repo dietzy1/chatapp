@@ -60,7 +60,7 @@ func New(c *Config) (*broker, error) {
 }
 
 // Subscribe subscribes to a channel and returns a PubSub instance for receiving messages.
-func (b *broker) Subscribe(ctx context.Context, channel string) (*redis.PubSub, error) {
+func (b *broker) Subscribe(ctx context.Context, channel, chatroom string) (*redis.PubSub, error) {
 	pubsub := b.client.Subscribe(ctx, channel)
 	_, err := pubsub.Receive(ctx)
 	if err != nil {
@@ -84,10 +84,10 @@ func (b *broker) Unsubscribe(ctx context.Context, pubsub *redis.PubSub) error {
 }
 
 // Send message to channel
-func (b *broker) Publish(ctx context.Context, channel string, message []byte) error {
-	err := b.client.Publish(ctx, channel, message).Err()
+func (b *broker) Publish(ctx context.Context, reciever string, message []byte) error {
+	err := b.client.Publish(ctx, reciever, message).Err()
 	if err != nil {
-		b.logger.Error("Failed to publish message to channel", zap.String("channel", channel))
+		b.logger.Error("Failed to publish message to channel", zap.String("reciever", reciever))
 		return err
 	}
 	return nil
