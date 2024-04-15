@@ -15,7 +15,7 @@ function MessageContent({ content, align }: MessageContentProps): JSX.Element {
           return (
             <div
               key={index}
-              className={`mr-auto rounded-r-xl  ${roundedClass} border-muted bg-muted p-4`}
+              className={`mr-auto min-w-20 rounded-r-xl  ${roundedClass} border-muted bg-muted p-4`}
             >
               <p className=" text-sm font-normal ">{msg}</p>
             </div>
@@ -25,7 +25,7 @@ function MessageContent({ content, align }: MessageContentProps): JSX.Element {
         return (
           <div
             key={index}
-            className={`ml-auto rounded-l-xl ${roundedClass} border-muted bg-muted p-4`}
+            className={`ml-auto min-w-20 rounded-l-xl ${roundedClass} border-muted bg-muted p-4`}
           >
             <p className=" text-sm font-normal ">{msg}</p>
           </div>

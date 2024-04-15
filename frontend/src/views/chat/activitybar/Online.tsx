@@ -1,4 +1,4 @@
-import { AnimatedTooltip } from "@/components/ui/animated-tooltip";
+import AnimatedTooltip from "@/components/ui/animated-tooltip";
 import { User } from "@/types/user";
 
 interface OnlineProps {
@@ -6,19 +6,11 @@ interface OnlineProps {
 }
 
 function Online({ user }: OnlineProps) {
-  const item = {
-    id: user.userId,
-    name: user.username,
-    designation: user.description,
-    image: user.icon.link,
-    online: true,
-  };
-
   return (
     <>
       <div className="mb-2 flex flex-row items-center gap-x-4 rounded-sm hover:bg-muted">
         <div className="relative m-2">
-          <AnimatedTooltip item={item} />
+          <AnimatedTooltip user={user} online={true} />
         </div>
         <div className="text-foreground"> {user.username}</div>
       </div>

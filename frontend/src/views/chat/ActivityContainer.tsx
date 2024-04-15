@@ -26,8 +26,8 @@ function ActivityContainer() {
         className="hidden  h-[90vh] flex-col rounded-lg bg-background lg:flex"
       >
         <ActivityHeader />
-        <div className="flex flex-col overflow-y-auto  p-2 ">
-          <div className="pl-1.5">Online - {online?.length}</div>
+        <div className="flex flex-col overflow-y-auto  p-2">
+          <div className="mt-5 pl-1.5">Online - {online?.length}</div>
 
           {isLoading || (error && <ActivityLoading />)}
 

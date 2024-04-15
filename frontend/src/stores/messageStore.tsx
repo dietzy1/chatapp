@@ -4,6 +4,7 @@ import { create } from "zustand";
 export interface MessageStore {
   messages: Message[];
   addMessage: (newMessage: RecieveMessageEvent) => void;
+  addMessages: (newMessages: RecieveMessageEvent[]) => void;
   clearMessages: () => void;
 }
 
@@ -46,6 +47,11 @@ const useMessageStore = create<MessageStore>((set) => ({
           return { messages: updatedMessages };
         }
       }
+    });
+  },
+  addMessages: (newMessages) => {
+    newMessages.forEach((message) => {
+      useMessageStore.getState().addMessage(message);
     });
   },
 

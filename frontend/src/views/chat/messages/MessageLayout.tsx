@@ -1,10 +1,10 @@
-import { AnimatedTooltip } from "@/components/ui/animated-tooltip";
 import MessageHeader from "./MessageHeader";
 //import { DotsVerticalIcon } from "@radix-ui/react-icons";
 import MessageContent from "./MessageContent";
 import { Message } from "@/types/message";
 import { User } from "@/types/user";
 import timeFormatter from "./TimeFormatter";
+import AnimatedTooltip from "@/components/ui/animated-tooltip";
 
 //Message scenarios that I must take care of
 
@@ -28,14 +28,6 @@ function MessageLayout({
   //If user ID is same as message ID then align = right
   //if user ID is not same as message ID then align = left
 
-  const item = {
-    id: "1",
-    name: "Bob",
-    designation: "Developer",
-    image:
-      "https://emojiisland.com/cdn/shop/products/Very_Angry_Emoji_7f7bb8df-d9dc-4cda-b79f-5453e764d4ea_large.png?v=1571606036",
-  };
-
   //Loop over the messages and convert the contents to a string[]
   const contents = message.message.map((message) => {
     console.log(message.content);
@@ -46,9 +38,9 @@ function MessageLayout({
   if (align === "left") {
     return (
       <>
-        <div className="my-8 flex max-w-[400px] items-start gap-2.5">
+        <div className="my-8 flex  max-w-[400px] items-start gap-2.5">
           <div className="flex shrink-0">
-            <AnimatedTooltip item={item} />
+            <AnimatedTooltip user={user} />
           </div>
           <div className="ml-3 flex flex-col gap-1">
             <MessageHeader
@@ -66,9 +58,9 @@ function MessageLayout({
 
   //Align right
   return (
-    <div className="my-8 ml-auto flex max-w-[400px] flex-row-reverse items-start  gap-2.5">
+    <div className="my-8 ml-auto flex  max-w-[400px] flex-row-reverse items-start  gap-2.5">
       <div className="flex shrink-0">
-        <AnimatedTooltip item={item} />
+        <AnimatedTooltip user={user} />
       </div>
       <div className=" flex flex-col gap-1">
         <MessageHeader

@@ -1,18 +1,14 @@
 "use client";
 import { useState } from "react";
 import { motion, useTransform, useMotionValue, useSpring } from "framer-motion";
+import { User } from "@/types/user";
 
-export const AnimatedTooltip = ({
-  item,
-}: {
-  item: {
-    id: string;
-    name: string;
-    designation: string;
-    image: string;
-    online?: boolean;
-  };
-}) => {
+interface AnimatedTooltipProps {
+  user: User;
+  online?: boolean;
+}
+
+function AnimatedTooltip({ user, online }: AnimatedTooltipProps): JSX.Element {
   const [hoveredIndex, setHoveredIndex] = useState<string | null>(null);
   const springConfig = { stiffness: 100, damping: 5 };
   const x = useMotionValue(0); // going to set this value on mouse move
@@ -34,14 +30,14 @@ export const AnimatedTooltip = ({
   //-mr-4
   return (
     <>
-      {item && (
+      {user && (
         <div
           className="group  relative -mr-4"
-          key={item.name}
-          onMouseEnter={() => setHoveredIndex(item.id)}
+          key={user.username}
+          onMouseEnter={() => setHoveredIndex(user.userId)}
           onMouseLeave={() => setHoveredIndex(null)}
         >
-          {hoveredIndex === item.id && (
+          {hoveredIndex === user.userId && (
             <motion.div
               initial={{ opacity: 0, y: 20, scale: 0.6 }}
               animate={{
@@ -65,9 +61,9 @@ export const AnimatedTooltip = ({
               <div className="absolute inset-x-10 -bottom-px z-30 h-px w-[20%] bg-gradient-to-r from-transparent via-orange-600 to-transparent " />
               <div className="absolute -bottom-px left-10 z-30 h-px w-[40%] bg-gradient-to-r from-transparent via-orange-500 to-transparent " />
               <div className="relative z-30 text-base font-bold text-white">
-                {item.name}
+                {user.username}
               </div>
-              <div className="text-xs text-white">{item.designation}</div>
+              <div className="text-xs text-white">{user.description}</div>
             </motion.div>
           )}
 
@@ -75,18 +71,20 @@ export const AnimatedTooltip = ({
             onMouseMove={handleMouseMove}
             height={100}
             width={100}
-            src={item.image}
-            alt={item.name}
+            src={user.icon.link}
+            alt={user.username}
             className="relative !m-0 h-12 w-12  object-cover object-top !p-0 transition  duration-500 group-hover:z-30 group-hover:scale-105"
           />
-          {item.online && (
+          {online && (
             <div className="absolute bottom-0 right-0  z-50  rounded-full border-2 border-background bg-green-500 p-1.5" />
           )}
-          {item.online === false && (
+          {online === false && (
             <div className="absolute bottom-0 right-0  z-50  rounded-full border-2 border-background bg-orange-500 p-1.5" />
           )}
         </div>
       )}
     </>
   );
-};
+}
+
+export default AnimatedTooltip;

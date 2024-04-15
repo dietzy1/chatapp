@@ -29,7 +29,7 @@ const useWrappedWebsocket = () => {
   const store = useSelectedChatroomStore();
 
   const { addActivity } = useActivityStore();
-  const { addMessage } = useMessageStore();
+  const { addMessage, clearMessages } = useMessageStore();
 
   const { data } = useGetUser();
 
@@ -48,6 +48,12 @@ const useWrappedWebsocket = () => {
     },
     !!queryParams.chatroomId && !!queryParams.channelId && !!queryParams.userId,
   );
+
+  //We should clear messages when we change chatroom
+  useEffect(() => {
+    console.log("Clearing messages");
+    clearMessages();
+  }, [store.selectedChatroom, store.selectedChannel, clearMessages]);
 
   //I should handle the grouping of messages here aswell
   useEffect(() => {
