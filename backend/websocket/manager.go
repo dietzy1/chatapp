@@ -152,11 +152,14 @@ func (m *manager) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 	m.addClient(client)
 	defer m.removeClient(client)
 
-	client.run()
+	//What we could do is to make a lookup in the chatroom map and then match ids in the client map and use the sendChannels to send activity messages to all of the clients in the chatroom
+
+	client.run(m)
 }
 
 //The issue is that I am trying to send on a closed channel
 
+// Returns a slice of clients that are connected to the chatroom
 func (m *manager) addClient(c *client) {
 	m.logger.Info("Adding client to manager")
 	m.mu.Lock()
@@ -164,9 +167,20 @@ func (m *manager) addClient(c *client) {
 
 	m.clients[c.ids.userId] = c
 
+	// Check if the user ID already exists in the slice
+	for _, id := range m.chatroomClients[c.ids.chatroomId] {
+		if id == c.ids.userId {
+			// If the user ID already exists, do not append
+			return
+		}
+	}
+
+	// Append the user ID to the slice
 	m.chatroomClients[c.ids.chatroomId] = append(m.chatroomClients[c.ids.chatroomId], c.ids.userId)
+
 }
 
+// Returns a slice of clients that are connected to the chatroom
 func (m *manager) removeClient(c *client) {
 	m.logger.Info("Removing client from manager")
 	m.mu.Lock()
@@ -175,5 +189,52 @@ func (m *manager) removeClient(c *client) {
 	delete(m.clients, c.ids.userId)
 
 	m.chatroomClients[c.ids.chatroomId] = remove(m.chatroomClients[c.ids.chatroomId], c.ids.userId)
+}
+
+type activeUsersCallback interface {
+	notifyChatroomClients(chatroomId string)
+}
+
+// FIXME: This right here is a massive race condition with how it works right now
+// Create a callback function we can pass to the run function
+func (m *manager) notifyChatroomClients(chatroomId string) {
+	m.logger.Info("Callback function called")
+	//Locate all clients in the chatroom
+	m.mu.RLock()
+
+	chatroomClients := m.chatroomClients[chatroomId]
+	m.logger.Info("Chatroom clients", zap.Any("clients", chatroomClients))
+
+	//Create slice of clients by looking up the client map
+	clients := make([]*client, 0, len(chatroomClients))
+	for _, id := range chatroomClients {
+		clients = append(clients, m.clients[id])
+	}
+	m.mu.RUnlock()
+
+	//Create packet to send to the client
+	//Marshal message into packet
+	responsePacket, err := MarshalPacket(Packet[ActivityEvent]{
+		Kind: "3",
+		Payload: ActivityEvent{
+			ActiveUsers: chatroomClients,
+		},
+	})
+	if err != nil {
+		m.logger.Error("Failed to marshal packet", zap.Error(err))
+		return
+	}
+
+	//This here doesn't work
+	for _, client := range clients {
+		m.logger.Info("Sending activity message to client")
+		select {
+		case client.conn.sendChannel <- responsePacket:
+			// The send operation was successful
+		default:
+			// The send operation was not successful
+			m.logger.Info("Failed to send message to client")
+		}
+	}
 
 }

@@ -1,17 +1,19 @@
-import React, { useRef } from "react";
+import React, { useMemo, useRef } from "react";
 
 import Header from "@/components/Header";
 
 import { TracingBeam } from "@/components/ui/tracing";
 import useUpdateWidth from "@/hooks/useUpdateWidth";
-import useWrappedWebsocket from "@/hooks/useWrappedWebsocket";
 import MessageLayout from "./messages/MessageLayout";
 import MessageDevider from "./messages/MessageDevider";
+import MessageLoading from "./messages/MessageLoading";
+import useMessageStore from "@/stores/messageStore";
+import useGetUsers from "@/api/endpoints/user/getUsers";
+import { User } from "@/types/user";
+import useGetUser from "@/api/endpoints/user/getUser";
 
 function MessageContainer(): JSX.Element {
   //const { format } = useFormatMessage();
-
-  const temp = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   //My target ref for the bracing beam
   const targetElementRef = useRef<HTMLDivElement>(null);
@@ -22,10 +24,42 @@ function MessageContainer(): JSX.Element {
 
   //scrollRef.current?.scrollIntoView({ behavior: "smooth" });
 
-  useWrappedWebsocket();
-
   //Different scenarios we must take care of.
   //On load we must fetch the last 25 messages
+  //When we scroll to the top we must fetch the next 25 messages
+  //We need to continuesly append new messages into the array of messages
+  //We need to show a loading spinner when we are fetching new messages
+
+  //If there is a big timestamp gap between messages we need to show a timestamp
+
+  //const messages = useMessages();
+  /*  const { data } = useGetUsers();
+
+  const userMap =
+    data?.users.reduce<Record<string, User>>((acc, user) => {
+      acc[user.userId] = user;
+      return acc;
+    }, {}) || {};
+  console.log("User Map", userMap); */
+
+  const { messages } = useMessageStore();
+  console.log("messaage store", messages);
+  console.log("Length of messages", messages.length);
+
+  const user = useGetUser();
+
+  const users = useGetUsers();
+
+  const userMap = useMemo(
+    () =>
+      users.data?.users.reduce<Record<string, User>>((acc, user) => {
+        acc[user.userId] = user;
+        return acc;
+      }, {}) || {},
+    [users],
+  );
+
+  //const align = user.userId === message.message[0].userId ? "right" : "left";
 
   return (
     <>
@@ -36,10 +70,18 @@ function MessageContainer(): JSX.Element {
         <Header />
         <div ref={targetElementRef} className="flex  overflow-y-auto p-10">
           <TracingBeam scrollContainerRef={targetElementRef}>
-            {temp.map((_, index) => (
-              <React.Fragment key={index}>
-                <MessageLayout align="right" />
-                <MessageLayout align="left" />
+            {messages.length === 0 && <MessageLoading />}
+            {messages.map((value) => (
+              <React.Fragment key={value.message[0].messageId}>
+                <MessageLayout
+                  message={value}
+                  user={userMap[value.message[0].userId]}
+                  align={
+                    user.data?.user.userId === value.message[0].userId
+                      ? "right"
+                      : "left"
+                  }
+                />
                 <MessageDevider timestamp="Yesterday at 19:48" />
               </React.Fragment>
             ))}

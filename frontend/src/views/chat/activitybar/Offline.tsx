@@ -1,6 +1,7 @@
-import UserAvatar from "@/components/UserAvatar";
+import { AnimatedTooltip } from "@/components/ui/animated-tooltip";
+import { User } from "@/types/user";
 
-function Offline() {
+/* function Offline() {
   const user = {
     name: "Bob Doe",
     icon: {
@@ -18,6 +19,34 @@ function Offline() {
           </div>
           <div className="text-gray-500 grayscale-[70%]"> {user?.name}</div>
         </div>
+      </div>
+    </>
+  );
+}
+
+export default Offline;
+ */
+
+interface OfflineProps {
+  user: User;
+}
+
+function Offline({ user }: OfflineProps) {
+  const item = {
+    id: user.userId,
+    name: user.username,
+    designation: user.description,
+    image: user.icon.link,
+    online: false,
+  };
+
+  return (
+    <>
+      <div className="mb-2 flex flex-row items-center gap-x-4 rounded-sm hover:bg-muted">
+        <div className="relative m-2">
+          <AnimatedTooltip item={item} />
+        </div>
+        <div className="text-foreground"> {user.username}</div>
       </div>
     </>
   );

@@ -1,12 +1,13 @@
 import { HashIcon } from "lucide-react";
-import { Channel } from "@/types/user";
+import { Channel } from "@/types/chatroom";
+
 import useSelectedChatroomStore from "@/stores/selectedChatroomStore";
 
-interface ChannelProps {
+interface SelectChannelProps {
   channel: Channel;
 }
 
-function Channel({ channel }: ChannelProps) {
+function SelectChannel({ channel }: SelectChannelProps) {
   const { selectedChannel, setSelectedChannel } = useSelectedChatroomStore();
 
   if (channel.channelId === selectedChannel?.channelId) {
@@ -36,4 +37,4 @@ function Channel({ channel }: ChannelProps) {
   );
 }
 
-export default Channel;
+export default SelectChannel;

@@ -1,7 +1,7 @@
 import useGetChatrooms from "@/api/endpoints/chatroom/getChatrooms";
 import useSelectedChatroomStore from "@/stores/selectedChatroomStore";
 import { useEffect, useState } from "react";
-import { Channel } from "@/types/user";
+import { Channel } from "@/types/chatroom";
 
 const useChannels = () => {
   const chatrooms = useGetChatrooms();

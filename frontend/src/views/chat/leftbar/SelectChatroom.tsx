@@ -5,13 +5,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import useSelectedChatroomStore from "@/stores/selectedChatroomStore";
-import { Chatroom } from "@/types/user";
+import { Chatroom } from "@/types/chatroom";
 
-interface ChatroomProps {
+interface SelectChatroomProps {
   chatroom: Chatroom;
 }
 
-function Chatroom({ chatroom }: ChatroomProps): JSX.Element {
+function SelectChatroom({ chatroom }: SelectChatroomProps): JSX.Element {
   const store = useSelectedChatroomStore();
 
   //Select chatroom
@@ -44,7 +44,7 @@ function Chatroom({ chatroom }: ChatroomProps): JSX.Element {
   );
 }
 
-export default Chatroom;
+export default SelectChatroom;
 
 /*   <TooltipTrigger>Hover</TooltipTrigger>
   <TooltipContent>

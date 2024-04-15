@@ -1,4 +1,4 @@
-import { Channel, Chatroom } from "@/types/user";
+import { Channel, Chatroom } from "@/types/chatroom";
 import { create } from "zustand";
 
 export interface SelectedChatroomStore {

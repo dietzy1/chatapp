@@ -10,7 +10,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-const primaryChatroomId = "4ed6de81-dedb-47ab-92f5-04d5e23fb71a"
+const primaryChatroomId = "8611519d-97eb-425f-a384-7ec3b8344bc0"
 
 func (r *repository) CreateUser(ctx context.Context, username, description string, iconId uuid.UUID) (uuid.UUID, uuid.UUID, error) {
 

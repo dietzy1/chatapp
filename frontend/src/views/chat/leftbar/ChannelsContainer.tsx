@@ -1,9 +1,10 @@
 import ChannelHeader from "./ChannelHeader";
 
 import { ChevronDown } from "lucide-react";
-import Channel from "./Channel";
+
 import useChannels from "@/hooks/useChannels";
 import React from "react";
+import SelectChannel from "./SelectChannel";
 
 function ChannelsContainer() {
   const channels = useChannels(); //use the value from the store to call the API for channels
@@ -24,7 +25,7 @@ function ChannelsContainer() {
         <div className="ml-3 space-y-3 overflow-y-auto">
           {channels.map((value) => (
             <React.Fragment key={value.channelId}>
-              <Channel channel={value} />
+              <SelectChannel channel={value} />
             </React.Fragment>
           ))}
         </div>

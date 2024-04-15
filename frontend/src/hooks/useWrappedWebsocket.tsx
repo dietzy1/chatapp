@@ -1,7 +1,14 @@
 import useGetUser from "@/api/endpoints/user/getUser";
+
 import useActivityStore from "@/stores/activityStore";
 import useMessageStore from "@/stores/messageStore";
 import useSelectedChatroomStore from "@/stores/selectedChatroomStore";
+import {
+  ActivityEvent,
+  CreateMessageEvent,
+  RecieveMessageEvent,
+} from "@/types/message";
+
 import { useState, useCallback, useEffect } from "react";
 import useWebSocket from "react-use-websocket";
 
@@ -11,27 +18,6 @@ interface Packet {
 }
 
 //Kind = "1"
-interface CreateMessageEvent {
-  channelId: string;
-  chatroomId: string;
-  userId: string;
-  content: string;
-}
-
-//Kind = "2"
-interface RecieveMessageEvent {
-  messageId: string;
-  channelId: string;
-  chatroomId: string;
-  userId: string;
-  content: string;
-  createdAt: string;
-}
-
-//Kind = "3"
-interface ActivityEvent {
-  activeUsers: string[];
-}
 
 type QueryParams = {
   chatroomId?: string;
@@ -42,8 +28,8 @@ type QueryParams = {
 const useWrappedWebsocket = () => {
   const store = useSelectedChatroomStore();
 
-  const activityStore = useActivityStore();
-  const messageStore = useMessageStore();
+  const { addActivity } = useActivityStore();
+  const { addMessage } = useMessageStore();
 
   const { data } = useGetUser();
 
@@ -55,24 +41,52 @@ const useWrappedWebsocket = () => {
     channelId: store.selectedChannel?.channelId,
   };
 
-  //I need to find out if query params like this correctly forces the websocket to reconnect
   const { sendJsonMessage, lastMessage } = useWebSocket(
     socketUrl,
     {
       queryParams: queryParams,
     },
-    true,
+    !!queryParams.chatroomId && !!queryParams.channelId && !!queryParams.userId,
   );
 
+  //I should handle the grouping of messages here aswell
   useEffect(() => {
     if (lastMessage !== null) {
       console.log("We recieved something", lastMessage);
 
       //Handle the different kinds of packets
-      const packet: Packet = JSON.parse(lastMessage.data);
-      console.log(packet);
+      try {
+        const packet: Packet = JSON.parse(lastMessage.data);
+
+        switch (packet.kind) {
+          case "2": {
+            //Recieve message event
+            const recieveMessageEvent = packet.payload as RecieveMessageEvent;
+            console.log("Recieved real message", recieveMessageEvent);
+
+            addMessage(recieveMessageEvent);
+
+            break;
+          }
+          case "3":
+            //Activity event
+            {
+              const activityEvent = packet.payload as ActivityEvent;
+              console.log("Recieved activity event", activityEvent);
+
+              //Update the activity store
+              addActivity(activityEvent.activeUsers);
+            }
+
+            break;
+          default:
+            console.error("Invalid packet kind");
+        }
+      } catch (error) {
+        console.error("Error parsing packet", error);
+      }
     }
-  }, [lastMessage]);
+  }, [lastMessage, addMessage, addActivity]);
 
   //Wrap sendJsonMessage
   const sendMessage = useCallback(

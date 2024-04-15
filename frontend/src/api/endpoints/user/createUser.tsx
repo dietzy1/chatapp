@@ -23,9 +23,9 @@ const createUser = async (
 };
 
 const useCreateUser = () => {
-  const username = "bob";
-  const description = "bob is a cool guy";
-  const iconId = "a2b3314b-c20e-4148-9eaf-28dd2e142bad";
+  const username = "fake bob";
+  const description = "bob is a fake guy";
+  const iconId = "9124edda-b816-4015-94bc-b163ae519497";
 
   const req: CreateUserRequest = {
     username,

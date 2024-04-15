@@ -2,6 +2,8 @@ import { AnimatedTooltip } from "@/components/ui/animated-tooltip";
 import MessageHeader from "./MessageHeader";
 //import { DotsVerticalIcon } from "@radix-ui/react-icons";
 import MessageContent from "./MessageContent";
+import { Message } from "@/types/message";
+import { User } from "@/types/user";
 
 //Message scenarios that I must take care of
 
@@ -12,10 +14,19 @@ import MessageContent from "./MessageContent";
 // ----january 25th 2021------
 
 interface MessageLayoutProps {
+  message: Message;
+  user: User;
   align: "left" | "right";
 }
 
-function MessageLayout({ align }: MessageLayoutProps): JSX.Element {
+function MessageLayout({
+  message,
+  user,
+  align,
+}: MessageLayoutProps): JSX.Element {
+  //If user ID is same as message ID then align = right
+  //if user ID is not same as message ID then align = left
+
   const item = {
     id: "1",
     name: "Bob",
@@ -23,6 +34,12 @@ function MessageLayout({ align }: MessageLayoutProps): JSX.Element {
     image:
       "https://emojiisland.com/cdn/shop/products/Very_Angry_Emoji_7f7bb8df-d9dc-4cda-b79f-5453e764d4ea_large.png?v=1571606036",
   };
+
+  //Loop over the messages and convert the contents to a string[]
+  const contents = message.message.map((message) => {
+    console.log(message.content);
+    return message.content;
+  });
 
   //Not our users message
   if (align === "left") {
@@ -34,19 +51,12 @@ function MessageLayout({ align }: MessageLayoutProps): JSX.Element {
           </div>
           <div className="ml-3 flex flex-col gap-1">
             <MessageHeader
-              username="Bob"
+              username={user.username}
               timestamp="Today at 9:18PM"
               align={align}
             />
 
-            <MessageContent
-              content={[
-                " That's awesome. I think our users will really appreciate the improvements. That's awesome. I think our users will really appreciatethe improvements. ",
-                "hello second msg",
-                "hellon third message which is alot longer than the other messages",
-              ]}
-              align={align}
-            />
+            <MessageContent content={contents} align={align} />
           </div>
         </div>
       </>
@@ -61,17 +71,12 @@ function MessageLayout({ align }: MessageLayoutProps): JSX.Element {
       </div>
       <div className=" flex flex-col gap-1">
         <MessageHeader
-          username="Bob"
+          username={user.username}
           timestamp="Today at 9:18PM"
           align={align}
         />
 
-        <MessageContent
-          content={[
-            " That's awesome. I think our users will really appreciate the improvements. That's awesome. I think our users will really appreciatethe improvements. ",
-          ]}
-          align={align}
-        />
+        <MessageContent content={contents} align={align} />
       </div>
     </div>
   );

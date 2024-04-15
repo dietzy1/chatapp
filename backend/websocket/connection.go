@@ -99,6 +99,12 @@ func (c *connection) writePump() {
 				return
 			}
 
+			//Check if the connection is still open
+			if c.conn == nil {
+				c.logger.Info("connection is closed")
+				return
+			}
+
 			if err := c.conn.WriteMessage(websocket.TextMessage, msg); err != nil {
 				c.logger.Info("failed to write message", zap.Error(err))
 				return
@@ -122,7 +128,6 @@ func (c *connection) readPump() {
 	}
 
 	c.conn.SetPongHandler(func(s string) error {
-		c.logger.Debug("received pong", zap.String("data", s))
 		c.lastPongAt = time.Now()
 		if err := c.conn.SetReadDeadline(time.Now().Add(idleTimeout)); err != nil {
 			c.logger.Error("failed to set read deadline", zap.Error(err))

@@ -1,10 +1,10 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import Home from "./Home";
 //import useGetUser from "@/api/endpoints/user/getUser";
-import Chatroom from "./Chatroom";
 
 import useGetChatrooms from "@/api/endpoints/chatroom/getChatrooms";
 import React from "react";
+import SelectChatroom from "./SelectChatroom";
 
 function ChatroomsContainer() {
   const { data, isLoading, error } = useGetChatrooms();
@@ -35,7 +35,7 @@ function ChatroomsContainer() {
             <>
               {data?.chatrooms.map((value) => (
                 <React.Fragment key={value.chatroomId}>
-                  <Chatroom chatroom={value} />
+                  <SelectChatroom chatroom={value} />
                 </React.Fragment>
               ))}
             </>

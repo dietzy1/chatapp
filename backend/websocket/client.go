@@ -9,9 +9,9 @@ import (
 )
 
 type MessageBroker interface {
-	Subscribe(ctx context.Context, channel string) (*redis.PubSub, error)
+	Subscribe(ctx context.Context, channel, chatroom string) (*redis.PubSub, error)
 	Unsubscribe(ctx context.Context, pubsub *redis.PubSub) error
-	Publish(ctx context.Context, channel string, message []byte) error
+	Publish(ctx context.Context, reciever string, message []byte) error
 }
 
 type MessageService interface {
@@ -42,24 +42,31 @@ func newClient(ids ids, conn *connection, logger *zap.Logger, broker MessageBrok
 
 }
 
-func (c *client) run() {
+//make run accept callbackActiveUsers(chatroomId string) []*client
+
+func (c *client) run(callback activeUsersCallback) {
 	//Start read and writer goroutines
 	c.conn.run()
+	callback.notifyChatroomClients(c.ids.chatroomId)
 
 	//Open pubsub connection
-	pubsub, err := c.broker.Subscribe(context.Background(), c.ids.channelId)
+	pubsub, err := c.broker.Subscribe(context.Background(), c.ids.channelId, c.ids.chatroomId)
 	if err != nil {
 		c.logger.Error("Failed to subscribe to pubsub", zap.Error(err))
 		return
 	}
+	//Send messages to
 
 	//Retrieve last 25 messages from the message service
 
 	//Send messages to the client
-	c.conn.sendChannel <- []byte("Hello")
+	//c.conn.sendChannel <- []byte("Hello")
 
 	//handle events in blocking loop
 	c.handleEvents(pubsub.Channel())
+
+	//I dont think this is where the disconnect event should be handled
+	callback.notifyChatroomClients(c.ids.chatroomId)
 
 	//Close pubsub connection
 	if err := c.broker.Unsubscribe(context.Background(), pubsub); err != nil {
