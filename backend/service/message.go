@@ -23,12 +23,12 @@ import (
 
 // Mongo doesn't like the UUID type, so we'll use string instead
 type Message struct {
-	MessageId  string `bson:"messageId"`
-	ChannelId  string `bson:"channelId"`
-	ChatroomId string `bson:"chatroomId"`
-	UserId     string `bson:"userId"`
-	Content    string `bson:"content"`
-	CreatedAt  string `bson:"createdAt"`
+	MessageId  string `json:"messageId" bson:"messageId"`
+	ChannelId  string `json:"channelId" bson:"channelId"`
+	ChatroomId string `json:"chatroomId" bson:"chatroomId"`
+	UserId     string `json:"userId" bson:"userId"`
+	Content    string `json:"content" bson:"content"`
+	CreatedAt  string `json:"createdAt" bson:"createdAt"`
 }
 
 type messageService struct {
@@ -64,10 +64,10 @@ func (m *messageService) GetMessages(ctx context.Context, chatroomId, channelId 
 }
 
 type CreateMessage struct {
-	ChannelId  string
-	ChatroomId string
-	UserId     string
-	Content    string
+	ChannelId  string `json:"channelId"`
+	ChatroomId string `json:"chatroomId"`
+	UserId     string `json:"userId"`
+	Content    string `json:"content"`
 }
 
 func (m *messageService) CreateMessage(ctx context.Context, msg CreateMessage) (Message, error) {

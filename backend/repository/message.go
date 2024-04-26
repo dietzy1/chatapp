@@ -18,19 +18,21 @@ const database = "Message-Database"
 
 // We want to add in some timestamp stuff later perhabs
 func (r *repository) GetMessages(ctx context.Context, chatroomId, channelId string) ([]service.Message, error) {
-	collection := r.mongodb.client.Database(database).Collection(channelId)
+	collection := r.mongodb.client.Database(database).Collection(chatroomId)
 
 	messages := []service.Message{}
 
 	//find 50 latests messages based on entry to database
 	//Use sort and setlimit operator
-	cursor, err := collection.Find(ctx, bson.M{"channeluuid": channelId}, options.Find().SetSort(bson.M{"$natural": 1}).SetLimit(50))
+
+	cursor, err := collection.Find(ctx, bson.M{"channelId": channelId}, options.Find().SetSort(bson.M{"timestamp": -1}).SetLimit(50))
 	if err != nil {
 		return messages, err
 	}
+	defer cursor.Close(ctx)
 
 	if err = cursor.All(ctx, &messages); err != nil {
-		return messages, err
+		return messages, fmt.Errorf("failed to decode messages: %w", err)
 	}
 
 	return messages, nil

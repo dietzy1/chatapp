@@ -5,16 +5,24 @@ import useMessageStore from "@/stores/messageStore";
 import useSelectedChatroomStore from "@/stores/selectedChatroomStore";
 import {
   ActivityEvent,
-  CreateMessageEvent,
-  RecieveMessageEvent,
+  CreateMessage,
+  Message,
+  InitialMessages,
 } from "@/types/message";
 
 import { useState, useCallback, useEffect } from "react";
 import useWebSocket from "react-use-websocket";
 
+export enum MessageKind {
+  CreateMessageKind = "CREATE",
+  RecieveMessageKind = "RECIEVE",
+  InitialKind = "INITIAL",
+  ActivityKind = "ACTIVITY",
+}
+
 interface Packet {
-  kind: string;
-  payload: CreateMessageEvent | RecieveMessageEvent | ActivityEvent;
+  kind: MessageKind;
+  payload: CreateMessage | Message | ActivityEvent | InitialMessages;
 }
 
 //Kind = "1"
@@ -29,7 +37,7 @@ const useWrappedWebsocket = () => {
   const store = useSelectedChatroomStore();
 
   const { addActivity } = useActivityStore();
-  const { addMessage, clearMessages } = useMessageStore();
+  const { addMessage, addMessages, clearMessages } = useMessageStore();
 
   const { data } = useGetUser();
 
@@ -65,16 +73,25 @@ const useWrappedWebsocket = () => {
         const packet: Packet = JSON.parse(lastMessage.data);
 
         switch (packet.kind) {
-          case "2": {
+          case MessageKind.RecieveMessageKind: {
             //Recieve message event
-            const recieveMessageEvent = packet.payload as RecieveMessageEvent;
+            const recieveMessageEvent = packet.payload as Message;
             console.log("Recieved real message", recieveMessageEvent);
 
             addMessage(recieveMessageEvent);
 
             break;
           }
-          case "3":
+          case MessageKind.InitialKind: {
+            const initialMessages = packet.payload as InitialMessages;
+            console.log("Recieved initial messages", initialMessages);
+
+            addMessages(initialMessages.messages);
+
+            break;
+          }
+
+          case MessageKind.ActivityKind:
             //Activity event
             {
               const activityEvent = packet.payload as ActivityEvent;
@@ -92,7 +109,7 @@ const useWrappedWebsocket = () => {
         console.error("Error parsing packet", error);
       }
     }
-  }, [lastMessage, addMessage, addActivity]);
+  }, [lastMessage, addMessage, addActivity, addMessages]);
 
   //Wrap sendJsonMessage
   const sendMessage = useCallback(
@@ -109,7 +126,7 @@ const useWrappedWebsocket = () => {
       }
 
       const packet: Packet = {
-        kind: "1",
+        kind: MessageKind.CreateMessageKind,
         payload: {
           channelId: store.selectedChannel?.channelId,
           chatroomId: store.selectedChatroom?.chatroomId,

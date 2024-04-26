@@ -55,6 +55,7 @@ func (c *client) run(callback activeUsersCallback) {
 	}
 
 	c.emitActivityEvent(callback, false)
+	c.SendInitialMessages()
 	//handle events in blocking loop
 	c.handleEvents(pubsub.Channel())
 
@@ -90,7 +91,7 @@ func (c *client) emitActivityEvent(callback activeUsersCallback, disconnecting b
 	c.logger.Info("Number of active users", zap.Int("active_users", len(chatroomClients)))
 	//Marshal message into packet
 	responsePacket, err := MarshalPacket(Packet[ActivityEvent]{
-		Kind: "3",
+		Kind: ActivityKind,
 		Payload: ActivityEvent{
 			ActiveUsers: chatroomClients,
 		},
@@ -101,6 +102,31 @@ func (c *client) emitActivityEvent(callback activeUsersCallback, disconnecting b
 	}
 
 	c.broker.Publish(context.Background(), c.ids.chatroomId, responsePacket)
+}
+
+// Handle the initial connection by retrieving the last 25 messages
+func (c *client) SendInitialMessages() {
+	//Retrieve last 25 messages from the message service
+	messages, err := c.messageService.GetMessages(context.TODO(), c.ids.chatroomId, c.ids.channelId)
+	if err != nil {
+		c.logger.Error("Failed to get messages", zap.Error(err))
+		return
+	}
+
+	responsePacket, err := MarshalPacket(Packet[InitialMessages]{
+		Kind: InitialKind,
+		Payload: InitialMessages{
+			Messages: messages,
+		},
+	})
+	if err != nil {
+		c.logger.Error("Failed to marshal packet", zap.Error(err))
+		return
+	}
+
+	if err := c.broker.Publish(context.TODO(), c.ids.channelId, responsePacket); err != nil {
+		c.logger.Error("Failed to publish initial messages", zap.Error(err))
+	}
 }
 
 func (c *client) handleEvents(ch <-chan *redis.Message) {
@@ -114,7 +140,7 @@ func (c *client) handleEvents(ch <-chan *redis.Message) {
 			}
 
 			//Unmarshal into packet
-			packet, err := UnmarshalPacket[CreateMessageEvent](msg)
+			packet, err := UnmarshalPacket[service.CreateMessage](msg)
 			if err != nil {
 				c.logger.Error("Failed to unmarshal packet", zap.Error(err))
 				return
@@ -134,9 +160,9 @@ func (c *client) handleEvents(ch <-chan *redis.Message) {
 			}
 
 			//Marshal message into packet
-			responsePacket, err := MarshalPacket(Packet[RecieveMessageEvent]{
-				Kind: "2",
-				Payload: RecieveMessageEvent{
+			responsePacket, err := MarshalPacket(Packet[service.Message]{
+				Kind: RecieveMessageKind,
+				Payload: service.Message{
 					MessageId:  response.MessageId,
 					ChannelId:  response.ChannelId,
 					ChatroomId: response.ChatroomId,

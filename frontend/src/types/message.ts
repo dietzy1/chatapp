@@ -1,12 +1,11 @@
-export interface CreateMessageEvent {
+export interface CreateMessage {
   channelId: string;
   chatroomId: string;
   userId: string;
   content: string;
 }
 
-//Kind = "2"
-export interface RecieveMessageEvent {
+export interface Message {
   messageId: string;
   channelId: string;
   chatroomId: string;
@@ -15,12 +14,15 @@ export interface RecieveMessageEvent {
   createdAt: string;
 }
 
-//Kind = "3"
 export interface ActivityEvent {
   activeUsers: string[];
 }
 
-export interface Message {
-  message: RecieveMessageEvent[];
+export interface InitialMessages {
+  messages: Message[];
+}
+
+export interface CompressedMessages {
+  message: Message[];
   dayDifference: boolean;
 }

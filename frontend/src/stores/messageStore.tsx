@@ -1,10 +1,10 @@
-import { Message, RecieveMessageEvent } from "@/types/message";
+import { CompressedMessages, Message } from "@/types/message";
 import { create } from "zustand";
 
 export interface MessageStore {
-  messages: Message[];
-  addMessage: (newMessage: RecieveMessageEvent) => void;
-  addMessages: (newMessages: RecieveMessageEvent[]) => void;
+  messages: CompressedMessages[];
+  addMessage: (newMessage: Message) => void;
+  addMessages: (newMessages: Message[]) => void;
   clearMessages: () => void;
 }
 
