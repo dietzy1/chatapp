@@ -52,7 +52,6 @@ func (s *authService) VerifySessionToken(ctx context.Context, sessionToken strin
 
 		s.logger.Debug("session token does not match", zap.String("session_token", sessionToken), zap.String("credentials_session_token", credentials.SessionToken.String()))
 		return "", fmt.Errorf("session token does not match")
-
 	}
 
 	return credentials.UserID.String(), nil

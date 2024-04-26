@@ -49,3 +49,4 @@ CREATE TABLE IF NOT EXISTS
     user_id UUID NOT NULL REFERENCES users (user_id) ON DELETE CASCADE,
     PRIMARY KEY (chatroom_id, user_id)
   );
+

@@ -5,7 +5,6 @@ import (
 
 	pb "github.com/dietzy1/chatapp/protos/chatroom/v1"
 	"github.com/dietzy1/chatapp/service"
-	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -21,8 +20,6 @@ func (h *handlers) GetChatrooms(ctx context.Context, req *pb.GetChatroomsRequest
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get chatrooms: %v", err)
 	}
-
-	h.logger.Info("Chatrooms retrieved", zap.Any("chatrooms", chatrooms))
 
 	//Convert from service.Chatroom to pb.Chatroom
 	pbchatrooms := make([]*pb.Chatroom, len(chatrooms))

@@ -77,10 +77,10 @@ func wrapperAuthMiddleware(logger *zap.Logger) func(http.Handler) http.Handler {
 
 			if r.URL.Path == loginRoute || r.URL.Path == registerRoute || r.URL.Path == authenticateRoute || r.URL.Path == logoutRoute {
 				h.ServeHTTP(w, r)
-				logger.Info("skipping auth middleware")
+
 				return
 			}
-			logger.Info("running auth middleware")
+
 			//Unsure if I actually need to do the cookie thing here or if its done at some other part of the middleware
 
 			//Call the auth service to check if the session token is valid
@@ -127,7 +127,7 @@ func withForwardResponseOptionWrapper(logger *zap.Logger) runtime.ServeMuxOption
 		//Specificly look for the session_token key in the metadata
 		token := md.HeaderMD.Get(sessionTokenName)
 
-		logger.Info("session token", zap.Any("token", token))
+		//logger.Info("session token", zap.Any("token", token))
 
 		if len(token) == 0 {
 			return nil
@@ -168,7 +168,7 @@ func incomingHeaderMatcherWrapper(logger *zap.Logger) runtime.ServeMuxOption {
 	ok := runtime.WithIncomingHeaderMatcher(func(key string) (string, bool) {
 		//List of allowed headers that can be forwarded to the gRPC server
 		if key == "Cookie" {
-			logger.Debug("forwarding header", zap.String("key", key))
+			//logger.Debug("forwarding header", zap.String("key", key))
 			return key, true
 		}
 
@@ -189,7 +189,7 @@ func withMetaDataWrapper(logger *zap.Logger) runtime.ServeMuxOption {
 
 		md := metadata.Pairs(sessionTokenName, cookie.Value)
 
-		logger.Debug(sessionTokenName, zap.Any("value", cookie.Value))
+		//logger.Debug(sessionTokenName, zap.Any("value", cookie.Value))
 		return md
 	})
 	return ok

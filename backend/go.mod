@@ -3,7 +3,6 @@ module github.com/dietzy1/chatapp
 go 1.21.6
 
 require (
-	github.com/go-redis/redis/v8 v8.11.5
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.19.1

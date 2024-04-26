@@ -46,10 +46,21 @@ type MessageRepository interface {
 	//GetMessages(ctx context.Context, chatroomId, channelId uuid.UUID) ([]Message, error)
 	// CreateMessage(ctx context.Context, msg CreateMessage) (Message, error)
 	AddMessage(ctx context.Context, msg Message) error
+	GetMessages(ctx context.Context, chatroomId, channelId string) ([]Message, error)
 }
 
 func (m *messageService) GetMessages(ctx context.Context, chatroomId, channelId string) ([]Message, error) {
-	return nil, nil
+	//Confirm neither chatroomId or channelId are empty
+	if chatroomId == "" || channelId == "" {
+		return nil, fmt.Errorf("chatroomId or channelId cannot be empty")
+	}
+
+	messages, err := m.repo.GetMessages(ctx, chatroomId, channelId)
+	if err != nil {
+		return nil, err
+	}
+
+	return messages, nil
 }
 
 type CreateMessage struct {

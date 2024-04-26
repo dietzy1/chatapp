@@ -15,6 +15,7 @@ type MessageBroker interface {
 }
 
 type MessageService interface {
+	GetMessages(ctx context.Context, chatroomId, channelId string) ([]service.Message, error)
 	CreateMessage(ctx context.Context, createMsg service.CreateMessage) (service.Message, error)
 }
 
@@ -42,33 +43,23 @@ func newClient(ids ids, conn *connection, logger *zap.Logger, broker MessageBrok
 
 }
 
-//make run accept callbackActiveUsers(chatroomId string) []*client
-
 func (c *client) run(callback activeUsersCallback) {
 	//Start read and writer goroutines
 	c.conn.run()
-	callback.notifyChatroomClients(c.ids.chatroomId)
 
-	//Open pubsub connection
+	//Open pubsub connection for the chatroom and channel
 	pubsub, err := c.broker.Subscribe(context.Background(), c.ids.channelId, c.ids.chatroomId)
 	if err != nil {
 		c.logger.Error("Failed to subscribe to pubsub", zap.Error(err))
 		return
 	}
-	//Use the broker to send messages to the client
 
-	//Send messages to
-
-	//Retrieve last 25 messages from the message service
-
-	//Send messages to the client
-	//c.conn.sendChannel <- []byte("Hello")
-
+	c.emitActivityEvent(callback, false)
 	//handle events in blocking loop
 	c.handleEvents(pubsub.Channel())
 
-	//I dont think this is where the disconnect event should be handled
-	callback.notifyChatroomClients(c.ids.chatroomId)
+	//Now the issue is that the client is not removed from the manager when the connection is closed
+	c.emitActivityEvent(callback, true)
 
 	//Close pubsub connection
 	if err := c.broker.Unsubscribe(context.Background(), pubsub); err != nil {
@@ -82,6 +73,36 @@ func (c *client) run(callback activeUsersCallback) {
 	c.conn.cleanup()
 }
 
+func (c *client) emitActivityEvent(callback activeUsersCallback, disconnecting bool) {
+	chatroomClients := callback.getChatroomClients(c.ids.chatroomId)
+
+	//If the client is disconnecting, remove the client from the list of active users
+	if disconnecting {
+		for i, id := range chatroomClients {
+			if id == c.ids.userId {
+				chatroomClients = append(chatroomClients[:i], chatroomClients[i+1:]...)
+				break
+			}
+		}
+	}
+
+	//Log the number of active users
+	c.logger.Info("Number of active users", zap.Int("active_users", len(chatroomClients)))
+	//Marshal message into packet
+	responsePacket, err := MarshalPacket(Packet[ActivityEvent]{
+		Kind: "3",
+		Payload: ActivityEvent{
+			ActiveUsers: chatroomClients,
+		},
+	})
+	if err != nil {
+		c.logger.Error("Failed to marshal packet", zap.Error(err))
+		return
+	}
+
+	c.broker.Publish(context.Background(), c.ids.chatroomId, responsePacket)
+}
+
 func (c *client) handleEvents(ch <-chan *redis.Message) {
 	for {
 		select {
@@ -93,7 +114,6 @@ func (c *client) handleEvents(ch <-chan *redis.Message) {
 			}
 
 			//Unmarshal into packet
-
 			packet, err := UnmarshalPacket[CreateMessageEvent](msg)
 			if err != nil {
 				c.logger.Error("Failed to unmarshal packet", zap.Error(err))
@@ -153,5 +173,40 @@ func (c *client) handleEvents(ch <-chan *redis.Message) {
 			c.conn.sendChannel <- []byte(msg.Payload)
 		}
 	}
-
 }
+
+//TODO: Initial connection:
+//Use the broker to send messages to the client
+
+//Send messages to
+
+//Retrieve last 25 messages from the message service
+
+/* 	messages, err := c.messageService.GetMessages(context.TODO(), c.ids.chatroomId, c.ids.channelId)
+if err != nil {
+	c.logger.Error("Failed to get messages", zap.Error(err))
+	return
+}
+
+//Marshal messages into packets
+for _, message := range messages {
+	packet, err := MarshalPacket(Packet[RecieveMessageEvent]{
+		Kind: "2",
+		Payload: RecieveMessageEvent{
+			MessageId:  message.MessageId,
+			ChannelId:  message.ChannelId,
+			ChatroomId: message.ChatroomId,
+			UserId:     message.UserId,
+			Content:    message.Content,
+			CreatedAt:  message.CreatedAt,
+		},
+	})
+	if err != nil {
+		c.logger.Error("Failed to marshal packet", zap.Error(err))
+		return
+	}
+	_ = packet
+} */
+
+//Send messages to the client
+//c.conn.sendChannel <- []byte("Hello")

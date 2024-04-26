@@ -5,7 +5,8 @@ import (
 	"fmt"
 
 	"github.com/dietzy1/chatapp/service"
-	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func (r *repository) CreateMessage(ctx context.Context, msg service.CreateMessage) (service.Message, error) {
@@ -15,14 +16,15 @@ func (r *repository) CreateMessage(ctx context.Context, msg service.CreateMessag
 
 const database = "Message-Database"
 
-func (r *repository) GetMessages(ctx context.Context, channelId uuid.UUID, timestamp string) ([]service.Message, error) {
-	/* collection := r.mongodb.client.Database(database).Collection(channelId.String())
+// We want to add in some timestamp stuff later perhabs
+func (r *repository) GetMessages(ctx context.Context, chatroomId, channelId string) ([]service.Message, error) {
+	collection := r.mongodb.client.Database(database).Collection(channelId)
 
 	messages := []service.Message{}
 
 	//find 50 latests messages based on entry to database
 	//Use sort and setlimit operator
-	cursor, err := collection.Find(ctx, bson.M{"channeluuid": channelUuid}, options.Find().SetSort(bson.M{"$natural": -1}).SetLimit(50))
+	cursor, err := collection.Find(ctx, bson.M{"channeluuid": channelId}, options.Find().SetSort(bson.M{"$natural": 1}).SetLimit(50))
 	if err != nil {
 		return messages, err
 	}
@@ -30,14 +32,8 @@ func (r *repository) GetMessages(ctx context.Context, channelId uuid.UUID, times
 	if err = cursor.All(ctx, &messages); err != nil {
 		return messages, err
 	}
-	//Swap the order of the messages
-	for i, j := 0, len(messages)-1; i < j; i, j = i+1, j-1 {
-		messages[i], messages[j] = messages[j], messages[i]
-	}
 
-	return messages, nil */
-	return nil, nil
-
+	return messages, nil
 }
 
 func (r *repository) AddMessage(ctx context.Context, msg service.Message) error {

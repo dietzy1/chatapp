@@ -61,7 +61,7 @@ func New(c *Config) (*broker, error) {
 
 // Subscribe subscribes to a channel and returns a PubSub instance for receiving messages.
 func (b *broker) Subscribe(ctx context.Context, channel, chatroom string) (*redis.PubSub, error) {
-	pubsub := b.client.Subscribe(ctx, channel)
+	pubsub := b.client.Subscribe(ctx, channel, chatroom)
 	_, err := pubsub.Receive(ctx)
 	if err != nil {
 		b.logger.Error("Failed to subscribe to channel", zap.String("channel", channel))

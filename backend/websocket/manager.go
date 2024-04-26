@@ -115,8 +115,6 @@ func (m *manager) Shutdown() error {
 }
 
 func (m *manager) upgradeHandler(w http.ResponseWriter, r *http.Request) {
-
-	m.logger.Info("Websocket connection established")
 	ids := ids{
 		chatroomId: r.URL.Query().Get("chatroomId"),
 		channelId:  r.URL.Query().Get("channelId"),
@@ -151,8 +149,6 @@ func (m *manager) upgradeHandler(w http.ResponseWriter, r *http.Request) {
 
 	m.addClient(client)
 	defer m.removeClient(client)
-
-	//What we could do is to make a lookup in the chatroom map and then match ids in the client map and use the sendChannels to send activity messages to all of the clients in the chatroom
 
 	client.run(m)
 }
@@ -192,49 +188,17 @@ func (m *manager) removeClient(c *client) {
 }
 
 type activeUsersCallback interface {
-	notifyChatroomClients(chatroomId string)
+	getChatroomClients(chatroomId string) []string
 }
 
-// FIXME: This right here is a massive race condition with how it works right now
-// Create a callback function we can pass to the run function
-func (m *manager) notifyChatroomClients(chatroomId string) {
+func (m *manager) getChatroomClients(chatroomId string) []string {
 	m.logger.Info("Callback function called")
 	//Locate all clients in the chatroom
 	m.mu.RLock()
+	defer m.mu.RUnlock()
 
 	chatroomClients := m.chatroomClients[chatroomId]
 	m.logger.Info("Chatroom clients", zap.Any("clients", chatroomClients))
 
-	//Create slice of clients by looking up the client map
-	clients := make([]*client, 0, len(chatroomClients))
-	for _, id := range chatroomClients {
-		clients = append(clients, m.clients[id])
-	}
-	m.mu.RUnlock()
-
-	//Create packet to send to the client
-	//Marshal message into packet
-	responsePacket, err := MarshalPacket(Packet[ActivityEvent]{
-		Kind: "3",
-		Payload: ActivityEvent{
-			ActiveUsers: chatroomClients,
-		},
-	})
-	if err != nil {
-		m.logger.Error("Failed to marshal packet", zap.Error(err))
-		return
-	}
-
-	//This here doesn't work
-	for _, client := range clients {
-		m.logger.Info("Sending activity message to client")
-		select {
-		case client.conn.sendChannel <- responsePacket:
-			// The send operation was successful
-		default:
-			// The send operation was not successful
-			m.logger.Info("Failed to send message to client")
-		}
-	}
-
+	return chatroomClients
 }
