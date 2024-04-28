@@ -6,13 +6,7 @@ import (
 
 	"github.com/dietzy1/chatapp/service"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
-
-func (r *repository) CreateMessage(ctx context.Context, msg service.CreateMessage) (service.Message, error) {
-
-	return service.Message{}, nil
-}
 
 const database = "Message-Database"
 
@@ -22,13 +16,18 @@ func (r *repository) GetMessages(ctx context.Context, chatroomId, channelId stri
 
 	messages := []service.Message{}
 
-	//find 50 latests messages based on entry to database
-	//Use sort and setlimit operator
+	pipeline := bson.A{
+		bson.M{"$match": bson.M{"channelId": channelId}},
+		bson.M{"$sort": bson.M{"_id": -1}},
+		bson.M{"$limit": 50},
+		bson.M{"$sort": bson.M{"_id": 1}}, // Add this stage to reverse the order
+	}
 
-	cursor, err := collection.Find(ctx, bson.M{"channelId": channelId}, options.Find().SetSort(bson.M{"timestamp": -1}).SetLimit(50))
+	cursor, err := collection.Aggregate(ctx, pipeline)
 	if err != nil {
 		return messages, err
 	}
+
 	defer cursor.Close(ctx)
 
 	if err = cursor.All(ctx, &messages); err != nil {

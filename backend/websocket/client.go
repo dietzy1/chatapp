@@ -139,15 +139,14 @@ func (c *client) handleEvents(ch <-chan *redis.Message) {
 				return
 			}
 
-			//Unmarshal into packet
 			packet, err := UnmarshalPacket[service.CreateMessage](msg)
 			if err != nil {
 				c.logger.Error("Failed to unmarshal packet", zap.Error(err))
 				return
 			}
 
-			//Call the message service to create a message
 			response, err := c.messageService.CreateMessage(context.TODO(), service.CreateMessage{
+				Kind:       packet.Payload.Kind,
 				ChannelId:  packet.Payload.ChannelId,
 				ChatroomId: packet.Payload.ChatroomId,
 				UserId:     packet.Payload.UserId,
@@ -159,10 +158,10 @@ func (c *client) handleEvents(ch <-chan *redis.Message) {
 				return
 			}
 
-			//Marshal message into packet
 			responsePacket, err := MarshalPacket(Packet[service.Message]{
 				Kind: RecieveMessageKind,
 				Payload: service.Message{
+					Kind:       response.Kind,
 					MessageId:  response.MessageId,
 					ChannelId:  response.ChannelId,
 					ChatroomId: response.ChatroomId,
@@ -180,12 +179,6 @@ func (c *client) handleEvents(ch <-chan *redis.Message) {
 				c.logger.Error("Failed to publish message", zap.Error(err))
 				return
 			}
-
-			//check if userID is same as Author ID -- to avoid duplicate messages
-			//TODO: why the fuck does this code exist?
-			/* if c.ids.user != message.AuthorUuid {
-				c.conn.sendChannel <- message1
-			} */
 
 		//Handle messages recieved from the redis broker
 		case msg, ok := <-ch:

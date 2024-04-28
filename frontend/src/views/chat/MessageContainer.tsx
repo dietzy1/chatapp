@@ -77,7 +77,7 @@ function MessageContainer(): JSX.Element {
                       : "left"
                   }
                 />
-                <GifMessage />
+                {/* <GifMessage /> */}
               </React.Fragment>
             ))}
             <div ref={scrollRef} style={{ height: 1 }} />

@@ -137,6 +137,7 @@ const useWrappedWebsocket = () => {
           content: content,
         },
       };
+      console.log(packet);
       sendJsonMessage(packet);
     },
     [

@@ -91,6 +91,7 @@ func (m *messageService) CreateMessage(ctx context.Context, msg CreateMessage) (
 	}
 
 	message := Message{
+		Kind:       msg.Kind,
 		MessageId:  uuid.New().String(),
 		ChannelId:  msg.ChannelId,
 		ChatroomId: msg.ChatroomId,
