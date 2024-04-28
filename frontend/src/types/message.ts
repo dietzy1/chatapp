@@ -1,4 +1,5 @@
 export interface CreateMessage {
+  kind: "MESSAGE" | "GIF";
   channelId: string;
   chatroomId: string;
   userId: string;
@@ -6,6 +7,7 @@ export interface CreateMessage {
 }
 
 export interface Message {
+  kind: "MESSAGE" | "GIF";
   messageId: string;
   channelId: string;
   chatroomId: string;

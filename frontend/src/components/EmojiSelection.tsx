@@ -8,7 +8,11 @@ import "./EmojiSelection.css";
 
 import EmojiPicker, { Theme } from "emoji-picker-react";
 
-function EmojiSelection() {
+interface EmojiSelectionProps {
+  handleAppendEmoji: (emoji: string) => void;
+}
+
+function EmojiSelection({ handleAppendEmoji }: EmojiSelectionProps) {
   return (
     <>
       <DropdownMenu>
@@ -21,7 +25,11 @@ function EmojiSelection() {
           sideOffset={10}
           alignOffset={-65}
         >
-          <EmojiPicker autoFocusSearch={false} theme={Theme.DARK} />
+          <EmojiPicker
+            onEmojiClick={(emoji) => handleAppendEmoji(emoji.emoji)}
+            autoFocusSearch={false}
+            theme={Theme.DARK}
+          />
         </DropdownMenuContent>
       </DropdownMenu>
     </>

@@ -21,6 +21,7 @@ function TenorSelection() {
         alignOffset={-100}
       >
         <GifPicker
+          onGifClick={(gif) => console.log(gif)}
           autoFocusSearch={false}
           theme={Theme.AUTO}
           tenorApiKey={"AIzaSyC4wcn4aGp48kxSjBeNqAtP_rAAO480ANo"}

@@ -1,6 +1,4 @@
-import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
@@ -13,9 +11,7 @@ import {
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface ChannelHeaderDropdownProps {}
-
-function ChannelHeaderDropdown({}: ChannelHeaderDropdownProps) {
+function ChannelHeaderDropdown() {
   return (
     <>
       <DropdownMenuContent className="w-56">

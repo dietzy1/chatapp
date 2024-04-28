@@ -21,6 +21,14 @@ function MessageInput(): JSX.Element {
     }
   };
 
+  const handleAppendEmoji = (emoji: string) => {
+    setInput((prevInput) => prevInput + emoji);
+  };
+
+  const handleGifClick = (gif: string) => {
+    setInput((prevInput) => prevInput + gif);
+  };
+
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       handleSendMessage();
@@ -73,7 +81,7 @@ function MessageInput(): JSX.Element {
           value={input}
           onChange={(event) => setInput(event.target.value)}
           onKeyDown={handleKeyPress}
-          EmojiPicker={<EmojiSelection />}
+          EmojiPicker={<EmojiSelection handleAppendEmoji={handleAppendEmoji} />}
           TenorPicker={<TenorSelection />}
         />
 
