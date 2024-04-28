@@ -15,18 +15,18 @@ function MessageInput(): JSX.Element {
   const handleSendMessage = () => {
     if (input.trim() !== "") {
       console.log(input);
-      sendMessage(input);
+      sendMessage("MESSAGE", input);
 
       setInput("");
     }
   };
 
-  const handleAppendEmoji = (emoji: string) => {
-    setInput((prevInput) => prevInput + emoji);
+  const handleSendGif = (url: string) => {
+    sendMessage("GIF", url);
   };
 
-  const handleGifClick = (gif: string) => {
-    setInput((prevInput) => prevInput + gif);
+  const handleAppendEmoji = (emoji: string) => {
+    setInput((prevInput) => prevInput + emoji);
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -82,7 +82,7 @@ function MessageInput(): JSX.Element {
           onChange={(event) => setInput(event.target.value)}
           onKeyDown={handleKeyPress}
           EmojiPicker={<EmojiSelection handleAppendEmoji={handleAppendEmoji} />}
-          TenorPicker={<TenorSelection />}
+          TenorPicker={<TenorSelection handleSendGif={handleSendGif} />}
         />
 
         <div className="rounded-sm p-2 hover:bg-muted">

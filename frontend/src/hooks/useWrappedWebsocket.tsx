@@ -8,6 +8,7 @@ import {
   CreateMessage,
   Message,
   InitialMessages,
+  Kind,
 } from "@/types/message";
 
 import { useState, useCallback, useEffect } from "react";
@@ -113,7 +114,7 @@ const useWrappedWebsocket = () => {
 
   //Wrap sendJsonMessage
   const sendMessage = useCallback(
-    (content: string) => {
+    (kind: Kind, content: string) => {
       //If either the selected channel or chatroom is null, return
       if (!store.selectedChannel || !store.selectedChatroom) {
         console.error("No selected channel or chatroom");
@@ -127,7 +128,9 @@ const useWrappedWebsocket = () => {
 
       const packet: Packet = {
         kind: MessageKind.CreateMessageKind,
+
         payload: {
+          kind: kind,
           channelId: store.selectedChannel?.channelId,
           chatroomId: store.selectedChatroom?.chatroomId,
           userId: data?.user.userId,

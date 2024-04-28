@@ -8,7 +8,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-function TenorSelection() {
+interface TenorSelectionProps {
+  handleSendGif: (url: string) => void;
+}
+
+function TenorSelection({ handleSendGif }: TenorSelectionProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -21,7 +25,7 @@ function TenorSelection() {
         alignOffset={-100}
       >
         <GifPicker
-          onGifClick={(gif) => console.log(gif)}
+          onGifClick={(gif) => handleSendGif(gif.url)}
           autoFocusSearch={false}
           theme={Theme.AUTO}
           tenorApiKey={"AIzaSyC4wcn4aGp48kxSjBeNqAtP_rAAO480ANo"}
