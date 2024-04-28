@@ -1,0 +1,10 @@
+.EmojiPickerReact.epr-dark-theme {
+    --epr-bg-color: hsl(var(--background));
+    --epr-category-label-bg-color: hsl(var(--background));
+    --epr-hover-bg-color: hsl(var(--muted));
+    --epr-text-color: hsl(var(--text-color));
+    --epr-search-input-bg-color: hsl(var(--muted));
+    --epr-search-input-bg-color-active: hsl(var(--muted));
+    --epr-highlight-color: hsl(var(--primary));
+    --epr-picker-border-color: hsl(var(--muted));
+}

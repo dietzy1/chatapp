@@ -1,16 +1,16 @@
 import * as React from "react";
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { LucideIcon } from "lucide-react";
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
-  Icon?: LucideIcon; // Add an icon prop
+  TenorPicker?: ReactNode;
+  EmojiPicker?: ReactNode; // Add an icon prop
   Node?: ReactNode;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, Icon, Node, ...props }, ref) => {
+  ({ className, type, TenorPicker, EmojiPicker, Node, ...props }, ref) => {
     return (
       <div className="relative flex flex-grow items-center">
         <input
@@ -22,9 +22,15 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           {...props}
         />
-        {Icon && (
-          <div className="absolute right-3">
-            <Icon className="text-foreground" />
+        {TenorPicker && (
+          <div className="absolute right-12 p-2 hover:bg-muted  ">
+            {TenorPicker}
+          </div>
+        )}
+
+        {EmojiPicker && (
+          <div className="absolute right-3 rounded-sm p-2 hover:bg-muted">
+            {EmojiPicker}
           </div>
         )}
         {Node && <div className="absolute right-3">{Node}</div>}

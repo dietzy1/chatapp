@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
-import { SendHorizontal, ThumbsUp, Smile, CommandIcon } from "lucide-react";
+import { SendHorizontal, ThumbsUp, CommandIcon } from "lucide-react";
 import { Input } from "./ui/input";
 import useWidthStore from "@/stores/widthStore";
 import useWrappedWebsocket from "@/hooks/useWrappedWebsocket";
+import TenorSelection from "./TenorSelection";
+import EmojiSelection from "./EmojiSelection";
 
 function MessageInput(): JSX.Element {
   const [input, setInput] = useState<string>("");
@@ -53,13 +55,11 @@ function MessageInput(): JSX.Element {
   const cardWidth = useWidthStore((state) => state.widths.middleWidth);
   const style = cardWidth ? { width: `${cardWidth}px` } : {};
 
-  //  const { format } = useFormatMessage();
-
   return (
     <>
       <div
         style={style}
-        className="flex  items-center  justify-center space-x-2"
+        className="flex  items-center  justify-center space-x-2 "
       >
         <div className="hidden items-center justify-center rounded-sm p-1 hover:bg-muted sm:flex">
           <CommandIcon />
@@ -73,14 +73,18 @@ function MessageInput(): JSX.Element {
           value={input}
           onChange={(event) => setInput(event.target.value)}
           onKeyDown={handleKeyPress}
-          Icon={Smile}
+          EmojiPicker={<EmojiSelection />}
+          TenorPicker={<TenorSelection />}
         />
 
-        <div className="rounded-full p-1 hover:bg-muted">
+        <div className="rounded-sm p-2 hover:bg-muted">
           {input.length > 0 ? (
-            <SendHorizontal onClick={handleSendMessage} />
+            <SendHorizontal className="h-5 w-5" onClick={handleSendMessage} />
           ) : (
-            <ThumbsUp className="" onClick={() => console.log("hello")} />
+            <ThumbsUp
+              className="h-5 w-5"
+              onClick={() => console.log("hello")}
+            />
           )}
         </div>
       </div>

@@ -26,9 +26,8 @@ export const TracingBeam = ({
   useEffect(() => {
     if (contentRef.current) {
       setSvgHeight(contentRef.current.offsetHeight);
-      console.log(contentRef.current.offsetHeight);
     }
-  }, []);
+  }, [children]);
 
   const y1 = useSpring(
     useTransform(scrollYProgress, [0, 0.4], [50, svgHeight]),
@@ -48,9 +47,9 @@ export const TracingBeam = ({
   return (
     <motion.div
       ref={ref}
-      className={cn("relative mx-auto h-full w-full max-w-4xl", className)}
+      className={cn("relative mx-auto h-full w-full p-16", className)}
     >
-      <div className="absolute -left-4 top-3 md:-left-20">
+      <div className="absolute left-0">
         <motion.div
           transition={{
             duration: 0.2,

@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 
 import Header from "@/components/Header";
 
@@ -44,7 +44,9 @@ function MessageContainer(): JSX.Element {
     [users],
   );
 
-  //Now we want to add timestamps inbetween messages if there is a day difference between them
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages]);
 
   return (
     <>
@@ -53,7 +55,11 @@ function MessageContainer(): JSX.Element {
         className="flex h-[90vh] flex-grow flex-col rounded-lg bg-background "
       >
         <Header />
-        <div ref={targetElementRef} className="flex  overflow-y-auto p-10">
+
+        <div
+          ref={targetElementRef}
+          className="flex flex-col overflow-y-auto p-4"
+        >
           <TracingBeam scrollContainerRef={targetElementRef}>
             {messages.length === 0 && <MessageLoading />}
             {messages.map((value) => (
@@ -72,7 +78,7 @@ function MessageContainer(): JSX.Element {
                 />
               </React.Fragment>
             ))}
-            <div ref={scrollRef}></div>
+            <div ref={scrollRef} style={{ height: 1 }} />
           </TracingBeam>
         </div>
       </div>

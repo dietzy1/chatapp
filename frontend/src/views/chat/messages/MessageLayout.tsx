@@ -1,7 +1,7 @@
 import MessageHeader from "./MessageHeader";
 //import { DotsVerticalIcon } from "@radix-ui/react-icons";
 import MessageContent from "./MessageContent";
-import { Message } from "@/types/message";
+import { CompressedMessages } from "@/types/message";
 import { User } from "@/types/user";
 import timeFormatter from "./TimeFormatter";
 import AnimatedTooltip from "@/components/ui/animated-tooltip";
@@ -15,7 +15,7 @@ import AnimatedTooltip from "@/components/ui/animated-tooltip";
 // ----january 25th 2021------
 
 interface MessageLayoutProps {
-  message: Message;
+  message: CompressedMessages;
   user: User;
   align: "left" | "right";
 }
