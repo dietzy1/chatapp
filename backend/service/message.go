@@ -19,10 +19,18 @@ import (
 	optional string updated_at = 7;
   } */
 
+type Kind string
+
+const (
+	MESSAGE Kind = "MESSAGE"
+	GIF     Kind = "GIF"
+)
+
 //fix for later perhabs: https://gist.github.com/SupaHam/3afe982dc75039356723600ccc91ff77
 
 // Mongo doesn't like the UUID type, so we'll use string instead
 type Message struct {
+	Kind       Kind   `json:"kind" bson:"kind"`
 	MessageId  string `json:"messageId" bson:"messageId"`
 	ChannelId  string `json:"channelId" bson:"channelId"`
 	ChatroomId string `json:"chatroomId" bson:"chatroomId"`
@@ -64,6 +72,7 @@ func (m *messageService) GetMessages(ctx context.Context, chatroomId, channelId 
 }
 
 type CreateMessage struct {
+	Kind       Kind   `json:"kind"`
 	ChannelId  string `json:"channelId"`
 	ChatroomId string `json:"chatroomId"`
 	UserId     string `json:"userId"`
@@ -75,6 +84,10 @@ func (m *messageService) CreateMessage(ctx context.Context, msg CreateMessage) (
 	//Confirm if the message is empty
 	if msg.Content == "" || msg.UserId == "" || msg.ChatroomId == "" || msg.ChannelId == "" {
 		return Message{}, fmt.Errorf("message cannot be empty")
+	}
+
+	if msg.Kind != MESSAGE && msg.Kind != GIF {
+		return Message{}, fmt.Errorf("Message kind must be either MESSAGE or GIF")
 	}
 
 	message := Message{
