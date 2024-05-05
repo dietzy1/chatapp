@@ -1,9 +1,7 @@
-import { Icon } from "./icon";
-
 export interface User {
   userId: string;
   username: string;
-  icon: Icon;
+  iconSrc: string;
   description: string;
   joinDate: string;
   verified: boolean;

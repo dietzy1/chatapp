@@ -41,13 +41,7 @@ function Register() {
                   <img
                     alt="Your avatar"
                     className="object-cover"
-                    height="200"
-                    src="https://emojiisland.com/cdn/shop/products/Very_Angry_Emoji_7f7bb8df-d9dc-4cda-b79f-5453e764d4ea_large.png?v=1571606036"
-                    style={{
-                      aspectRatio: "200/200",
-                      objectFit: "cover",
-                    }}
-                    width="200"
+                    src="https://emojicdn.elk.sh/🥸"
                   />
                 </div>
                 <Button className="" variant="outline">

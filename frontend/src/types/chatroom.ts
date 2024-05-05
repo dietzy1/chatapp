@@ -1,10 +1,8 @@
-import { Icon } from "./icon";
-
 export interface Chatroom {
   chatroomId: string;
   name: string;
   description: string;
-  icon: Icon;
+  iconSrc: string;
   admin: string;
   channels: Channel[];
 }

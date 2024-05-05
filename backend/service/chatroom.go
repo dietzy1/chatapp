@@ -11,7 +11,7 @@ import (
 type Chatroom struct {
 	ChatroomId uuid.UUID
 	Name       string
-	Icon       Icon
+	IconSrc    string
 	OwnerId    uuid.UUID
 	Channels   []Channel
 }

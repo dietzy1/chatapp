@@ -42,6 +42,7 @@ function Landing() {
               <ArrowRightIcon className="h-6 w-6 " />
             </div>
           </button>
+
           <button
             className="z-10 transform rounded-full border border-neutral-400 bg-black px-12 py-4 font-bold uppercase tracking-widest text-white  transition-colors duration-200 hover:scale-105 hover:bg-orange-600"
             onClick={handleGoToLogin}

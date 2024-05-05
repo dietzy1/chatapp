@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react";
 import useChannels from "@/hooks/useChannels";
 import React from "react";
 import SelectChannel from "./SelectChannel";
+import ChannelLoading from "./ChannelLoading";
 
 function ChannelsContainer() {
   const channels = useChannels(); //use the value from the store to call the API for channels
@@ -18,8 +19,7 @@ function ChannelsContainer() {
         <div className="my-4 ml-3 flex flex-row">
           {/* <div className="ml-2 flex flex-row"> */}
           <ChevronDown className="mr-2 h-5 w-5 text-white " />
-          <div className="text-gray-500">CHANNELS</div>
-          {/* </div> */}
+          <div className="tracking-widest text-gray-500 ">CHANNELS</div>
         </div>
 
         <div className="ml-3 space-y-3 overflow-y-auto">
@@ -28,6 +28,10 @@ function ChannelsContainer() {
               <SelectChannel channel={value} />
             </React.Fragment>
           ))}
+
+          {
+            channels.length === 0 && <ChannelLoading /> // Assuming ChannelLoading is your placeholder
+          }
         </div>
       </div>
     </>

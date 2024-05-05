@@ -6,7 +6,6 @@ import (
 
 	"github.com/dietzy1/chatapp/broker"
 	"github.com/dietzy1/chatapp/cache"
-	"github.com/dietzy1/chatapp/clients"
 	"github.com/dietzy1/chatapp/repository"
 	"github.com/dietzy1/chatapp/server"
 	"github.com/dietzy1/chatapp/websocket"
@@ -23,7 +22,6 @@ type Config struct {
 
 	//Not done yet
 	Cache cache.Config
-	Cdn   clients.Config
 }
 
 func New(logger *zap.Logger) (*Config, error) {
@@ -52,13 +50,7 @@ func New(logger *zap.Logger) (*Config, error) {
 		},
 
 		Cache: cache.Config{},
-		Cdn: clients.Config{
-			PublicKey:   "public_123",
-			PrivateKey:  "private_123",
-			UrlEndpoint: "https://cdn.example.com",
-		},
 	}, nil
-
 }
 
 // reads the .env file and sets the environment variables, if the file is not found, it will log an error and the program will default to injected production variables.

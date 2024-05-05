@@ -3,11 +3,39 @@ import { Skeleton } from "@/components/ui/skeleton";
 function ActivityLoading() {
   return (
     <>
-      <div className="mb-2 flex flex-row items-center gap-x-4 rounded-sm hover:bg-muted">
-        <div className="relative m-2">
-          <Skeleton className="h-[50px] w-[50px] rounded-full" />
-          <div className="text-foreground">
-            <Skeleton className="w-[100px]" />
+      <div className="flex w-full grow flex-col items-start gap-2">
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[100px]" />
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[110px]" />
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[70px]" />
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[100px]" />
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-4">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[80px]" />
           </div>
         </div>
       </div>

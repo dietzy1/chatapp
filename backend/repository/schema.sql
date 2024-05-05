@@ -2,18 +2,10 @@ DO $$ BEGIN
 
 -- One to many relation with both users and chatrooms
 CREATE TABLE IF NOT EXISTS
-  icons (
-    icon_id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
-    kind VARCHAR(255) NOT NULL,
-    link VARCHAR(255) NOT NULL,
-    is_default BOOLEAN NOT NULL
-  );
-
-CREATE TABLE IF NOT EXISTS
   users (
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     username VARCHAR(255) NOT NULL,
-    icon_id UUID REFERENCES icons (icon_id) NOT NULL,
+    icon_src VARCHAR(255) NOT NULL,
     user_description VARCHAR(255) NOT NULL,
     join_date DATE DEFAULT CURRENT_DATE NOT NULL,
     verified BOOLEAN NOT NULL DEFAULT false
@@ -30,7 +22,7 @@ CREATE TABLE IF NOT EXISTS
   chatrooms (
     chatroom_id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     chatroom_name VARCHAR(255) NOT NULL,
-    icon_id UUID NOT NULL REFERENCES icons (icon_id),
+    icon_src VARCHAR(255) NOT NULL,
     owner_id UUID NOT NULL REFERENCES users (user_id)
   );_
 
@@ -50,3 +42,5 @@ CREATE TABLE IF NOT EXISTS
     PRIMARY KEY (chatroom_id, user_id)
   );
 
+-- End of schema
+END $$;

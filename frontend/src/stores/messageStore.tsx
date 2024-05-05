@@ -8,6 +8,12 @@ export interface MessageStore {
   clearMessages: () => void;
 }
 
+
+//New requirements:
+//There are two types of messages "MESSAGE" and "GIF" if we encounter a "GIF" message then we should not concatenate it with the previous message
+
+
+
 const useMessageStore = create<MessageStore>((set) => ({
   messages: [],
   addMessage: (newMessage) => {

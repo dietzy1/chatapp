@@ -19,6 +19,8 @@ function ActivityContainer() {
 
   const offline = data?.users.filter((user) => !activity.includes(user.userId));
 
+  const authenticated = false;
+
   return (
     <>
       <div
@@ -27,9 +29,12 @@ function ActivityContainer() {
       >
         <ActivityHeader />
         <div className="flex flex-col overflow-y-auto  p-2">
-          <div className="mt-5 pl-1.5">Online - {online?.length}</div>
+          <div className="mt-5 pl-1.5 tracking-widest ">
+            Online - {online?.length || 0}{" "}
+          </div>
 
-          {isLoading || (error && <ActivityLoading />)}
+          {isLoading || !authenticated || (error && <ActivityLoading />)}
+          {!authenticated && <ActivityLoading />}
 
           {online?.map((value) => (
             <React.Fragment key={value.userId}>
@@ -37,8 +42,11 @@ function ActivityContainer() {
             </React.Fragment>
           ))}
 
-          <div className="pl-1.5">Offline - {offline?.length}</div>
+          <div className="pl-1.5 tracking-widest ">
+            Offline - {offline?.length || 0}
+          </div>
           {isLoading || (error && <ActivityLoading />)}
+          {!authenticated && <ActivityLoading />}
           {offline?.map((value) => (
             <React.Fragment key={value.userId}>
               {<Offline user={value} />}

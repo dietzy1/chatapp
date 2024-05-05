@@ -14,8 +14,8 @@ function ChannelHeader() {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger>
-          <div className="flex h-16 items-center justify-between rounded-sm p-4 hover:bg-muted">
-            <span>{selectedChatroom?.name}</span>
+          <div className="flex h-16 items-center justify-between rounded-sm p-4 tracking-widest hover:bg-muted ">
+            <span>{selectedChatroom?.name || "Javascript haters"} </span>
             <ChevronDown className="h-5 w-5" />
             <ChannelHeaderDropdown />
           </div>

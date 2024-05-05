@@ -13,15 +13,17 @@ import SearchCommand from "./SearchCommand";
 import ChannelHeaderDropdown from "../leftbar/ChannelHeaderDropdown";
 
 function ActivityHeader() {
+  const isAuthenticated = false;
+
   return (
     <>
       <div className="flex flex-col">
         <div className="items mx-2 flex h-16 items-center justify-end">
           <SearchCommand />
 
-          <div className="rounded-sm p-2 hover:bg-muted">
+          {/*      <div className="rounded-sm p-2 hover:bg-muted">
             <GitHubLogoIcon className="h-5 w-5" />
-          </div>
+          </div> */}
 
           <div className="rounded-sm  hover:bg-muted">
             <ModeToggle />

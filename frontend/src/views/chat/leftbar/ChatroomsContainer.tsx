@@ -19,8 +19,12 @@ function ChatroomsContainer() {
 
         {/*         <Card className="flex flex-grow flex-col space-y-4 p-2 align-middle"> */}
         <div className=" flex-grow space-y-4 overflow-y-auto rounded-lg bg-background p-2 align-middle">
-          {isLoading || error ? (
+          {isLoading || error || !data ? (
             <>
+              <Skeleton className="h-14 w-14 rounded-sm" />
+              <Skeleton className="h-14 w-14 rounded-sm" />
+              <Skeleton className="h-14 w-14 rounded-sm" />
+              <Skeleton className="h-14 w-14 rounded-sm" />
               <Skeleton className="h-14 w-14 rounded-sm" />
               <Skeleton className="h-14 w-14 rounded-sm" />
               <Skeleton className="h-14 w-14 rounded-sm" />

@@ -19,13 +19,15 @@ function Chat(): JSX.Element {
     },
   });
 
+  //We need to hide certain easter eggs within all of the loading elements etc for example the github and linked in icons could we put as servers
+
   return (
     <>
       <div
         {...handlers}
-        className="flex h-screen max-h-screen flex-col bg-neutral-50 p-2 pb-1 dark:bg-black"
+        className=" flex h-[100vh] w-full flex-col bg-neutral-50 pb-1 dark:bg-black sm:p-2"
       >
-        <div className="flex flex-row space-x-2 ">
+        <div className="flex flex-row sm:space-x-2">
           <ChatroomContainer />
           <MessageContainer />
           <ActivityContainer />

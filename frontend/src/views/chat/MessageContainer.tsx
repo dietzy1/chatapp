@@ -11,7 +11,6 @@ import useMessageStore from "@/stores/messageStore";
 import useGetUsers from "@/api/endpoints/user/getUsers";
 import { User } from "@/types/user";
 import useGetUser from "@/api/endpoints/user/getUser";
-import GifMessage from "./messages/GifMessage";
 
 function MessageContainer(): JSX.Element {
   //const { format } = useFormatMessage();
@@ -53,7 +52,7 @@ function MessageContainer(): JSX.Element {
     <>
       <div
         ref={middleRef}
-        className="flex h-[90vh] flex-grow flex-col rounded-lg bg-background "
+        className="flex h-[90dvh] flex-grow flex-col rounded-lg bg-background "
       >
         <Header />
 
@@ -77,7 +76,6 @@ function MessageContainer(): JSX.Element {
                       : "left"
                   }
                 />
-                {/* <GifMessage /> */}
               </React.Fragment>
             ))}
             <div ref={scrollRef} style={{ height: 1 }} />
