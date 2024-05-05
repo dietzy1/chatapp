@@ -11,7 +11,7 @@ import (
 type User struct {
 	UserID      uuid.UUID
 	Username    string
-	Icon        Icon
+	IconSrc     string
 	Description string
 	JoinDate    string
 	Verified    bool
