@@ -10,6 +10,10 @@ generate:
 	@echo "Generating the code"
 	@cd protos && buf generate
 
+sqlc:
+	@echo "Generating the sqlc code"
+	@cd repository && sqlc generate
+
 format:
 	@echo "Formatting the code"
 	@cd protos buf format -w
