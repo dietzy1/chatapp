@@ -20,6 +20,10 @@ function Chat(): JSX.Element {
   });
 
   //We need to hide certain easter eggs within all of the loading elements etc for example the github and linked in icons could we put as servers
+  //Servers could be my skillsets
+  //Messages should contain an occational meme GIF
+  //Chatroom could be the typewriter effect?
+  
 
   return (
     <>

@@ -2,13 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/0x6flab/namegenerator"
 	"github.com/dietzy1/chatapp/broker"
 	"github.com/dietzy1/chatapp/config"
 	"github.com/dietzy1/chatapp/repository"
@@ -20,18 +18,6 @@ import (
 )
 
 func main() {
-	generator := namegenerator.NewGenerator()
-
-	//generate multiple names
-	var names []string
-	for i := 0; i < 10; i++ {
-		names = append(names, generator.Generate())
-	}
-
-	fmt.Println(names)
-
-	//exit
-	os.Exit(0)
 
 	logger, err := zap.NewDevelopment()
 	if err != nil {

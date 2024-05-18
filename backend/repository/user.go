@@ -72,13 +72,9 @@ func (r *repository) GetUser(ctx context.Context, userID uuid.UUID) (service.Use
 		UserID:      user.UserID,
 		Username:    user.Username,
 		Description: user.UserDescription,
-		Icon: service.Icon{
-			IconId: user.IconID,
-			Link:   user.Link.String,
-			Kind:   user.Kind.String,
-		},
-		JoinDate: user.JoinDate.Time.String(),
-		Verified: user.Verified,
+		IconSrc:     "",
+		JoinDate:    user.JoinDate.Time.String(),
+		Verified:    user.Verified,
 	}, nil
 }
 
@@ -95,13 +91,9 @@ func (r *repository) GetUsers(ctx context.Context, chatroomID uuid.UUID) ([]serv
 			UserID:      v.UserID,
 			Username:    v.Username,
 			Description: v.UserDescription,
-			Icon: service.Icon{
-				IconId: v.IconID,
-				Link:   v.IconLink.String,
-				Kind:   v.IconKind.String,
-			},
-			JoinDate: v.JoinDate.Time.String(),
-			Verified: v.Verified,
+			IconSrc:     "",
+			JoinDate:    v.JoinDate.Time.String(),
+			Verified:    v.Verified,
 		}
 
 		userSlice = append(userSlice, user)

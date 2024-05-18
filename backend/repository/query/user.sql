@@ -1,24 +1,20 @@
 -- name: CreateUser :one
 INSERT INTO
-    users (username, user_description, icon_id)
+    users (username, user_description, icon_src)
 VALUES
     ($1, $2, $3)
 RETURNING
     user_id;
 
--- name: GetUserAndIcon :one
+-- name: GetUser :one
 SELECT
-    u.user_id,
-    u.username,
-    CAST(i.icon_id AS UUID) AS icon_id,
-    i.link,
-    i.kind,
-    i.is_default,
-    u.user_description,
-    u.join_date,
-    u.verified
+    user_id,
+    username,
+    icon_src,
+    user_description,
+    join_date,
+    verified
 FROM
-    users u
-    LEFT JOIN icons i ON u.icon_id = i.icon_id
+    users
 WHERE
     u.user_id = $1;

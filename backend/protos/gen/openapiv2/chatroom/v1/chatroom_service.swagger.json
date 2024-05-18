@@ -96,8 +96,8 @@
         "name": {
           "type": "string"
         },
-        "icon": {
-          "$ref": "#/definitions/v1Icon"
+        "iconSrc": {
+          "type": "string"
         },
         "ownerId": {
           "type": "string"
@@ -120,20 +120,6 @@
             "type": "object",
             "$ref": "#/definitions/v1Chatroom"
           }
-        }
-      }
-    },
-    "v1Icon": {
-      "type": "object",
-      "properties": {
-        "iconId": {
-          "type": "string"
-        },
-        "link": {
-          "type": "string"
-        },
-        "kind": {
-          "type": "string"
         }
       }
     }

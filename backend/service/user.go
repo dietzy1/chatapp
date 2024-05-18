@@ -28,26 +28,21 @@ func NewUserService(logger *zap.Logger, repo UserRepo) *userService {
 }
 
 type UserRepo interface {
-	CreateUser(ctx context.Context, username, description string, iconId uuid.UUID) (uuid.UUID, uuid.UUID, error)
+	CreateUser(ctx context.Context, username, description, iconSrc string) (uuid.UUID, uuid.UUID, error)
 	GetUser(ctx context.Context, userID uuid.UUID) (User, error)
 	GetUsers(ctx context.Context, chatroomID uuid.UUID) ([]User, error)
 }
 
-func (u *userService) CreateUser(ctx context.Context, username, description, iconId string) (string, string, error) {
+func (u *userService) CreateUser(ctx context.Context, username, description, IconSrc string) (string, string, error) {
 
-	if username == "" || description == "" || iconId == "" {
-		u.logger.Info("Recieved the following values", zap.String("username", username), zap.String("description", description), zap.String("iconId", iconId))
-		return "", "", fmt.Errorf("username, description or iconID cannot be empty")
-	}
-
-	//parse iconId into uuid
-	iconUUID, err := uuid.Parse(iconId)
-	if err != nil {
-		return "", "", fmt.Errorf("failed to parse iconID: %w", err)
+	if username == "" || description == "" || IconSrc == "" {
+		u.logger.Info("Recieved the following values", zap.String("username", username), zap.String("description", description), zap.String("iconSrc", IconSrc))
+		return "", "", fmt.Errorf("username, description or iconSrc cannot be empty")
 	}
 
 	//Verified being true means that a lookup is possible in the auth table
-	userId, sessionToken, err := u.repo.CreateUser(ctx, username, description, iconUUID)
+	userId, sessionToken, err := u.repo.CreateUser(ctx, username, description,
+		IconSrc)
 	if err != nil {
 		return "", "", err
 	}

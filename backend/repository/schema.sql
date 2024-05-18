@@ -1,4 +1,5 @@
-DO $$ BEGIN
+DO $$ 
+BEGIN
 
 -- One to many relation with both users and chatrooms
 CREATE TABLE IF NOT EXISTS
@@ -24,7 +25,7 @@ CREATE TABLE IF NOT EXISTS
     chatroom_name VARCHAR(255) NOT NULL,
     icon_src VARCHAR(255) NOT NULL,
     owner_id UUID NOT NULL REFERENCES users (user_id)
-  );_
+  );
 
 -- One to many relation with chatrooms
 CREATE TABLE IF NOT EXISTS

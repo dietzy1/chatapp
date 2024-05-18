@@ -27,12 +27,8 @@ func (h *handlers) GetChatrooms(ctx context.Context, req *pb.GetChatroomsRequest
 		pbchatrooms[i] = &pb.Chatroom{
 			ChatroomId: chatroom.ChatroomId.String(),
 			Name:       chatroom.Name,
-			Icon: &pb.Icon{
-				IconId: chatroom.Icon.IconId.String(),
-				Link:   chatroom.Icon.Link,
-				Kind:   chatroom.Icon.Kind,
-			},
-			OwnerId: chatroom.OwnerId.String(),
+			IconSrc:    chatroom.IconSrc,
+			OwnerId:    chatroom.OwnerId.String(),
 			Channels: func() []*pb.Channel {
 				pbchannels := make([]*pb.Channel, len(chatroom.Channels))
 				for j, channel := range chatroom.Channels {

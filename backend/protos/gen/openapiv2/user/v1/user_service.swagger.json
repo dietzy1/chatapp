@@ -147,7 +147,7 @@
         "description": {
           "type": "string"
         },
-        "iconId": {
+        "iconSrc": {
           "type": "string"
         }
       }
@@ -181,20 +181,6 @@
         }
       }
     },
-    "v1Icon": {
-      "type": "object",
-      "properties": {
-        "iconId": {
-          "type": "string"
-        },
-        "link": {
-          "type": "string"
-        },
-        "kind": {
-          "type": "string"
-        }
-      }
-    },
     "v1User": {
       "type": "object",
       "properties": {
@@ -204,8 +190,8 @@
         "username": {
           "type": "string"
         },
-        "icon": {
-          "$ref": "#/definitions/v1Icon"
+        "iconSrc": {
+          "type": "string"
         },
         "description": {
           "type": "string"

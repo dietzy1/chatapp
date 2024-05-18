@@ -20,7 +20,7 @@ type UserService interface {
 
 func (h *handlers) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 
-	userId, sessionToken, err := h.userService.CreateUser(ctx, req.Username, req.Description, req.IconId)
+	userId, sessionToken, err := h.userService.CreateUser(ctx, req.Username, req.Description, req.IconSrc)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create user: %v", err)
 	}
@@ -50,13 +50,9 @@ func (h *handlers) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.Get
 
 	return &pb.GetUserResponse{
 		User: &pb.User{
-			UserId:   user.UserID.String(),
-			Username: user.Username,
-			Icon: &pb.Icon{
-				IconId: user.Icon.IconId.String(),
-				Link:   user.Icon.Link,
-				Kind:   user.Icon.Kind,
-			},
+			UserId:      user.UserID.String(),
+			Username:    user.Username,
+			IconSrc:     user.IconSrc,
 			JoinDate:    user.JoinDate,
 			Description: user.Description,
 			Verified:    user.Verified,
@@ -74,13 +70,9 @@ func (h *handlers) GetUsers(ctx context.Context, req *pb.GetUsersRequest) (*pb.G
 	pbusers := make([]*pb.User, len(users))
 	for i, user := range users {
 		pbusers[i] = &pb.User{
-			UserId:   user.UserID.String(),
-			Username: user.Username,
-			Icon: &pb.Icon{
-				IconId: user.Icon.IconId.String(),
-				Link:   user.Icon.Link,
-				Kind:   user.Icon.Kind,
-			},
+			UserId:      user.UserID.String(),
+			Username:    user.Username,
+			IconSrc:     user.IconSrc,
 			JoinDate:    user.JoinDate,
 			Description: user.Description,
 			Verified:    user.Verified,

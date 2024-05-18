@@ -22,34 +22,21 @@ service UserService {
   rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {
     option (google.api.http) = {get: "/v1/users/{chatroom_id}"};
   }
-
-  /*   rpc VerifyUser(VerifyUserRequest) returns (VerifyUserResponse) {
-       option (google.api.http) = {
-         patch: "/v1/user/verify"
-         body: "*"
-       };
-     } */
 }
 
 message User {
   string user_id = 1;
   string username = 2;
-  Icon icon = 3;
+  string icon_src = 3;
   string description = 4;
   string join_date = 5;
   bool verified = 6;
 }
 
-message Icon {
-  string icon_id = 1;
-  string link = 2;
-  string kind = 3;
-}
-
 message CreateUserRequest {
   string username = 1;
   string description = 2;
-  string icon_id = 3;
+  string icon_src = 3;
 }
 
 //And a token

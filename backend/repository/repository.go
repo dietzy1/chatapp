@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	generated "github.com/dietzy1/chatapp/repository/sqlc"
@@ -85,4 +86,32 @@ func NewPostgres(c *Config) (*postgres, error) {
 		pool:  pool,
 		query: queries,
 	}, nil
+}
+
+const SCHEMA = "./repository/schema.sql"
+
+func (r *repository) Migrate() error {
+
+	//print working directory
+	pwd, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("failed to get working directory: %w", err)
+	}
+	fmt.Println(pwd)
+
+	//Read in the schema
+	schema, err := os.ReadFile(SCHEMA)
+	if err != nil {
+		return fmt.Errorf("failed to read schema from file: %w", err)
+	}
+
+	sql := string(schema)
+
+	//Use the schema to create the tables
+	_, err = r.postgres.pool.Exec(context.TODO(), sql)
+	if err != nil {
+		fmt.Println("Failed to create tables:", err)
+	}
+
+	return nil
 }

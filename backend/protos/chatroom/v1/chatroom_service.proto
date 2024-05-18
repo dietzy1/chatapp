@@ -13,16 +13,10 @@ service ChatroomService {
   }
 }
 
-message Icon {
-  string icon_id = 1;
-  string link = 2;
-  string kind = 3;
-}
-
 message Chatroom {
   string chatroom_id = 1;
   string name = 2;
-  Icon icon = 3;
+  string icon_src = 3;
   string owner_id = 4;
   repeated Channel channels = 5;
 }

@@ -40,12 +40,7 @@ func (r *repository) GetChatrooms(ctx context.Context, userId uuid.UUID) ([]serv
 			ChatroomId: v.ChatroomID,
 			Name:       v.ChatroomName,
 			OwnerId:    v.OwnerID,
-			Icon: service.Icon{
-				IconId: v.IconID,
-				Link:   v.IconLink,
-				Kind:   v.IconKind,
-			},
-			Channels: channelSlice,
+			Channels:   channelSlice,
 		}
 
 		chatroomSlice = append(chatroomSlice, chatroom)

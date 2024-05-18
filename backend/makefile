@@ -2,6 +2,10 @@ run:
 	@echo "Running the server"
 	@cd cmd && go run main.go
 
+migrate:
+	@echo "Running the migrations"
+	@go run cmd/migrate/main.go
+
 generate:
 	@echo "Generating the code"
 	@cd protos && buf generate

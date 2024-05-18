@@ -56,10 +56,6 @@ func New(logger *zap.Logger) (*Config, error) {
 // reads the .env file and sets the environment variables, if the file is not found, it will log an error and the program will default to injected production variables.
 func readEnvfile() {
 
-	//print current path
-	dir, _ := os.Getwd()
-	log.Println(dir)
-
 	//Read the .env file
 	err := godotenv.Load("./.env")
 	if err != nil {
