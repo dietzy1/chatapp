@@ -31,7 +31,7 @@ function UserInformation(): JSX.Element {
         style={style}
         className="hidden space-x-4 rounded-sm p-1 hover:bg-muted sm:flex"
       >
-        <img className="h-14 w-14" src={data?.user?.icon.link} />
+        <img className="h-14 w-14" src={data?.user?.iconSrc} />
         {/* <UserAvatar  width={14} height={14} /> */}
         <div className="flex flex-col">
           <div className="font-medium">{data?.user?.username}</div>

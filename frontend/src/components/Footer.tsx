@@ -1,4 +1,4 @@
-import { User } from "@/types/user";
+/* import { User } from "@/types/user";
 import AnimatedTooltip from "./ui/animated-tooltip";
 
 function Footer() {
@@ -56,4 +56,4 @@ function Footer() {
   );
 }
 
-export default Footer;
+export default Footer; */

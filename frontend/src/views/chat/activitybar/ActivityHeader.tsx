@@ -1,7 +1,7 @@
 import { ModeToggle } from "@/components/mode-toggle";
 import { Separator } from "@/components/ui/separator";
 
-import { GitHubLogoIcon } from "@radix-ui/react-icons";
+//import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { Settings } from "lucide-react";
 
 import {
@@ -13,8 +13,6 @@ import SearchCommand from "./SearchCommand";
 import ChannelHeaderDropdown from "../leftbar/ChannelHeaderDropdown";
 
 function ActivityHeader() {
-  const isAuthenticated = false;
-
   return (
     <>
       <div className="flex flex-col">

@@ -31,7 +31,7 @@ function SelectChatroom({ chatroom }: SelectChatroomProps): JSX.Element {
               ratio={1}
               className="item-center flex items-center justify-center"
             >
-              <img src={chatroom.icon.link} className="h-12 w-12 rounded-sm " />
+              <img src={chatroom.iconSrc} className="h-12 w-12 rounded-sm " />
             </AspectRatio>
           </div>
 

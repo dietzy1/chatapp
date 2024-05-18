@@ -61,7 +61,7 @@ export const TracingBeam = ({
                 ? "none"
                 : "rgba(0, 0, 0, 0.24) 0px 3px 8px",
           }}
-          className="border-netural-200 ml-[27px] flex h-4 w-4 items-center justify-center rounded-full border shadow-sm"
+          className="ml-[27px] flex h-4 w-4 items-center justify-center rounded-full border border-muted shadow-sm"
         >
           <motion.div
             transition={{

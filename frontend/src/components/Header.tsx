@@ -2,11 +2,12 @@ import { Separator } from "@/components/ui/separator";
 import useSelectedChatroomStore from "@/stores/selectedChatroomStore";
 import { HashIcon, ArrowLeft, ArrowRightIcon } from "lucide-react";
 import { Button } from "./ui/button";
+import useGetAuth from "@/api/endpoints/auth/getAuth";
 
 function Header(): JSX.Element {
   const { selectedChannel } = useSelectedChatroomStore();
 
-  const isAuthenticated = false;
+  const { data } = useGetAuth();
 
   return (
     <>
@@ -23,7 +24,7 @@ function Header(): JSX.Element {
             {selectedChannel?.name || "General"}
           </div>
 
-          {!isAuthenticated && (
+          {!data?.userId && (
             <>
               <div className="mr-4 flex items-center gap-x-6">
                 <span className="transform tracking-widest  transition-colors duration-200 hover:scale-105 hover:text-primary ">

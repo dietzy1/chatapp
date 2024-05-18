@@ -1,4 +1,3 @@
-import Footer from "./Footer";
 import { BackgroundBeams } from "./ui/background-beams";
 
 function BackgroundWrapper({ children }: { children: React.ReactNode }) {
@@ -8,7 +7,7 @@ function BackgroundWrapper({ children }: { children: React.ReactNode }) {
         <div className="flex h-full  grow flex-col items-center justify-center">
           {children}
         </div>
-        <Footer />
+        {/*         <Footer /> */}
         <BackgroundBeams />
       </div>
     </>

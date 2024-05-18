@@ -7,6 +7,7 @@ import React from "react";
 import useGetUsers from "@/api/endpoints/user/getUsers";
 import useActivityStore from "@/stores/activityStore";
 import ActivityLoading from "./activitybar/ActivityLoading";
+import useGetAuth from "@/api/endpoints/auth/getAuth";
 
 function ActivityContainer() {
   const rightbarRef = useRef<HTMLDivElement>(null);
@@ -19,7 +20,7 @@ function ActivityContainer() {
 
   const offline = data?.users.filter((user) => !activity.includes(user.userId));
 
-  const authenticated = false;
+  const { data: userID } = useGetAuth();
 
   return (
     <>
@@ -33,8 +34,8 @@ function ActivityContainer() {
             Online - {online?.length || 0}{" "}
           </div>
 
-          {isLoading || !authenticated || (error && <ActivityLoading />)}
-          {!authenticated && <ActivityLoading />}
+          {isLoading || !userID || (error && <ActivityLoading />)}
+          {!userID && <ActivityLoading />}
 
           {online?.map((value) => (
             <React.Fragment key={value.userId}>
@@ -46,7 +47,7 @@ function ActivityContainer() {
             Offline - {offline?.length || 0}
           </div>
           {isLoading || (error && <ActivityLoading />)}
-          {!authenticated && <ActivityLoading />}
+          {!userID && <ActivityLoading />}
           {offline?.map((value) => (
             <React.Fragment key={value.userId}>
               {<Offline user={value} />}
