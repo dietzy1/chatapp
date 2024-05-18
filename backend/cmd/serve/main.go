@@ -18,7 +18,6 @@ import (
 )
 
 func main() {
-
 	logger, err := zap.NewDevelopment()
 	if err != nil {
 		logger.Fatal("failed to initialize logger", zap.Error(err))
@@ -40,18 +39,6 @@ func main() {
 		logger.Fatal("failed to initialize broker", zap.Error(err))
 	}
 
-	//Cache layer
-	/* cache, err := cache.New(config.Cache)
-	if err != nil {
-		logger.Fatal("failed to initialize cache", zap.Error(err))
-	} */
-
-	//Broker layer
-
-	//Services
-
-	//iconService := service.NewIconService(logger, repository, cdn)
-
 	authService := service.NewAuthService(logger, repository)
 	chatroomService := service.NewChatroomService(logger, repository)
 	messageService := service.NewMessageService(logger, repository)
@@ -62,16 +49,13 @@ func main() {
 
 	websocketManager := websocket.NewManager(&config.Websocket, broker, messageService)
 
-	// Start the gRPC server in a separate goroutine
 	go func() {
 		if err := s.ListenAndServe(); err != nil {
-			// Handle gRPC server start error
 			logger.Fatal("failed to start server", zap.Error(err))
 		}
 	}()
 
 	go func() {
-		//Here I want to call the gateway server
 		if err := s.RunGateway(); err != nil {
 			logger.Fatal("failed to start gateway", zap.Error(err))
 		}
@@ -81,7 +65,6 @@ func main() {
 		if err := websocketManager.ListenAndServe(); err != nil {
 			logger.Fatal("failed to start websocket server", zap.Error(err))
 		}
-
 	}()
 
 	// Wait for the termination signal
@@ -95,7 +78,7 @@ func main() {
 	defer cancel()
 
 	// Start the graceful shutdown
-	//s.Stop(ctx)
+	s.Stop(ctx)
 	_ = ctx
 
 	logger.Info("Application gracefully stopped")

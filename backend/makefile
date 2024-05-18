@@ -1,6 +1,6 @@
 run:
 	@echo "Running the server"
-	@cd cmd && go run main.go
+	@go run cmd/serve/main.go
 
 migrate:
 	@echo "Running the migrations"

@@ -8,7 +8,6 @@ import (
 
 func main() {
 
-	//Add
 	logger, err := zap.NewDevelopment()
 	if err != nil {
 		logger.Fatal("failed to initialize logger", zap.Error(err))
@@ -25,7 +24,6 @@ func main() {
 		logger.Fatal("failed to initialize repository", zap.Error(err))
 	}
 
-	//Migrate database
 	if err := repository.Seed(); err != nil {
 		logger.Fatal("failed to migrate database", zap.Error(err))
 	}

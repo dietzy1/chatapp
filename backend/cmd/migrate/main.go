@@ -8,7 +8,6 @@ import (
 
 func main() {
 
-	//Add
 	logger, err := zap.NewDevelopment()
 	if err != nil {
 		logger.Fatal("failed to initialize logger", zap.Error(err))
