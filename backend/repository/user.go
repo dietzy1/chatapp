@@ -10,9 +10,9 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-const primaryChatroomId = "8611519d-97eb-425f-a384-7ec3b8344bc0"
+const primaryChatroomId = "75fa861d-45d0-48b5-b700-51254b0f0d62"
 
-func (r *repository) CreateUser(ctx context.Context, username, description string, iconId uuid.UUID) (uuid.UUID, uuid.UUID, error) {
+func (r *repository) CreateUser(ctx context.Context, username, description, iconSrc string) (uuid.UUID, uuid.UUID, error) {
 
 	tx, err := r.postgres.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
@@ -28,7 +28,7 @@ func (r *repository) CreateUser(ctx context.Context, username, description strin
 	userId, err := qtx.CreateUser(ctx, generated.CreateUserParams{
 		Username:        username,
 		UserDescription: description,
-		IconID:          iconId,
+		IconSrc:         iconSrc,
 	})
 	if err != nil {
 		return uuid.Nil, uuid.Nil, fmt.Errorf("failed to create user: %w", err)
@@ -63,7 +63,7 @@ func (r *repository) CreateUser(ctx context.Context, username, description strin
 
 func (r *repository) GetUser(ctx context.Context, userID uuid.UUID) (service.User, error) {
 
-	user, err := r.postgres.query.GetUserAndIcon(ctx, userID)
+	user, err := r.postgres.query.GetUser(ctx, userID)
 	if err != nil {
 		return service.User{}, fmt.Errorf("failed to get user: %w", err)
 	}
@@ -72,7 +72,7 @@ func (r *repository) GetUser(ctx context.Context, userID uuid.UUID) (service.Use
 		UserID:      user.UserID,
 		Username:    user.Username,
 		Description: user.UserDescription,
-		IconSrc:     "",
+		IconSrc:     user.IconSrc,
 		JoinDate:    user.JoinDate.Time.String(),
 		Verified:    user.Verified,
 	}, nil
@@ -91,7 +91,7 @@ func (r *repository) GetUsers(ctx context.Context, chatroomID uuid.UUID) ([]serv
 			UserID:      v.UserID,
 			Username:    v.Username,
 			Description: v.UserDescription,
-			IconSrc:     "",
+			IconSrc:     v.IconSrc,
 			JoinDate:    v.JoinDate.Time.String(),
 			Verified:    v.Verified,
 		}

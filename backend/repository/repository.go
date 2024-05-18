@@ -92,18 +92,12 @@ const SCHEMA = "./repository/schema.sql"
 
 func (r *repository) Migrate() error {
 
-	//print working directory
-	pwd, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("failed to get working directory: %w", err)
-	}
-	fmt.Println(pwd)
-
 	//Read in the schema
 	schema, err := os.ReadFile(SCHEMA)
 	if err != nil {
 		return fmt.Errorf("failed to read schema from file: %w", err)
 	}
+	//defer closeFile()
 
 	sql := string(schema)
 
@@ -114,4 +108,25 @@ func (r *repository) Migrate() error {
 	}
 
 	return nil
+}
+
+const SEED = "./repository/seed.sql"
+
+func (r *repository) Seed() error {
+
+	seed, err := os.ReadFile(SEED)
+	if err != nil {
+		return fmt.Errorf("failed to read schema from file: %w", err)
+	}
+
+	sql := string(seed)
+
+	//Use the schema to create the tables
+	_, err = r.postgres.pool.Exec(context.TODO(), sql)
+	if err != nil {
+		fmt.Println("Failed to create tables:", err)
+	}
+
+	return nil
+
 }

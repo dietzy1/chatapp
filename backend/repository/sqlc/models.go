@@ -18,7 +18,7 @@ type Channel struct {
 type Chatroom struct {
 	ChatroomID   uuid.UUID
 	ChatroomName string
-	IconID       uuid.UUID
+	IconSrc      string
 	OwnerID      uuid.UUID
 }
 
@@ -33,17 +33,10 @@ type Credential struct {
 	SessionToken uuid.UUID
 }
 
-type Icon struct {
-	IconID    uuid.UUID
-	Kind      string
-	Link      string
-	IsDefault bool
-}
-
 type User struct {
 	UserID          uuid.UUID
 	Username        string
-	IconID          uuid.UUID
+	IconSrc         string
 	UserDescription string
 	JoinDate        pgtype.Date
 	Verified        bool

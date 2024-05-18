@@ -9,7 +9,6 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const addUserToChatroom = `-- name: AddUserToChatroom :exec
@@ -67,13 +66,10 @@ SELECT
     c.chatroom_id,
     c.chatroom_name,
     c.owner_id,
-    CAST(c.icon_id AS UUID) as icon_id,
-    CAST(i.kind AS VARCHAR(255)) AS icon_kind,
-    CAST(i.link AS VARCHAR(255)) AS icon_link
+    c.icon_src
 FROM
     chatrooms c
     JOIN chatroom_users cu ON c.chatroom_id = cu.chatroom_id
-    LEFT JOIN icons i ON c.icon_id = i.icon_id
 WHERE
     cu.user_id = $1
 `
@@ -82,9 +78,7 @@ type GetChatroomsRow struct {
 	ChatroomID   uuid.UUID
 	ChatroomName string
 	OwnerID      uuid.UUID
-	IconID       uuid.UUID
-	IconKind     string
-	IconLink     string
+	IconSrc      string
 }
 
 func (q *Queries) GetChatrooms(ctx context.Context, userID uuid.UUID) ([]GetChatroomsRow, error) {
@@ -100,9 +94,7 @@ func (q *Queries) GetChatrooms(ctx context.Context, userID uuid.UUID) ([]GetChat
 			&i.ChatroomID,
 			&i.ChatroomName,
 			&i.OwnerID,
-			&i.IconID,
-			&i.IconKind,
-			&i.IconLink,
+			&i.IconSrc,
 		); err != nil {
 			return nil, err
 		}
@@ -118,46 +110,30 @@ const getUsersInChatroom = `-- name: GetUsersInChatroom :many
 SELECT
     u.user_id,
     u.username,
-    u.icon_id,
-    i.link AS icon_link,
-    i.kind AS icon_kind,
+    u.icon_src,
     u.user_description,
     u.join_date,
     u.verified
 FROM
     users u
-    LEFT JOIN icons i ON u.icon_id = i.icon_id
     INNER JOIN chatroom_users cu ON u.user_id = cu.user_id
 WHERE
     cu.chatroom_id = $1
 `
 
-type GetUsersInChatroomRow struct {
-	UserID          uuid.UUID
-	Username        string
-	IconID          uuid.UUID
-	IconLink        pgtype.Text
-	IconKind        pgtype.Text
-	UserDescription string
-	JoinDate        pgtype.Date
-	Verified        bool
-}
-
-func (q *Queries) GetUsersInChatroom(ctx context.Context, chatroomID uuid.UUID) ([]GetUsersInChatroomRow, error) {
+func (q *Queries) GetUsersInChatroom(ctx context.Context, chatroomID uuid.UUID) ([]User, error) {
 	rows, err := q.db.Query(ctx, getUsersInChatroom, chatroomID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetUsersInChatroomRow
+	var items []User
 	for rows.Next() {
-		var i GetUsersInChatroomRow
+		var i User
 		if err := rows.Scan(
 			&i.UserID,
 			&i.Username,
-			&i.IconID,
-			&i.IconLink,
-			&i.IconKind,
+			&i.IconSrc,
 			&i.UserDescription,
 			&i.JoinDate,
 			&i.Verified,

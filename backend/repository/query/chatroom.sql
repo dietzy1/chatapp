@@ -32,7 +32,6 @@ WHERE
 SELECT
     u.user_id,
     u.username,
-    u.icon_id,
     u.icon_src,
     u.user_description,
     u.join_date,

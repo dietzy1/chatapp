@@ -1,6 +1,5 @@
-DO $$ 
-BEGIN
-
+/* DO $$ 
+BEGIN */
 -- One to many relation with both users and chatrooms
 CREATE TABLE IF NOT EXISTS
   users (
@@ -44,4 +43,4 @@ CREATE TABLE IF NOT EXISTS
   );
 
 -- End of schema
-END $$;
+/* END $$; */

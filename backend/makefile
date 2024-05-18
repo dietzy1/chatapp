@@ -17,3 +17,7 @@ sqlc:
 format:
 	@echo "Formatting the code"
 	@cd protos buf format -w
+
+seed:
+	@echo "Seeding the database"
+	@go run cmd/seed/main.go

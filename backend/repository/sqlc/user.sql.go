@@ -9,12 +9,11 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO
-    users (username, user_description, icon_id)
+    users (username, user_description, icon_src)
 VALUES
     ($1, $2, $3)
 RETURNING
@@ -24,56 +23,37 @@ RETURNING
 type CreateUserParams struct {
 	Username        string
 	UserDescription string
-	IconID          uuid.UUID
+	IconSrc         string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (uuid.UUID, error) {
-	row := q.db.QueryRow(ctx, createUser, arg.Username, arg.UserDescription, arg.IconID)
+	row := q.db.QueryRow(ctx, createUser, arg.Username, arg.UserDescription, arg.IconSrc)
 	var user_id uuid.UUID
 	err := row.Scan(&user_id)
 	return user_id, err
 }
 
-const getUserAndIcon = `-- name: GetUserAndIcon :one
+const getUser = `-- name: GetUser :one
 SELECT
-    u.user_id,
-    u.username,
-    CAST(i.icon_id AS UUID) AS icon_id,
-    i.link,
-    i.kind,
-    i.is_default,
-    u.user_description,
-    u.join_date,
-    u.verified
+    user_id,
+    username,
+    icon_src,
+    user_description,
+    join_date,
+    verified
 FROM
-    users u
-    LEFT JOIN icons i ON u.icon_id = i.icon_id
+    users
 WHERE
-    u.user_id = $1
+    user_id = $1
 `
 
-type GetUserAndIconRow struct {
-	UserID          uuid.UUID
-	Username        string
-	IconID          uuid.UUID
-	Link            pgtype.Text
-	Kind            pgtype.Text
-	IsDefault       pgtype.Bool
-	UserDescription string
-	JoinDate        pgtype.Date
-	Verified        bool
-}
-
-func (q *Queries) GetUserAndIcon(ctx context.Context, userID uuid.UUID) (GetUserAndIconRow, error) {
-	row := q.db.QueryRow(ctx, getUserAndIcon, userID)
-	var i GetUserAndIconRow
+func (q *Queries) GetUser(ctx context.Context, userID uuid.UUID) (User, error) {
+	row := q.db.QueryRow(ctx, getUser, userID)
+	var i User
 	err := row.Scan(
 		&i.UserID,
 		&i.Username,
-		&i.IconID,
-		&i.Link,
-		&i.Kind,
-		&i.IsDefault,
+		&i.IconSrc,
 		&i.UserDescription,
 		&i.JoinDate,
 		&i.Verified,

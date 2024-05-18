@@ -17,4 +17,4 @@ SELECT
 FROM
     users
 WHERE
-    u.user_id = $1;
+    user_id = $1;
