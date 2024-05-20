@@ -1,8 +1,6 @@
 import BackgroundWrapper from "@/components/BackgroundWrapper";
-import Footer from "@/components/Footer";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import { Button } from "@/components/ui/button";
-import { EvervaultCard, Icon } from "@/components/ui/evervault-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
