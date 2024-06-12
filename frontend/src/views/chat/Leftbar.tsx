@@ -15,7 +15,7 @@ function ChatroomContainer(): JSX.Element {
     <>
       <div
         ref={leftbarRef}
-        className="hidden h-[90vh] flex-row space-x-2 lg:flex"
+        className="hidden h-[90vh] flex-row space-x-4 lg:flex"
       >
         <ChatroomsContainer />
         <ChannelsContainer />

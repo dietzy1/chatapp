@@ -13,9 +13,9 @@ function MessageHeader({
   if (align === "left") {
     return (
       <>
-        <div className="flex items-center space-x-2">
-          <div className="text-lg font-semibold">{username}</div>
-          <div className="text text-sm font-normal text-muted-foreground">
+        <div className="flex items-end space-x-2">
+          <div className="text-lg font-semibold leading-none">{username}</div>
+          <div className="text-xs font-normal leading-none text-muted-foreground">
             {timestamp}
           </div>
         </div>
@@ -26,11 +26,11 @@ function MessageHeader({
   //Align right
   return (
     <>
-      <div className="flex flex-row-reverse items-center space-x-2 space-x-reverse">
-        <div className=" text-lg font-semibold">{username}</div>
-        <div className="text text-sm font-normal text-muted-foreground">
+      <div className="flex flex-row-reverse items-end  space-x-2 space-x-reverse">
+        <span className=" text-lg font-semibold leading-none">{username}</span>
+        <span className="text-xs font-normal leading-none text-muted-foreground">
           {timestamp}
-        </div>
+        </span>
       </div>
     </>
   );

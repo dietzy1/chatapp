@@ -48,6 +48,8 @@ function RegisterForm({ selectedEmoji }: RegisterFormProps) {
       username: values.username,
       iconSrc: `https://emojicdn.elk.sh/${selectedEmoji}`,
     });
+
+    mutate.isSuccess && window.location.reload();
   }
 
   return (

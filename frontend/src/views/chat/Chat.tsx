@@ -27,9 +27,9 @@ function Chat(): JSX.Element {
   return (
     <div
       {...handlers}
-      className=" flex h-[100dvh] w-full flex-col bg-neutral-50 pb-1 dark:bg-black sm:p-2"
+      className=" flex h-[100dvh] w-full flex-col bg-neutral-50 pb-1 dark:bg-black sm:p-4"
     >
-      <div className="flex flex-col sm:flex-row sm:space-x-2">
+      <div className="flex flex-col sm:flex-row sm:space-x-4">
         <ChatroomContainer />
         <MessageContainer />
         <ActivityContainer />

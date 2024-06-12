@@ -45,7 +45,7 @@ function MessageLayout({
           <div className="flex shrink-0">
             <AnimatedTooltip user={user} />
           </div>
-          <div className="ml-3 flex flex-col gap-1">
+          <div className="flex flex-col gap-1">
             <MessageHeader
               username={user.username}
               timestamp={timeFormatter(message.message[0].createdAt)}
