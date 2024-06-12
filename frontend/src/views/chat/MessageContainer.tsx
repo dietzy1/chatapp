@@ -13,23 +13,10 @@ import { User } from "@/types/user";
 import useGetUser from "@/api/endpoints/user/getUser";
 
 function MessageContainer(): JSX.Element {
-  //const { format } = useFormatMessage();
-
-  //My target ref for the bracing beam
   const targetElementRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const middleRef = useRef<HTMLDivElement>(null);
   useUpdateWidth(middleRef, "middleWidth");
-
-  //scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-
-  //Different scenarios we must take care of.
-  //On load we must fetch the last 25 messages
-  //When we scroll to the top we must fetch the next 25 messages
-  //We need to continuesly append new messages into the array of messages
-  //We need to show a loading spinner when we are fetching new messages
-
-  //If there is a big timestamp gap between messages we need to show a timestamp
 
   const { messages } = useMessageStore();
   const user = useGetUser();
@@ -45,20 +32,29 @@ function MessageContainer(): JSX.Element {
   );
 
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    scrollRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
   }, [messages]);
+
+  //Scroll to bottom on load using useLayout Effect
+  /*   useLayoutEffect(() => {
+    if (scrollRef.current)
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [scrollRef, messages]); */
 
   return (
     <>
       <div
         ref={middleRef}
-        className="flex h-[90dvh] flex-grow flex-col rounded-lg bg-background "
+        className="flex h-[90dvh] flex-grow  flex-col rounded-lg bg-background "
       >
         <Header />
 
         <div
           ref={targetElementRef}
-          className="flex flex-col overflow-y-auto p-4"
+          className="flex  h-full flex-col overflow-y-auto p-4"
         >
           <TracingBeam scrollContainerRef={targetElementRef}>
             {messages.length === 0 && <MessageLoading />}
@@ -78,9 +74,9 @@ function MessageContainer(): JSX.Element {
                 />
               </React.Fragment>
             ))}
-            <div ref={scrollRef} style={{ height: 1 }} />
+            <div ref={scrollRef} style={{ height: 10 }} />
           </TracingBeam>
-        </div>
+        </div>  
       </div>
     </>
   );

@@ -24,8 +24,9 @@ type repository struct {
 }
 
 type postgres struct {
-	pool  *pgxpool.Pool
-	query *generated.Queries
+	pool              *pgxpool.Pool
+	query             *generated.Queries
+	primaryChatroomId string
 }
 
 type mongodb struct {
@@ -82,9 +83,16 @@ func NewPostgres(c *Config) (*postgres, error) {
 
 	queries := generated.New(pool)
 
+	//Get primary chatroom ID
+	chatroomId, err := queries.GetPrimaryChatroom(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get primary chatroom ID: %v", err)
+	}
+
 	return &postgres{
-		pool:  pool,
-		query: queries,
+		pool:              pool,
+		query:             queries,
+		primaryChatroomId: chatroomId.String(),
 	}, nil
 }
 

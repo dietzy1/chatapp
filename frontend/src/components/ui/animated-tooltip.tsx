@@ -39,7 +39,7 @@ function AnimatedTooltip({
     <>
       {user && (
         <div
-          className="group  relative"
+          className="group relative"
           key={user.username}
           onMouseEnter={() => setHoveredIndex(user.userId)}
           onMouseLeave={() => setHoveredIndex(null)}

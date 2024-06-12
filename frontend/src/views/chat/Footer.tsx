@@ -4,28 +4,28 @@ import UserSettings from "@/components/UserSettings";
 import { ArrowRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import useGetAuth from "@/api/endpoints/auth/getAuth";
-import { useState } from "react";
-import RegisterDialog from "../authentication/RegisterDialog";
+import Register from "../authentication/Register";
+import useRegisterOpenStore from "@/stores/RegisterOpenStore";
 
 //interface FooterProps {}
 
 function Footer(): JSX.Element {
   const { data } = useGetAuth();
-
-  const [open, setOpen] = useState(false);
+  const { open, setOpen } = useRegisterOpenStore();
 
   //If we are not logged in then we display the example and create account button instead
   if (!data?.userId) {
     return (
       <>
         <footer className="flex h-[10vh]  flex-grow flex-row items-center justify-center">
-          <RegisterDialog open={open} setOpen={setOpen} />
+          <Register open={open} setOpen={setOpen} />
+
           <div className="flex h-[6vh] min-h-16 w-full flex-row justify-between bg-gradient-to-r from-orange-500 to-yellow-600 px-4">
             <div className="flex flex-col justify-center">
-              <span className="text-lg font-semibold tracking-widest">
+              <span className="text-base font-semibold tracking-widest sm:text-lg">
                 Try it out!
               </span>
-              <span>
+              <span className="text-balance text-xs sm:text-base">
                 Signing up only requires you to come up with a username.
               </span>
             </div>

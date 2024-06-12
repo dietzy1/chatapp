@@ -4,8 +4,7 @@ import client from "@/api/client/axios";
 
 export interface CreateUserRequest {
   username: string;
-  description: string;
-  iconId: string;
+  iconSrc: string;
 }
 
 export interface CreateUserResponse {
@@ -23,19 +22,9 @@ const createUser = async (
 };
 
 const useCreateUser = () => {
-  const username = "fake bob";
-  const description = "bob is a fake guy";
-  const iconId = "9124edda-b816-4015-94bc-b163ae519497";
-
-  const req: CreateUserRequest = {
-    username,
-    description,
-    iconId,
-  };
-
   return useMutation({
     mutationKey: ["user"],
-    mutationFn: () => createUser(req),
+    mutationFn: (req: CreateUserRequest) => createUser(req),
   });
 };
 

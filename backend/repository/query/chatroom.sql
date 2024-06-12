@@ -41,3 +41,11 @@ FROM
     INNER JOIN chatroom_users cu ON u.user_id = cu.user_id
 WHERE
     cu.chatroom_id = $1;
+
+-- name: GetPrimaryChatroom :one
+SELECT
+    chatroom_id
+FROM
+    chatrooms
+ORDER BY
+    chatroom_id LIMIT 1;

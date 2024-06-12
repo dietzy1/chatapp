@@ -37,7 +37,7 @@ type User struct {
 	UserID          uuid.UUID
 	Username        string
 	IconSrc         string
-	UserDescription string
+	UserDescription pgtype.Text
 	JoinDate        pgtype.Date
 	Verified        bool
 }

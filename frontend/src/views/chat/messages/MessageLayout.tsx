@@ -28,10 +28,13 @@ function MessageLayout({
   //If user ID is same as message ID then align = right
   //if user ID is not same as message ID then align = left
 
-  //Loop over the messages and convert the contents to a string[]
   const contents = message.message.map((message) => {
     console.log(message.content);
-    return message.content;
+
+    return {
+      kind: message.kind,
+      content: message.content,
+    };
   });
 
   //Not our users message

@@ -69,7 +69,7 @@ func (m *messageService) GetMessages(ctx context.Context, chatroomId, channelId 
 	}
 
 	return messages, nil
-}
+} 
 
 type CreateMessage struct {
 	Kind       Kind   `json:"kind"`

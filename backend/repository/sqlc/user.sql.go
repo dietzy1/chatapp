@@ -13,21 +13,20 @@ import (
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO
-    users (username, user_description, icon_src)
+    users (username, icon_src)
 VALUES
-    ($1, $2, $3)
+    ($1, $2)
 RETURNING
     user_id
 `
 
 type CreateUserParams struct {
-	Username        string
-	UserDescription string
-	IconSrc         string
+	Username string
+	IconSrc  string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (uuid.UUID, error) {
-	row := q.db.QueryRow(ctx, createUser, arg.Username, arg.UserDescription, arg.IconSrc)
+	row := q.db.QueryRow(ctx, createUser, arg.Username, arg.IconSrc)
 	var user_id uuid.UUID
 	err := row.Scan(&user_id)
 	return user_id, err

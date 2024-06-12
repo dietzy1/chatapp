@@ -23,22 +23,19 @@ function Chat(): JSX.Element {
   //Servers could be my skillsets
   //Messages should contain an occational meme GIF
   //Chatroom could be the typewriter effect?
-  
 
   return (
-    <>
-      <div
-        {...handlers}
-        className=" flex h-[100vh] w-full flex-col bg-neutral-50 pb-1 dark:bg-black sm:p-2"
-      >
-        <div className="flex flex-row sm:space-x-2">
-          <ChatroomContainer />
-          <MessageContainer />
-          <ActivityContainer />
-        </div>
-        <Footer />
+    <div
+      {...handlers}
+      className=" flex h-[100dvh] w-full flex-col bg-neutral-50 pb-1 dark:bg-black sm:p-2"
+    >
+      <div className="flex flex-col sm:flex-row sm:space-x-2">
+        <ChatroomContainer />
+        <MessageContainer />
+        <ActivityContainer />
       </div>
-    </>
+      <Footer />
+    </div>
   );
 }
 export default Chat;

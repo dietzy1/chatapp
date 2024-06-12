@@ -1,8 +1,8 @@
 -- name: CreateUser :one
 INSERT INTO
-    users (username, user_description, icon_src)
+    users (username, icon_src)
 VALUES
-    ($1, $2, $3)
+    ($1, $2)
 RETURNING
     user_id;
 

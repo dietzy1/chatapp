@@ -21,6 +21,10 @@ function MessageInput(): JSX.Element {
     }
   };
 
+  const handleThumbsUp = () => {
+    sendMessage("MESSAGE", "👍");
+  };
+
   const handleSendGif = (url: string) => {
     sendMessage("GIF", url);
   };
@@ -89,10 +93,7 @@ function MessageInput(): JSX.Element {
           {input.length > 0 ? (
             <SendHorizontal className="h-5 w-5" onClick={handleSendMessage} />
           ) : (
-            <ThumbsUp
-              className="h-5 w-5"
-              onClick={() => console.log("hello")}
-            />
+            <ThumbsUp className="h-5 w-5" onClick={handleThumbsUp} />
           )}
         </div>
       </div>

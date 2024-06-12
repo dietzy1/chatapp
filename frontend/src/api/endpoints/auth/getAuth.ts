@@ -17,6 +17,7 @@ const useGetAuth = () => {
     queryKey: ["auth"],
     queryFn: getAuth,
     enabled: true,
+    retry: false,
   });
 
   return {

@@ -106,6 +106,22 @@ func (q *Queries) GetChatrooms(ctx context.Context, userID uuid.UUID) ([]GetChat
 	return items, nil
 }
 
+const getPrimaryChatroom = `-- name: GetPrimaryChatroom :one
+SELECT
+    chatroom_id
+FROM
+    chatrooms
+ORDER BY
+    chatroom_id LIMIT 1
+`
+
+func (q *Queries) GetPrimaryChatroom(ctx context.Context) (uuid.UUID, error) {
+	row := q.db.QueryRow(ctx, getPrimaryChatroom)
+	var chatroom_id uuid.UUID
+	err := row.Scan(&chatroom_id)
+	return chatroom_id, err
+}
+
 const getUsersInChatroom = `-- name: GetUsersInChatroom :many
 SELECT
     u.user_id,

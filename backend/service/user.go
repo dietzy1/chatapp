@@ -28,21 +28,20 @@ func NewUserService(logger *zap.Logger, repo UserRepo) *userService {
 }
 
 type UserRepo interface {
-	CreateUser(ctx context.Context, username, description, iconSrc string) (uuid.UUID, uuid.UUID, error)
+	CreateUser(ctx context.Context, username, iconSrc string) (uuid.UUID, uuid.UUID, error)
 	GetUser(ctx context.Context, userID uuid.UUID) (User, error)
 	GetUsers(ctx context.Context, chatroomID uuid.UUID) ([]User, error)
 }
 
-func (u *userService) CreateUser(ctx context.Context, username, description, IconSrc string) (string, string, error) {
+func (u *userService) CreateUser(ctx context.Context, username, IconSrc string) (string, string, error) {
 
-	if username == "" || description == "" || IconSrc == "" {
-		u.logger.Info("Recieved the following values", zap.String("username", username), zap.String("description", description), zap.String("iconSrc", IconSrc))
+	if username == "" || IconSrc == "" {
+		u.logger.Info("Recieved the following values", zap.String("username", username), zap.String("iconSrc", IconSrc))
 		return "", "", fmt.Errorf("username, description or iconSrc cannot be empty")
 	}
 
 	//Verified being true means that a lookup is possible in the auth table
-	userId, sessionToken, err := u.repo.CreateUser(ctx, username, description,
-		IconSrc)
+	userId, sessionToken, err := u.repo.CreateUser(ctx, username, IconSrc)
 	if err != nil {
 		return "", "", err
 	}

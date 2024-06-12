@@ -10,9 +10,9 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-const primaryChatroomId = "75fa861d-45d0-48b5-b700-51254b0f0d62"
+const primaryChatroomId = "0f325167-6319-40d9-8ece-9dcbd413f6a6"
 
-func (r *repository) CreateUser(ctx context.Context, username, description, iconSrc string) (uuid.UUID, uuid.UUID, error) {
+func (r *repository) CreateUser(ctx context.Context, username, iconSrc string) (uuid.UUID, uuid.UUID, error) {
 
 	tx, err := r.postgres.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
@@ -26,9 +26,8 @@ func (r *repository) CreateUser(ctx context.Context, username, description, icon
 
 	//2. Create a user in the database
 	userId, err := qtx.CreateUser(ctx, generated.CreateUserParams{
-		Username:        username,
-		UserDescription: description,
-		IconSrc:         iconSrc,
+		Username: username,
+		IconSrc:  iconSrc,
 	})
 	if err != nil {
 		return uuid.Nil, uuid.Nil, fmt.Errorf("failed to create user: %w", err)
@@ -71,7 +70,7 @@ func (r *repository) GetUser(ctx context.Context, userID uuid.UUID) (service.Use
 	return service.User{
 		UserID:      user.UserID,
 		Username:    user.Username,
-		Description: user.UserDescription,
+		Description: user.UserDescription.String,
 		IconSrc:     user.IconSrc,
 		JoinDate:    user.JoinDate.Time.String(),
 		Verified:    user.Verified,
@@ -90,7 +89,7 @@ func (r *repository) GetUsers(ctx context.Context, chatroomID uuid.UUID) ([]serv
 		user := service.User{
 			UserID:      v.UserID,
 			Username:    v.Username,
-			Description: v.UserDescription,
+			Description: v.UserDescription.String,
 			IconSrc:     v.IconSrc,
 			JoinDate:    v.JoinDate.Time.String(),
 			Verified:    v.Verified,

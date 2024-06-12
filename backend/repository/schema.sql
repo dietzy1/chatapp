@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     username VARCHAR(255) NOT NULL,
     icon_src VARCHAR(255) NOT NULL,
-    user_description VARCHAR(255) NOT NULL,
+    user_description VARCHAR(255),
     join_date DATE DEFAULT CURRENT_DATE NOT NULL,
     verified BOOLEAN NOT NULL DEFAULT false
   );

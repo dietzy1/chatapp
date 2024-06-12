@@ -35,8 +35,7 @@ message User {
 
 message CreateUserRequest {
   string username = 1;
-  string description = 2;
-  string icon_src = 3;
+  string icon_src = 2;
 }
 
 //And a token

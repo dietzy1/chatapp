@@ -13,14 +13,14 @@ import (
 )
 
 type UserService interface {
-	CreateUser(ctx context.Context, username, description, iconId string) (string, string, error)
+	CreateUser(ctx context.Context, username, iconSrc string) (string, string, error)
 	GetUser(ctx context.Context, userID string) (service.User, error)
 	GetUsers(ctx context.Context, chatroomID string) ([]service.User, error)
 }
 
 func (h *handlers) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 
-	userId, sessionToken, err := h.userService.CreateUser(ctx, req.Username, req.Description, req.IconSrc)
+	userId, sessionToken, err := h.userService.CreateUser(ctx, req.Username, req.IconSrc)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create user: %v", err)
 	}
