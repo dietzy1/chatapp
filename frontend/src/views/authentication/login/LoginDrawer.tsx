@@ -12,9 +12,19 @@ import useRandomEmoji from "@/hooks/useRandomEmoji";
 import { User } from "@/types/user";
 import AnimatedTooltip from "@/components/ui/animated-tooltip";
 import LoginForm from "./LoginForm";
+import useLoginOpenStore from "@/stores/LoginOpenStore";
+import useRegisterOpenStore from "@/stores/RegisterOpenStore";
 
 function LoginDrawer() {
   const [selectedEmoji, getRandomEmoji] = useRandomEmoji();
+
+  const { setOpen } = useRegisterOpenStore();
+  const { setOpen: setLoginOpen } = useLoginOpenStore();
+
+  const handleOpen = () => {
+    setLoginOpen(false);
+    setOpen(true);
+  };
 
   return (
     <DrawerContent>
@@ -39,9 +49,16 @@ function LoginDrawer() {
           />
         </div>
         <LoginForm />
+
         <DrawerClose asChild>
           <Button variant="outline">Cancel</Button>
         </DrawerClose>
+        <div className="mt-4 text-center text-sm">
+          Don&apos;t have an account?{" "}
+          <span className="underline" onClick={handleOpen}>
+            Sign up
+          </span>
+        </div>
       </DrawerFooter>
     </DrawerContent>
   );

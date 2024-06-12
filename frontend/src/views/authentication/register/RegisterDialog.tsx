@@ -8,9 +8,19 @@ import {
 import useRandomEmoji from "@/hooks/useRandomEmoji";
 import { User } from "@/types/user";
 import RegisterForm from "./RegisterForm";
+import useRegisterOpenStore from "@/stores/RegisterOpenStore";
+import useLoginOpenStore from "@/stores/LoginOpenStore";
 
 function RegisterDialog() {
   const [selectedEmoji, getRandomEmoji] = useRandomEmoji();
+
+  const { setOpen } = useRegisterOpenStore();
+  const { setOpen: setLoginOpen } = useLoginOpenStore();
+
+  const handleOpen = () => {
+    setOpen(false);
+    setLoginOpen(true);
+  };
 
   return (
     <DialogContent className="sm:max-w-[425px]">
@@ -35,6 +45,12 @@ function RegisterDialog() {
       </div>
 
       <RegisterForm selectedEmoji={selectedEmoji} />
+      <div className="mt-4 text-center text-sm">
+        Already have an account?{" "}
+        <span className="underline" onClick={handleOpen}>
+          Sign in
+        </span>
+      </div>
     </DialogContent>
   );
 }
