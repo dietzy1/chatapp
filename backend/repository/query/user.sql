@@ -18,3 +18,13 @@ FROM
     users
 WHERE
     user_id = $1;
+
+-- name: UpdateUserVerification :exec
+UPDATE users
+SET verified = true
+WHERE user_id = $1;
+
+-- name: UpdateHashedPassword :exec
+UPDATE credentials
+SET hash_password = $2
+WHERE user_id = $1;

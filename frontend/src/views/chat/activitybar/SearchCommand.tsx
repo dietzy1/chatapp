@@ -31,7 +31,7 @@ function SearchCommand() {
 
   return (
     <>
-      <Button variant={"outline"} onClick={openSearch}>
+      <Button variant={"outline"} onClick={openSearch} className="grow">
         <span className="mr-1 text-xs">Search </span>
         <CommandIcon className="h-4 w-4" />
         <span className="text-center text-xs">k</span>

@@ -2,15 +2,17 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	generated "github.com/dietzy1/chatapp/repository/sqlc"
 	"github.com/dietzy1/chatapp/service"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
-const primaryChatroomId = "0f325167-6319-40d9-8ece-9dcbd413f6a6"
+//const primaryChatroomId = "0f325167-6319-40d9-8ece-9dcbd413f6a6"
 
 func (r *repository) CreateUser(ctx context.Context, username, iconSrc string) (uuid.UUID, uuid.UUID, error) {
 
@@ -30,10 +32,18 @@ func (r *repository) CreateUser(ctx context.Context, username, iconSrc string) (
 		IconSrc:  iconSrc,
 	})
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if ok := errors.As(err, &pgErr); ok && pgErr.Code == "23505" {
+			// This is a unique constraint violation
+			return uuid.Nil, uuid.Nil, fmt.Errorf("username already exists: %w", err)
+		}
+		// Other error handling
 		return uuid.Nil, uuid.Nil, fmt.Errorf("failed to create user: %w", err)
+
+		//return uuid.Nil, uuid.Nil, fmt.Errorf("failed to create user: %w", err)
 	}
 
-	chatroomUuid, err := uuid.Parse(primaryChatroomId)
+	chatroomUuid, err := uuid.Parse(r.postgres.primaryChatroomId)
 	if err != nil {
 		fmt.Println("Error parsing UUID:", err)
 		return uuid.Nil, uuid.Nil, fmt.Errorf("failed to parse hardcoded chatroom UUID: %w", err)
@@ -70,7 +80,7 @@ func (r *repository) GetUser(ctx context.Context, userID uuid.UUID) (service.Use
 	return service.User{
 		UserID:      user.UserID,
 		Username:    user.Username,
-		Description: user.UserDescription.String,
+		Description: user.UserDescription,
 		IconSrc:     user.IconSrc,
 		JoinDate:    user.JoinDate.Time.String(),
 		Verified:    user.Verified,
@@ -89,7 +99,7 @@ func (r *repository) GetUsers(ctx context.Context, chatroomID uuid.UUID) ([]serv
 		user := service.User{
 			UserID:      v.UserID,
 			Username:    v.Username,
-			Description: v.UserDescription.String,
+			Description: v.UserDescription,
 			IconSrc:     v.IconSrc,
 			JoinDate:    v.JoinDate.Time.String(),
 			Verified:    v.Verified,
@@ -99,4 +109,19 @@ func (r *repository) GetUsers(ctx context.Context, chatroomID uuid.UUID) ([]serv
 	}
 
 	return userSlice, nil
+}
+
+func (r *repository) VerifyUser(ctx context.Context, userID, password string) error {
+
+	tx, err := r.postgres.pool.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback(ctx)
+	fmt.Println("Transaction started")
+
+	//Create transaction object
+	qtx := r.postgres.query.WithTx(tx)
+
+	return nil
 }

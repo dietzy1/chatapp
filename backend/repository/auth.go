@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	generated "github.com/dietzy1/chatapp/repository/sqlc"
 	"github.com/dietzy1/chatapp/service"
 	"github.com/google/uuid"
 )
@@ -19,4 +20,17 @@ func (r *repository) GetSessionToken(ctx context.Context, sessionToken uuid.UUID
 		UserID:       result.UserID,
 		SessionToken: result.SessionToken,
 	}, nil
+}
+
+func (r *repository) DeleteSessionToken(ctx context.Context, sessionToken, userId uuid.UUID) error {
+
+	err := r.postgres.query.NullifySessionToken(ctx, generated.NullifySessionTokenParams{
+		SessionToken: sessionToken,
+		UserID:       userId,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to delete session token: %w", err)
+	}
+
+	return nil
 }

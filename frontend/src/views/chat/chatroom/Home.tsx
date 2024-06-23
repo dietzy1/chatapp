@@ -3,11 +3,26 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import useIsMobile from "@/hooks/useIsMobile";
 import { Home as HomeIcon } from "lucide-react";
 
-function Home(): JSX.Element {
-  useIsMobile();
+interface HomeProps {
+  expanded: boolean;
+}
+
+function Home({ expanded }: HomeProps): JSX.Element {
+  if (expanded) {
+    return (
+      <>
+        <div className="mx-auto flex min-w-72 items-center  justify-start rounded-sm p-1.5">
+          <div className="flex h-14 w-14 items-center justify-center rounded-sm hover:bg-muted ">
+            <HomeIcon size={24} />
+          </div>
+          <div className=" tracking-widest">Home</div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <Tooltip>

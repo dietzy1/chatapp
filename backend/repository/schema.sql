@@ -4,9 +4,9 @@ BEGIN */
 CREATE TABLE IF NOT EXISTS
   users (
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
-    username VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL UNIQUE,
     icon_src VARCHAR(255) NOT NULL,
-    user_description VARCHAR(255),
+    user_description VARCHAR(255) NOT NULL DEFAULT '',
     join_date DATE DEFAULT CURRENT_DATE NOT NULL,
     verified BOOLEAN NOT NULL DEFAULT false
   );

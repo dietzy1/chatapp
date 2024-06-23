@@ -1,11 +1,12 @@
 import MessageInput from "@/components/MessageInput";
-import UserInformation from "@/components/UserInformation";
-import UserSettings from "@/components/UserSettings";
+
 import { ArrowRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import useGetAuth from "@/api/endpoints/auth/getAuth";
 import Register from "../authentication/Register";
 import useRegisterOpenStore from "@/stores/RegisterOpenStore";
+import UserSettings from "./footer/UserSettings";
+import UserInformation from "./footer/UserInformation";
 
 //interface FooterProps {}
 
@@ -48,7 +49,7 @@ function Footer(): JSX.Element {
 
   return (
     <>
-      <footer className="flex h-[10vh] flex-grow flex-row items-center justify-center">
+      <footer className="flex h-[10vh] w-full flex-grow flex-row items-center justify-center space-x-8 ">
         <UserInformation />
         <MessageInput />
         <UserSettings />

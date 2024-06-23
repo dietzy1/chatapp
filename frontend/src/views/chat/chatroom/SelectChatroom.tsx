@@ -9,15 +9,40 @@ import { Chatroom } from "@/types/chatroom";
 
 interface SelectChatroomProps {
   chatroom: Chatroom;
+  expanded: boolean;
 }
 
-function SelectChatroom({ chatroom }: SelectChatroomProps): JSX.Element {
+function SelectChatroom({
+  chatroom,
+  expanded,
+}: SelectChatroomProps): JSX.Element {
   const store = useSelectedChatroomStore();
 
   //Select chatroom
   const selectChatroom = () => {
     store.setSelectedChatroom(chatroom);
   };
+
+  if (expanded) {
+    return (
+      <>
+        <div className="mx-auto flex min-w-72 items-center  justify-start rounded-sm p-1.5">
+          <div
+            className="flex h-14 w-14 items-center justify-center rounded-sm hover:bg-muted "
+            onClick={selectChatroom}
+          >
+            <AspectRatio
+              ratio={1}
+              className="item-center flex items-center justify-center"
+            >
+              <img src={chatroom.iconSrc} className="h-12 w-12 rounded-sm " />
+            </AspectRatio>
+          </div>
+          <div className="tracking-widest">{chatroom.name}</div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>

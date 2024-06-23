@@ -29,8 +29,6 @@ function MessageLayout({
   //if user ID is not same as message ID then align = left
 
   const contents = message.message.map((message) => {
-    console.log(message.content);
-
     return {
       kind: message.kind,
       content: message.content,

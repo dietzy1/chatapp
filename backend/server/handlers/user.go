@@ -16,6 +16,7 @@ type UserService interface {
 	CreateUser(ctx context.Context, username, iconSrc string) (string, string, error)
 	GetUser(ctx context.Context, userID string) (service.User, error)
 	GetUsers(ctx context.Context, chatroomID string) ([]service.User, error)
+	VerifyUser(ctx context.Context, userID, password string) error
 }
 
 func (h *handlers) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
@@ -82,4 +83,18 @@ func (h *handlers) GetUsers(ctx context.Context, req *pb.GetUsersRequest) (*pb.G
 	return &pb.GetUsersResponse{
 		Users: pbusers,
 	}, nil
+}
+
+func (h *handlers) VerifyUser(ctx context.Context, req *pb.VerifyUserRequest) (*pb.VerifyUserResponse, error) {
+
+	err := h.userService.VerifyUser(ctx, req.UserId, req.Password)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to verify user: %v", err)
+	}
+
+	h.logger.Info("User verified", zap.String("userId", req.UserId))
+
+	return &pb.VerifyUserResponse{}, nil
+
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyUser not implemented")
 }

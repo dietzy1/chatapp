@@ -29,18 +29,29 @@ function UserInformation(): JSX.Element {
     <>
       <div
         style={style}
-        className="hidden space-x-4 rounded-sm p-1 hover:bg-muted sm:flex"
+        className="hidden  justify-start space-x-4 rounded-sm p-2 hover:bg-muted sm:flex"
       >
         <img className="h-14 w-14" src={data?.user?.iconSrc} />
-        {/* <UserAvatar  width={14} height={14} /> */}
         <div className="flex flex-col">
-          <div className="font-medium">{data?.user?.username}</div>
-          <div className="font-thin">#{data?.user?.description}</div>
+          <span className="text-lg font-medium">{data?.user?.username}</span>
+          <span className="text-sm text-muted-foreground">
+            #{data?.user?.description || "New guy"}
+          </span>
         </div>
-        <ChevronsUpDown className="self-center" size={24} />
       </div>
     </>
   );
 }
 
 export default UserInformation;
+
+{
+  /*   <DropdownMenu>
+            <DropdownMenuTrigger>
+              <div className="rounded-sm p-2 hover:bg-muted">
+                <Settings className="h-5 w-5" />
+                <ChannelHeaderDropdown />
+              </div>
+            </DropdownMenuTrigger>
+          </DropdownMenu> */
+}

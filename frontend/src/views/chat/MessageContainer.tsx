@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useMemo, useRef } from "react";
 
 import Header from "@/components/Header";
 
@@ -11,12 +11,18 @@ import useMessageStore from "@/stores/messageStore";
 import useGetUsers from "@/api/endpoints/user/getUsers";
 import { User } from "@/types/user";
 import useGetUser from "@/api/endpoints/user/getUser";
+import NewMessagesSince from "./messages/NewMessagesSince";
+import useAutoScroll from "@/hooks/useNewAutoScroll";
 
 function MessageContainer(): JSX.Element {
-  const targetElementRef = useRef<HTMLDivElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
   const middleRef = useRef<HTMLDivElement>(null);
   useUpdateWidth(middleRef, "middleWidth");
+  const {
+    targetElementRef,
+    isAutoScrollEnabled,
+    scrollToBottom,
+    newMessagesCount,
+  } = useAutoScroll();
 
   const { messages } = useMessageStore();
   const user = useGetUser();
@@ -31,19 +37,6 @@ function MessageContainer(): JSX.Element {
     [users],
   );
 
-  useEffect(() => {
-    scrollRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-    });
-  }, [messages]);
-
-  //Scroll to bottom on load using useLayout Effect
-  /*   useLayoutEffect(() => {
-    if (scrollRef.current)
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [scrollRef, messages]); */
-
   return (
     <>
       <div
@@ -51,10 +44,18 @@ function MessageContainer(): JSX.Element {
         className="flex h-[90dvh] flex-grow  flex-col rounded-lg bg-background "
       >
         <Header />
+        {/*  {!isAutoScrollEnabled && (
+          <>
+            <NewMessagesSince
+              amount={newMessagesCount}
+              date="Yesterday at 19:48"
+            />
+          </>
+        )} */}
 
         <div
           ref={targetElementRef}
-          className="flex  h-full flex-col overflow-y-auto p-4"
+          className=" mb-6 flex h-full flex-col overflow-y-auto p-4"
         >
           <TracingBeam scrollContainerRef={targetElementRef}>
             {messages.length === 0 && <MessageLoading />}
@@ -74,9 +75,8 @@ function MessageContainer(): JSX.Element {
                 />
               </React.Fragment>
             ))}
-            <div ref={scrollRef} style={{ height: 10 }} />
           </TracingBeam>
-        </div>  
+        </div>
       </div>
     </>
   );

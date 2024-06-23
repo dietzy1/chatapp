@@ -14,7 +14,6 @@ function MessageInput(): JSX.Element {
 
   const handleSendMessage = () => {
     if (input.trim() !== "") {
-      console.log(input);
       sendMessage("MESSAGE", input);
 
       setInput("");
@@ -71,7 +70,7 @@ function MessageInput(): JSX.Element {
     <>
       <div
         style={style}
-        className="flex  items-center  justify-center space-x-2 "
+        className="flex  items-center justify-center space-x-2  "
       >
         <div className="hidden items-center justify-center rounded-sm p-1 hover:bg-muted sm:flex">
           <CommandIcon />

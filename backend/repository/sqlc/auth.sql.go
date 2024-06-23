@@ -32,3 +32,20 @@ func (q *Queries) GetSessionToken(ctx context.Context, sessionToken uuid.UUID) (
 	err := row.Scan(&i.UserID, &i.SessionToken)
 	return i, err
 }
+
+const nullifySessionToken = `-- name: NullifySessionToken :exec
+UPDATE credentials
+    SET session_token = ''
+WHERE session_token = $1
+AND user_id = $2
+`
+
+type NullifySessionTokenParams struct {
+	SessionToken uuid.UUID
+	UserID       uuid.UUID
+}
+
+func (q *Queries) NullifySessionToken(ctx context.Context, arg NullifySessionTokenParams) error {
+	_, err := q.db.Exec(ctx, nullifySessionToken, arg.SessionToken, arg.UserID)
+	return err
+}

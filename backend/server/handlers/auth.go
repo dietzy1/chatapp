@@ -2,9 +2,6 @@ package handlers
 
 import (
 	"context"
-	"fmt"
-	"io/ioutil"
-	"net/http"
 
 	pb "github.com/dietzy1/chatapp/protos/auth/v1"
 	"go.uber.org/zap"
@@ -17,6 +14,7 @@ const sessionTokenName = "session_token"
 
 type AuthService interface {
 	VerifySessionToken(ctx context.Context, sessionToken string) (string, error)
+	DeleteSessionToken(ctx context.Context, sessionToken, userId string) error
 }
 
 func (h *handlers) GetAuth(ctx context.Context, req *pb.GetAuthRequest) (*pb.GetAuthResponse, error) {
@@ -47,33 +45,25 @@ func (h *handlers) GetAuth(ctx context.Context, req *pb.GetAuthRequest) (*pb.Get
 	}, nil
 }
 
-func (h *handlers) GetMeme(ctx context.Context, req *pb.GetMemeRequest) (*pb.GetMemeResponse, error) {
+func (h *handlers) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutResponse, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		h.logger.Info("no metadata")
+		return &pb.LogoutResponse{}, status.Errorf(codes.Unauthenticated, "no metadata")
+	}
 
-	//Delay the response with 60 seconds
-	//time.Sleep(60 * time.Second)
-	response, err := http.Get("https://whatthecommit.com/index.txt")
+	sessionToken := md.Get(sessionTokenName)
+	if len(sessionToken) == 0 {
+		h.logger.Info("no session token")
+		return &pb.LogoutResponse{}, status.Errorf(codes.Unauthenticated, "no session token")
+	}
+
+	//Delete the session token from the cache
+	err := h.authService.DeleteSessionToken(ctx, sessionToken[0], req.UserId)
 	if err != nil {
-		fmt.Println("Error:", err)
-		return nil, nil
-	}
-	defer response.Body.Close()
-
-	// Read the response body
-	body, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		fmt.Println("Error reading response body:", err)
-		return nil, nil
+		h.logger.Info("failed to delete session token", zap.Error(err))
+		return &pb.LogoutResponse{}, status.Errorf(codes.Internal, "failed to delete session token")
 	}
 
-	// Print the response body
-	//fmt.Println(string(body))
-
-	memes := []string{
-		string(body),
-	}
-
-	return &pb.GetMemeResponse{
-		Memes: memes,
-	}, nil
-
+	return &pb.LogoutResponse{}, nil
 }

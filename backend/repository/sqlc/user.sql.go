@@ -59,3 +59,12 @@ func (q *Queries) GetUser(ctx context.Context, userID uuid.UUID) (User, error) {
 	)
 	return i, err
 }
+
+const updateUserVerificationAndSetPassword = `-- name: UpdateUserVerificationAndSetPassword :exec
+BEGIN
+`
+
+func (q *Queries) UpdateUserVerificationAndSetPassword(ctx context.Context) error {
+	_, err := q.db.Exec(ctx, updateUserVerificationAndSetPassword)
+	return err
+}

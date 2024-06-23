@@ -22,6 +22,10 @@ service UserService {
   rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {
     option (google.api.http) = {get: "/v1/users/{chatroom_id}"};
   }
+
+  rpc VerifyUser(VerifyUserRequest) returns (VerifyUserResponse) {
+    option (google.api.http) = {post: "/v1/user/verify"};
+  }
 }
 
 message User {
@@ -57,4 +61,12 @@ message GetUsersRequest {
 
 message GetUsersResponse {
   repeated User users = 1;
+}
+
+message VerifyUserRequest {
+  string user_id = 1;
+  string password = 2;
+}
+
+message VerifyUserResponse {
 }

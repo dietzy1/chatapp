@@ -186,7 +186,6 @@ func (c *client) handleEvents(ch <-chan *redis.Message) {
 				c.logger.Info("Redis broker channel closed")
 				return
 			}
-			c.logger.Info("Recieved shit from redis broker", zap.Any("", msg.Payload))
 
 			//convert msg.Payload to slice of bytes
 			c.conn.sendChannel <- []byte(msg.Payload)

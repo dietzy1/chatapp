@@ -12,9 +12,14 @@ service AuthService {
     option (google.api.http) = {get: "/v1/auth"};
   }
 
-  rpc GetMeme(GetMemeRequest) returns (GetMemeResponse) {
-    option (google.api.http) = {get: "/v1/auth/meme"};
+  rpc Login(LoginRequest) returns (LoginResponse) {
+    option (google.api.http) = {post: "/v1/auth/login"};
   }
+
+  rpc Logout(LogoutRequest) returns (LogoutResponse) {
+    option (google.api.http) = {delete: "/v1/auth/logout/{user_id}"};
+  }
+ 
 }
 
 
@@ -26,11 +31,20 @@ message GetAuthResponse {
   string user_id = 1;
 }
 
-message GetMemeRequest {
- 
+message LoginRequest {
+  string username = 1;
+  string password = 2;
 }
 
-message GetMemeResponse {
-    repeated string memes = 1;
+message LoginResponse {
+  string user_id = 1;
 }
+
+message LogoutRequest {
+  string user_id = 1;
+}
+
+message LogoutResponse {
+}
+
 

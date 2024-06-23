@@ -16,6 +16,7 @@ type Credentials struct {
 
 type AuthRepository interface {
 	GetSessionToken(ctx context.Context, sessionToken uuid.UUID) (Credentials, error)
+	DeleteSessionToken(ctx context.Context, sessionToken, userId uuid.UUID) error
 }
 
 type authService struct {
@@ -30,7 +31,7 @@ func NewAuthService(logger *zap.Logger, authRepo AuthRepository) *authService {
 	}
 }
 
-func (s *authService) VerifySessionToken(ctx context.Context, sessionToken string) (string, error) {
+func (a *authService) VerifySessionToken(ctx context.Context, sessionToken string) (string, error) {
 
 	if sessionToken == "" {
 		return "", fmt.Errorf("session token is empty")
@@ -42,7 +43,7 @@ func (s *authService) VerifySessionToken(ctx context.Context, sessionToken strin
 		return "", fmt.Errorf("failed to parse session token: %w", err)
 	}
 
-	credentials, err := s.authRepo.GetSessionToken(ctx, token)
+	credentials, err := a.authRepo.GetSessionToken(ctx, token)
 	if err != nil {
 		return "", fmt.Errorf("failed to get session token: %w", err)
 	}
@@ -50,9 +51,34 @@ func (s *authService) VerifySessionToken(ctx context.Context, sessionToken strin
 	//Compare session token with the one in the database
 	if sessionToken != credentials.SessionToken.String() {
 
-		s.logger.Debug("session token does not match", zap.String("session_token", sessionToken), zap.String("credentials_session_token", credentials.SessionToken.String()))
+		a.logger.Debug("session token does not match", zap.String("session_token", sessionToken), zap.String("credentials_session_token", credentials.SessionToken.String()))
 		return "", fmt.Errorf("session token does not match")
 	}
 
 	return credentials.UserID.String(), nil
+}
+
+func (a *authService) DeleteSessionToken(ctx context.Context, sessionToken, userId string) error {
+
+	if sessionToken == "" || userId == "" {
+		return fmt.Errorf("session token or user id cannot be empty")
+	}
+
+	//Parse into uuid
+	parsedToken, err := uuid.Parse(sessionToken)
+	if err != nil {
+		return fmt.Errorf("failed to parse session token: %w", err)
+	}
+
+	//Parse into uuid
+	parsedUserId, err := uuid.Parse(userId)
+	if err != nil {
+		return fmt.Errorf("failed to parse user id: %w", err)
+	}
+
+	if err := a.authRepo.DeleteSessionToken(ctx, parsedToken, parsedUserId); err != nil {
+		return fmt.Errorf("failed to delete session token: %w", err)
+	}
+
+	return nil
 }

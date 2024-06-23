@@ -1,8 +1,8 @@
 import { useRef } from "react";
 
-import ChatroomsContainer from "./leftbar/ChatroomsContainer";
-import ChannelsContainer from "./leftbar/ChannelsContainer";
 import useUpdateWidth from "@/hooks/useUpdateWidth";
+import ChatroomsContainer from "./chatroom/ChatroomsContainer";
+import ChannelsContainer from "./channel/ChannelsContainer";
 
 function ChatroomContainer(): JSX.Element {
   //

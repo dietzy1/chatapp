@@ -84,15 +84,15 @@ func NewPostgres(c *Config) (*postgres, error) {
 	queries := generated.New(pool)
 
 	//Get primary chatroom ID
-	chatroomId, err := queries.GetPrimaryChatroom(ctx)
+	/* chatroomId, err := queries.GetPrimaryChatroom(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get primary chatroom ID: %v", err)
-	}
+	} */
 
 	return &postgres{
-		pool:              pool,
-		query:             queries,
-		primaryChatroomId: chatroomId.String(),
+		pool:  pool,
+		query: queries,
+		//primaryChatroomId: chatroomId.String(),
 	}, nil
 }
 
