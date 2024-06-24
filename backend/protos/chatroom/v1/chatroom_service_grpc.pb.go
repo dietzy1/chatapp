@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ChatroomServiceClient interface {
 	GetChatrooms(ctx context.Context, in *GetChatroomsRequest, opts ...grpc.CallOption) (*GetChatroomsResponse, error)
+	CreateChatroom(ctx context.Context, in *CreateChatroomRequest, opts ...grpc.CallOption) (*CreateChatroomResponse, error)
 }
 
 type chatroomServiceClient struct {
@@ -42,11 +43,21 @@ func (c *chatroomServiceClient) GetChatrooms(ctx context.Context, in *GetChatroo
 	return out, nil
 }
 
+func (c *chatroomServiceClient) CreateChatroom(ctx context.Context, in *CreateChatroomRequest, opts ...grpc.CallOption) (*CreateChatroomResponse, error) {
+	out := new(CreateChatroomResponse)
+	err := c.cc.Invoke(ctx, "/chatroom.v1.ChatroomService/CreateChatroom", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ChatroomServiceServer is the server API for ChatroomService service.
 // All implementations should embed UnimplementedChatroomServiceServer
 // for forward compatibility
 type ChatroomServiceServer interface {
 	GetChatrooms(context.Context, *GetChatroomsRequest) (*GetChatroomsResponse, error)
+	CreateChatroom(context.Context, *CreateChatroomRequest) (*CreateChatroomResponse, error)
 }
 
 // UnimplementedChatroomServiceServer should be embedded to have forward compatible implementations.
@@ -55,6 +66,9 @@ type UnimplementedChatroomServiceServer struct {
 
 func (UnimplementedChatroomServiceServer) GetChatrooms(context.Context, *GetChatroomsRequest) (*GetChatroomsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetChatrooms not implemented")
+}
+func (UnimplementedChatroomServiceServer) CreateChatroom(context.Context, *CreateChatroomRequest) (*CreateChatroomResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateChatroom not implemented")
 }
 
 // UnsafeChatroomServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -86,6 +100,24 @@ func _ChatroomService_GetChatrooms_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ChatroomService_CreateChatroom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateChatroomRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatroomServiceServer).CreateChatroom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/chatroom.v1.ChatroomService/CreateChatroom",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatroomServiceServer).CreateChatroom(ctx, req.(*CreateChatroomRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ChatroomService_ServiceDesc is the grpc.ServiceDesc for ChatroomService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -96,6 +128,10 @@ var ChatroomService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetChatrooms",
 			Handler:    _ChatroomService_GetChatrooms_Handler,
+		},
+		{
+			MethodName: "CreateChatroom",
+			Handler:    _ChatroomService_CreateChatroom_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

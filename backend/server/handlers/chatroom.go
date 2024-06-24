@@ -5,12 +5,14 @@ import (
 
 	pb "github.com/dietzy1/chatapp/protos/chatroom/v1"
 	"github.com/dietzy1/chatapp/service"
+	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 type ChatroomService interface {
 	GetChatrooms(ctx context.Context, userId string) ([]service.Chatroom, error)
+	CreateChatroom(ctx context.Context, name, ownerId string) (string, error)
 }
 
 func (h *handlers) GetChatrooms(ctx context.Context, req *pb.GetChatroomsRequest) (*pb.GetChatroomsResponse, error) {
@@ -47,4 +49,17 @@ func (h *handlers) GetChatrooms(ctx context.Context, req *pb.GetChatroomsRequest
 		Chatrooms: pbchatrooms,
 	}, nil
 
+}
+
+func (h *handlers) CreateChatroom(ctx context.Context, req *pb.CreateChatroomRequest) (*pb.CreateChatroomResponse, error) {
+
+	//Create the chatroom
+	chatroomId, err := h.chatroomService.CreateChatroom(ctx, req.Name, req.OwnerId)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create chatroom: %v", err)
+	}
+
+	h.logger.Info("Chatroom created: ", zap.String("chatroomId", chatroomId))
+
+	return &pb.CreateChatroomResponse{ChatroomId: chatroomId}, nil
 }

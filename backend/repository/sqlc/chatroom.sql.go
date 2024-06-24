@@ -163,3 +163,52 @@ func (q *Queries) GetUsersInChatroom(ctx context.Context, chatroomID uuid.UUID) 
 	}
 	return items, nil
 }
+
+const insertChannel = `-- name: InsertChannel :exec
+INSERT INTO channels (channel_name, chatroom_id)
+VALUES ($1, $2)
+`
+
+type InsertChannelParams struct {
+	ChannelName string
+	ChatroomID  uuid.UUID
+}
+
+func (q *Queries) InsertChannel(ctx context.Context, arg InsertChannelParams) error {
+	_, err := q.db.Exec(ctx, insertChannel, arg.ChannelName, arg.ChatroomID)
+	return err
+}
+
+const insertChatroom = `-- name: InsertChatroom :one
+INSERT INTO chatrooms (chatroom_name, icon_src, owner_id)
+VALUES ($1, $2, $3)
+RETURNING chatroom_id
+`
+
+type InsertChatroomParams struct {
+	ChatroomName string
+	IconSrc      string
+	OwnerID      uuid.UUID
+}
+
+func (q *Queries) InsertChatroom(ctx context.Context, arg InsertChatroomParams) (uuid.UUID, error) {
+	row := q.db.QueryRow(ctx, insertChatroom, arg.ChatroomName, arg.IconSrc, arg.OwnerID)
+	var chatroom_id uuid.UUID
+	err := row.Scan(&chatroom_id)
+	return chatroom_id, err
+}
+
+const insertChatroomUser = `-- name: InsertChatroomUser :exec
+INSERT INTO chatroom_users (chatroom_id, user_id)
+VALUES ($1, $2)
+`
+
+type InsertChatroomUserParams struct {
+	ChatroomID uuid.UUID
+	UserID     uuid.UUID
+}
+
+func (q *Queries) InsertChatroomUser(ctx context.Context, arg InsertChatroomUserParams) error {
+	_, err := q.db.Exec(ctx, insertChatroomUser, arg.ChatroomID, arg.UserID)
+	return err
+}

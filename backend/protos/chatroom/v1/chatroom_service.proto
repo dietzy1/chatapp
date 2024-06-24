@@ -10,6 +10,11 @@ service ChatroomService {
   rpc GetChatrooms(GetChatroomsRequest) returns (GetChatroomsResponse) {
     option (google.api.http) = {get: "/v1/chatroom/{user_id}"};
   }
+
+  rpc CreateChatroom(CreateChatroomRequest) returns (CreateChatroomResponse) {
+    option (google.api.http) = {post: "/v1/chatroom"};
+  }
+
 }
 
 message Chatroom {
@@ -31,4 +36,13 @@ message GetChatroomsRequest {
 
 message GetChatroomsResponse {
   repeated Chatroom chatrooms = 1;
+}
+
+message CreateChatroomRequest {
+  string name = 1;
+  string owner_id = 2;
+}
+
+message CreateChatroomResponse {
+  string chatroom_id = 1;
 }

@@ -28,6 +28,7 @@ type chatroomService struct {
 
 type ChatroomRepo interface {
 	GetChatrooms(ctx context.Context, userId uuid.UUID) ([]Chatroom, error)
+	CreateChatroom(ctx context.Context, name, iconSrc string, ownerUUID uuid.UUID) (string, error)
 }
 
 func NewChatroomService(logger *zap.Logger, chatroomRepo ChatroomRepo) *chatroomService {
@@ -56,4 +57,28 @@ func (c *chatroomService) GetChatrooms(ctx context.Context, userId string) ([]Ch
 	}
 
 	return chatrooms, nil
+}
+
+func (c *chatroomService) CreateChatroom(ctx context.Context, name, ownerId string) (string, error) {
+
+	if name == "" || ownerId == "" {
+		return "", fmt.Errorf("name or ownerId cannot be empty")
+	}
+
+	//parse ownerId into uuid
+	ownerUUID, err := uuid.Parse(ownerId)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse ownerId: %w", err)
+	}
+
+	firstLetter := name[0:1]
+
+	iconSrc := "https://fakeimg.pl/100x100/171717/ffffff?text=" + firstLetter
+
+	chatroomId, err := c.chatroomRepo.CreateChatroom(ctx, name, iconSrc, ownerUUID)
+	if err != nil {
+		return "", err
+	}
+
+	return chatroomId, nil
 }

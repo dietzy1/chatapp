@@ -95,6 +95,4 @@ func (h *handlers) VerifyUser(ctx context.Context, req *pb.VerifyUserRequest) (*
 	h.logger.Info("User verified", zap.String("userId", req.UserId))
 
 	return &pb.VerifyUserResponse{}, nil
-
-	return nil, status.Errorf(codes.Unimplemented, "method VerifyUser not implemented")
 }
