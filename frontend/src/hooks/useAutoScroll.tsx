@@ -90,8 +90,9 @@ function useAutoScroll() {
 export default useAutoScroll;
  */
 
-import useMessageStore from "@/stores/messageStore";
-import { useEffect, useState, useRef } from "react";
+
+import useMessageStore from '@/stores/messageStore';
+import { useEffect, useState, useRef } from 'react';
 
 function useAutoScroll() {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -105,11 +106,10 @@ function useAutoScroll() {
         if (smooth) {
           targetElementRef.current.scrollTo({
             top: targetElementRef.current.scrollHeight,
-            behavior: "smooth",
+            behavior: 'smooth',
           });
         } else {
-          targetElementRef.current.scrollTop =
-            targetElementRef.current.scrollHeight;
+          targetElementRef.current.scrollTop = targetElementRef.current.scrollHeight;
         }
       }
     };
@@ -131,23 +131,19 @@ function useAutoScroll() {
   useEffect(() => {
     const handleUserScroll = () => {
       if (targetElementRef.current) {
-        const { scrollTop, scrollHeight, clientHeight } =
-          targetElementRef.current;
-        const isAtBottom = scrollTop + clientHeight >= scrollHeight; // Allow some tolerance
+        const { scrollTop, scrollHeight, clientHeight } = targetElementRef.current;
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10; // Allow some tolerance
         setIsAutoScrollEnabled(isAtBottom);
       }
     };
 
     if (targetElementRef.current) {
-      targetElementRef.current.addEventListener("scroll", handleUserScroll);
+      targetElementRef.current.addEventListener('scroll', handleUserScroll);
     }
 
     return () => {
       if (targetElementRef.current) {
-        targetElementRef.current.removeEventListener(
-          "scroll",
-          handleUserScroll,
-        );
+        targetElementRef.current.removeEventListener('scroll', handleUserScroll);
       }
     };
   }, []);

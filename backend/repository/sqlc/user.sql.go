@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -60,11 +61,29 @@ func (q *Queries) GetUser(ctx context.Context, userID uuid.UUID) (User, error) {
 	return i, err
 }
 
-const updateUserVerificationAndSetPassword = `-- name: UpdateUserVerificationAndSetPassword :exec
-BEGIN
+const updateHashedPassword = `-- name: UpdateHashedPassword :exec
+UPDATE credentials
+    SET hash_password = $2
+WHERE user_id = $1
 `
 
-func (q *Queries) UpdateUserVerificationAndSetPassword(ctx context.Context) error {
-	_, err := q.db.Exec(ctx, updateUserVerificationAndSetPassword)
+type UpdateHashedPasswordParams struct {
+	UserID       uuid.UUID
+	HashPassword pgtype.Text
+}
+
+func (q *Queries) UpdateHashedPassword(ctx context.Context, arg UpdateHashedPasswordParams) error {
+	_, err := q.db.Exec(ctx, updateHashedPassword, arg.UserID, arg.HashPassword)
+	return err
+}
+
+const updateUserVerification = `-- name: UpdateUserVerification :exec
+UPDATE users
+    SET verified = true
+WHERE user_id = $1
+`
+
+func (q *Queries) UpdateUserVerification(ctx context.Context, userID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, updateUserVerification, userID)
 	return err
 }

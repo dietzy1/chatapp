@@ -9,7 +9,45 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
+
+const addSessionToken = `-- name: AddSessionToken :exec
+UPDATE credentials
+    SET session_token = $1
+WHERE user_id = $2
+`
+
+type AddSessionTokenParams struct {
+	SessionToken uuid.UUID
+	UserID       uuid.UUID
+}
+
+func (q *Queries) AddSessionToken(ctx context.Context, arg AddSessionTokenParams) error {
+	_, err := q.db.Exec(ctx, addSessionToken, arg.SessionToken, arg.UserID)
+	return err
+}
+
+const getHashedPasswordByUsername = `-- name: GetHashedPasswordByUsername :one
+SELECT 
+    c.hash_password,
+    c.user_id
+    FROM users u
+JOIN credentials c ON u.user_id = c.user_id
+    WHERE u.username = $1
+`
+
+type GetHashedPasswordByUsernameRow struct {
+	HashPassword pgtype.Text
+	UserID       uuid.UUID
+}
+
+func (q *Queries) GetHashedPasswordByUsername(ctx context.Context, username string) (GetHashedPasswordByUsernameRow, error) {
+	row := q.db.QueryRow(ctx, getHashedPasswordByUsername, username)
+	var i GetHashedPasswordByUsernameRow
+	err := row.Scan(&i.HashPassword, &i.UserID)
+	return i, err
+}
 
 const getSessionToken = `-- name: GetSessionToken :one
 SELECT

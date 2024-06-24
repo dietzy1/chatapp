@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Credentials struct {
@@ -17,6 +18,8 @@ type Credentials struct {
 type AuthRepository interface {
 	GetSessionToken(ctx context.Context, sessionToken uuid.UUID) (Credentials, error)
 	DeleteSessionToken(ctx context.Context, sessionToken, userId uuid.UUID) error
+	GetHashedPassword(ctx context.Context, username string) (Credentials, error)
+	AddSessionToken(ctx context.Context, sessionToken, userId uuid.UUID) error
 }
 
 type authService struct {
@@ -81,4 +84,35 @@ func (a *authService) DeleteSessionToken(ctx context.Context, sessionToken, user
 	}
 
 	return nil
+}
+
+func (a *authService) Login(ctx context.Context, username, password string) (string, error) {
+
+	if username == "" || password == "" {
+		return "", fmt.Errorf("username or password cannot be empty")
+	}
+
+	//retrieve password from the database
+	credentials, err := a.authRepo.GetHashedPassword(ctx, username)
+	if err != nil {
+		return "", fmt.Errorf("failed to get hashed password: %w", err)
+	}
+
+	//Compare the hashed password with the password
+	if err := bcrypt.CompareHashAndPassword([]byte(credentials.HashedPass), []byte(password)); err != nil {
+		return "", fmt.Errorf("password does not match: %w", err)
+	}
+
+	//Generate a session token
+	sessionToken, err := uuid.NewRandom()
+	if err != nil {
+		return "", fmt.Errorf("failed to generate session token: %w", err)
+	}
+
+	//Add the session token to the database
+	if err := a.authRepo.AddSessionToken(ctx, sessionToken, credentials.UserID); err != nil {
+		return "", fmt.Errorf("failed to add session token: %w", err)
+	}
+
+	return sessionToken.String(), nil
 }

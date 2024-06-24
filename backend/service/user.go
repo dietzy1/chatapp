@@ -33,6 +33,7 @@ type UserRepo interface {
 	CreateUser(ctx context.Context, username, iconSrc string) (uuid.UUID, uuid.UUID, error)
 	GetUser(ctx context.Context, userID uuid.UUID) (User, error)
 	GetUsers(ctx context.Context, chatroomID uuid.UUID) ([]User, error)
+	VerifyUser(ctx context.Context, userID uuid.UUID, hashedPassword string) error
 }
 
 func (u *userService) CreateUser(ctx context.Context, username, IconSrc string) (string, string, error) {
@@ -112,6 +113,10 @@ func (u *userService) VerifyUser(ctx context.Context, userID, password string) e
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return fmt.Errorf("failed to hash password: %w", err)
+	}
+
+	if err := u.repo.VerifyUser(ctx, userUUID, string(hashedPassword)); err != nil {
+		return fmt.Errorf("failed to verify user: %w", err)
 	}
 
 	return nil

@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 //const primaryChatroomId = "0f325167-6319-40d9-8ece-9dcbd413f6a6"
@@ -111,7 +112,7 @@ func (r *repository) GetUsers(ctx context.Context, chatroomID uuid.UUID) ([]serv
 	return userSlice, nil
 }
 
-func (r *repository) VerifyUser(ctx context.Context, userID, password string) error {
+func (r *repository) VerifyUser(ctx context.Context, userID uuid.UUID, hashedPassword string) error {
 
 	tx, err := r.postgres.pool.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
@@ -123,5 +124,21 @@ func (r *repository) VerifyUser(ctx context.Context, userID, password string) er
 	//Create transaction object
 	qtx := r.postgres.query.WithTx(tx)
 
+	//convert passwordhash to pgtype.text
+
+	if err := qtx.UpdateHashedPassword(ctx, generated.UpdateHashedPasswordParams{
+		UserID:       userID,
+		HashPassword: pgtype.Text{String: hashedPassword},
+	}); err != nil {
+		return fmt.Errorf("failed to update hashed password: %w", err)
+	}
+
+	if err := qtx.UpdateUserVerification(ctx, userID); err != nil {
+		return fmt.Errorf("failed to update user verification: %w", err)
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
 	return nil
 }

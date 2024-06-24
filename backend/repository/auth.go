@@ -34,3 +34,28 @@ func (r *repository) DeleteSessionToken(ctx context.Context, sessionToken, userI
 
 	return nil
 }
+
+func (r *repository) GetHashedPassword(ctx context.Context, username string) (service.Credentials, error) {
+
+	result, err := r.postgres.query.GetHashedPasswordByUsername(ctx, username)
+	if err != nil {
+		return service.Credentials{}, fmt.Errorf("failed to get hashed password: %w", err)
+	}
+
+	return service.Credentials{
+		UserID:     result.UserID,
+		HashedPass: result.HashPassword.String,
+	}, nil
+}
+
+func (r *repository) AddSessionToken(ctx context.Context, sessionToken, userId uuid.UUID) error {
+
+	if err := r.postgres.query.AddSessionToken(ctx, generated.AddSessionTokenParams{
+		SessionToken: sessionToken,
+		UserID:       userId,
+	}); err != nil {
+		return fmt.Errorf("failed to add session token: %w", err)
+	}
+
+	return nil
+}
