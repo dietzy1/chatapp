@@ -192,7 +192,6 @@ type activeUsersCallback interface {
 }
 
 func (m *manager) getChatroomClients(chatroomId string) []string {
-	m.logger.Info("Callback function called")
 	//Locate all clients in the chatroom
 	m.mu.RLock()
 	defer m.mu.RUnlock()

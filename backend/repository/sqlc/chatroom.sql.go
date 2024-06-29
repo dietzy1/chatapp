@@ -112,7 +112,9 @@ SELECT
 FROM
     chatrooms
 ORDER BY
-    chatroom_id LIMIT 1
+    chatroom_id
+LIMIT
+    1
 `
 
 func (q *Queries) GetPrimaryChatroom(ctx context.Context) (uuid.UUID, error) {
@@ -165,8 +167,10 @@ func (q *Queries) GetUsersInChatroom(ctx context.Context, chatroomID uuid.UUID) 
 }
 
 const insertChannel = `-- name: InsertChannel :exec
-INSERT INTO channels (channel_name, chatroom_id)
-VALUES ($1, $2)
+INSERT INTO
+    channels (channel_name, chatroom_id)
+VALUES
+    ($1, $2)
 `
 
 type InsertChannelParams struct {
@@ -180,9 +184,12 @@ func (q *Queries) InsertChannel(ctx context.Context, arg InsertChannelParams) er
 }
 
 const insertChatroom = `-- name: InsertChatroom :one
-INSERT INTO chatrooms (chatroom_name, icon_src, owner_id)
-VALUES ($1, $2, $3)
-RETURNING chatroom_id
+INSERT INTO
+    chatrooms (chatroom_name, icon_src, owner_id)
+VALUES
+    ($1, $2, $3)
+RETURNING
+    chatroom_id
 `
 
 type InsertChatroomParams struct {
@@ -199,8 +206,10 @@ func (q *Queries) InsertChatroom(ctx context.Context, arg InsertChatroomParams) 
 }
 
 const insertChatroomUser = `-- name: InsertChatroomUser :exec
-INSERT INTO chatroom_users (chatroom_id, user_id)
-VALUES ($1, $2)
+INSERT INTO
+    chatroom_users (chatroom_id, user_id)
+VALUES
+    ($1, $2)
 `
 
 type InsertChatroomUserParams struct {

@@ -11,6 +11,7 @@ require (
 	github.com/redis/go-redis/v9 v9.5.1
 	go.mongodb.org/mongo-driver v1.15.0
 	go.uber.org/zap v1.27.0
+	golang.org/x/crypto v0.24.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240318140521-94a12d6c2237
 	google.golang.org/grpc v1.62.1
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.3.0
@@ -33,7 +34,6 @@ require (
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.24.0 // indirect
 	golang.org/x/net v0.22.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect

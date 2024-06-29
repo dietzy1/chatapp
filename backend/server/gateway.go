@@ -40,7 +40,7 @@ func (s *server) RunGateway() error {
 		return err
 	}
 
-	mw := wrapperAuthMiddleware(s.logger)
+	mw := wrapperAuthMiddleware(s.logger, s)
 	middleware := mw((corsMiddleware(gwmux)))
 
 	gwServer := &http.Server{

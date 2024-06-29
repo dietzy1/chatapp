@@ -48,18 +48,26 @@ SELECT
 FROM
     chatrooms
 ORDER BY
-    chatroom_id LIMIT 1;
-
+    chatroom_id
+LIMIT
+    1;
 
 -- name: InsertChatroom :one
-INSERT INTO chatrooms (chatroom_name, icon_src, owner_id)
-VALUES ($1, $2, $3)
-RETURNING chatroom_id;
+INSERT INTO
+    chatrooms (chatroom_name, icon_src, owner_id)
+VALUES
+    ($1, $2, $3)
+RETURNING
+    chatroom_id;
 
 -- name: InsertChannel :exec
-INSERT INTO channels (channel_name, chatroom_id)
-VALUES ($1, $2);
+INSERT INTO
+    channels (channel_name, chatroom_id)
+VALUES
+    ($1, $2);
 
 -- name: InsertChatroomUser :exec
-INSERT INTO chatroom_users (chatroom_id, user_id)
-VALUES ($1, $2);
+INSERT INTO
+    chatroom_users (chatroom_id, user_id)
+VALUES
+    ($1, $2);

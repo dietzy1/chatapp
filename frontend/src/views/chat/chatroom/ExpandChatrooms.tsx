@@ -1,3 +1,5 @@
+import useGetAuth from "@/api/endpoints/auth/getAuth";
+import useCreateChatroom from "@/api/endpoints/chatroom/createChatroom";
 import {
   Tooltip,
   TooltipContent,
@@ -17,6 +19,15 @@ function ExpandChatrooms({
   {
     /*Expand list-collapse + Your servers + create new server button */
   }
+  const mutate = useCreateChatroom();
+  const { data } = useGetAuth();
+
+  const handleCreateChatroom = async () => {
+    mutate.mutate({
+      name: "Go enjoyers",
+      ownerId: data!.userId,
+    });
+  };
 
   if (expanded) {
     return (
@@ -30,7 +41,10 @@ function ExpandChatrooms({
           </div>
           <div className="tracking-widest">Your chatrooms</div>
           <Tooltip>
-            <TooltipTrigger className="ml-auto flex h-14 w-14 items-center justify-center rounded-sm hover:bg-muted ">
+            <TooltipTrigger
+              className="ml-auto flex h-14 w-14 items-center justify-center rounded-sm hover:bg-muted "
+              onClick={handleCreateChatroom}
+            >
               <Plus size={24} />
             </TooltipTrigger>
 

@@ -12,9 +12,18 @@ service ChatroomService {
   }
 
   rpc CreateChatroom(CreateChatroomRequest) returns (CreateChatroomResponse) {
-    option (google.api.http) = {post: "/v1/chatroom"};
+    option (google.api.http) = {
+      post: "/v1/chatroom"
+      body: "*"
+    };
   }
 
+  rpc CreateChannel(CreateChannelRequest) returns (CreateChannelResponse) {
+    option (google.api.http) = {
+      post: "/v1/channel"
+      body: "*"
+    };
+  }
 }
 
 message Chatroom {
@@ -45,4 +54,9 @@ message CreateChatroomRequest {
 
 message CreateChatroomResponse {
   string chatroom_id = 1;
+}
+
+message CreateChannelRequest {
+  string chatroom_id = 1;
+  string name = 2;
 }

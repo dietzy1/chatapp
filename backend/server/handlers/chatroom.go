@@ -48,7 +48,6 @@ func (h *handlers) GetChatrooms(ctx context.Context, req *pb.GetChatroomsRequest
 	return &pb.GetChatroomsResponse{
 		Chatrooms: pbchatrooms,
 	}, nil
-
 }
 
 func (h *handlers) CreateChatroom(ctx context.Context, req *pb.CreateChatroomRequest) (*pb.CreateChatroomResponse, error) {
@@ -63,3 +62,7 @@ func (h *handlers) CreateChatroom(ctx context.Context, req *pb.CreateChatroomReq
 
 	return &pb.CreateChatroomResponse{ChatroomId: chatroomId}, nil
 }
+
+/* func (h *handlers) CreateChannel(ctx context.Context, req *pb.CreateChannelRequest) (*pb.CreateChannelResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateChannel not implemented")
+} */

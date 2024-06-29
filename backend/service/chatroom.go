@@ -61,6 +61,9 @@ func (c *chatroomService) GetChatrooms(ctx context.Context, userId string) ([]Ch
 
 func (c *chatroomService) CreateChatroom(ctx context.Context, name, ownerId string) (string, error) {
 
+	//log the values recieved
+	c.logger.Info("Recieved the following values", zap.String("name", name), zap.String("ownerId", ownerId))
+
 	if name == "" || ownerId == "" {
 		return "", fmt.Errorf("name or ownerId cannot be empty")
 	}

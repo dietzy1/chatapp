@@ -1,10 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 
 import client from "@/api/client/axios";
-import { Chatroom } from "@/types/user";
 
 import useGetUser from "../user/getUser";
-//import "../mocks/getUser";
+import { Chatroom } from "@/types/chatroom";
 
 export interface GetChatroomsResponse {
   chatrooms: Chatroom[];
@@ -18,7 +17,7 @@ const getChatrooms = async (userId: string) => {
   return response.data;
 };
 
-const useGetChatrooms = (/* userId: string */) => {
+const useGetChatrooms = () => {
   const user = useGetUser();
 
   const userId = user?.data?.user.userId;
